@@ -199,3 +199,44 @@ a {
   opacity: 1;
   transform: translateY(0);
 }
+
+/* ─── Hero ─── */
+
+.hero {
+  padding: 160px 24px 120px;
+  text-align: center;
+}
+
+.hero-inner {
+  max-width: 720px;
+}
+
+.hero-title {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  color: var(--color-text);
+  margin-bottom: 24px;
+}
+
+.hero-subtitle {
+  font-size: clamp(1.125rem, 2vw, 1.375rem);
+  color: var(--color-text-light);
+  line-height: 1.5;
+  max-width: 560px;
+  margin: 0 auto 40px;
+}
+
+.btn-hero {
+  background: var(--color-accent);
+  color: var(--color-white);
+  padding: 14px 36px;
+  font-size: 1.0625rem;
+  border-radius: 10px;
+}
+
+.btn-hero:hover {
+  background: var(--color-accent-hover);
+  color: var(--color-white);
+}
