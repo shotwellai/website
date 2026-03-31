@@ -240,3 +240,116 @@ a {
   background: var(--color-accent-hover);
   color: var(--color-white);
 }
+
+/* ─── Pillar sections ─── */
+
+.pillar {
+  padding: var(--section-padding);
+  background: var(--color-bg);
+}
+
+.pillar-alt {
+  background: var(--color-bg-alt);
+}
+
+.pillar-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+
+.pillar-text {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.pillar-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-accent);
+}
+
+.pillar-title {
+  font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+
+.pillar-points {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pillar-points li {
+  font-size: 1.0625rem;
+  color: var(--color-text-light);
+  padding-left: 24px;
+  position: relative;
+  line-height: 1.5;
+}
+
+.pillar-points li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-secondary);
+}
+
+.pillar-learn {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--color-accent);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: gap 0.2s;
+}
+
+.pillar-learn:hover {
+  gap: 10px;
+}
+
+.pillar-visual {
+  background: var(--color-bg);
+  border-radius: 16px;
+  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(43, 29, 94, 0.06);
+}
+
+.pillar-alt .pillar-visual {
+  background: var(--color-bg);
+}
+
+.pillar-visual-placeholder {
+  font-size: 0.875rem;
+  color: var(--color-text-light);
+  opacity: 0.5;
+}
+
+@media (max-width: 768px) {
+  .pillar-inner {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .pillar-visual {
+    order: -1;
+  }
+}
