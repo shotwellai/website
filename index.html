@@ -11,102 +11,55 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
+  <!-- Noise texture overlay -->
+  <svg class="noise" aria-hidden="true">
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+    <rect width="100%" height="100%" filter="url(#grain)"/>
+  </svg>
+
   <nav class="nav" id="nav">
     <div class="nav-inner">
-      <a href="#" class="nav-logo">Shotwell AI</a>
+      <a href="#" class="nav-logo">Shotwell<span class="nav-logo-dot">.</span></a>
       <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
         <span></span>
         <span></span>
         <span></span>
       </button>
       <div class="nav-links" id="nav-links">
-        <a href="#labeling">Labeling</a>
-        <a href="#data-collection">Data Collection</a>
-        <a href="#visualization">Visualization</a>
-        <a href="YOUR_CALENDLY_URL" class="btn btn-nav" target="_blank" rel="noopener">Book a Demo</a>
+        <a href="https://calendly.com/nour-shotwell/30-minute-meeting-w-team" class="btn btn-nav" target="_blank" rel="noopener">Book a Demo</a>
       </div>
     </div>
   </nav>
 
   <section class="hero" id="hero">
-    <div class="container hero-inner">
-      <h1 class="hero-title">The data engine<br>for robotics</h1>
-      <p class="hero-subtitle">Label, collect, and visualize multimodal data — purpose-built for robotics teams that need to move fast.</p>
-      <a href="YOUR_CALENDLY_URL" class="btn btn-hero" target="_blank" rel="noopener">Book a Demo</a>
+    <div class="hero-inner">
+      <span class="hero-eyebrow reveal">The data engine for robotics</span>
+      <h1 class="hero-title reveal">
+        Better data.<br><em>Better robots.</em>
+      </h1>
+      <p class="hero-subtitle reveal">Label, collect, and visualize multimodal data — purpose-built for robotics teams that need to move fast.</p>
+      <a href="https://calendly.com/nour-shotwell/30-minute-meeting-w-team" class="btn btn-hero reveal" target="_blank" rel="noopener">
+        Book a Demo
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+    <div class="hero-decoration" aria-hidden="true">
+      <div class="hero-circle hero-circle-1"></div>
+      <div class="hero-circle hero-circle-2"></div>
     </div>
   </section>
 
-  <section class="pillar" id="labeling">
-    <div class="pillar-inner fade-in">
-      <div class="pillar-text">
-        <span class="pillar-label">Labeling & Annotation</span>
-        <h2 class="pillar-title">Label and annotate multimodal data</h2>
-        <ul class="pillar-points">
-          <li>Support for video, LIDAR, IMU, and other sensor modalities</li>
-          <li>Frame-level and sequence-level annotation</li>
-          <li>QA workflows to catch labeling errors</li>
-          <li>Built for robotics-specific data formats</li>
-        </ul>
-        <a href="#" class="pillar-learn">Learn more →</a>
-      </div>
-      <div class="pillar-visual">
-        <span class="pillar-visual-placeholder">Screenshot coming soon</span>
-      </div>
-    </div>
-  </section>
-
-  <section class="pillar pillar-alt" id="data-collection">
-    <div class="pillar-inner fade-in">
-      <div class="pillar-visual">
-        <span class="pillar-visual-placeholder">Screenshot coming soon</span>
-      </div>
-      <div class="pillar-text">
-        <span class="pillar-label">Data Collection</span>
-        <h2 class="pillar-title">Scale your data collection</h2>
-        <ul class="pillar-points">
-          <li>Managed data farms for collecting demonstration data</li>
-          <li>Diverse environments and scenarios</li>
-          <li>Structured collection protocols</li>
-          <li>Quality-validated at the source</li>
-        </ul>
-        <a href="#" class="pillar-learn">Learn more →</a>
-      </div>
-    </div>
-  </section>
-
-  <section class="pillar" id="visualization">
-    <div class="pillar-inner fade-in">
-      <div class="pillar-text">
-        <span class="pillar-label">Data Visualization</span>
-        <h2 class="pillar-title">Understand your data at a glance</h2>
-        <ul class="pillar-points">
-          <li>Multi-camera video synchronized with sensor streams</li>
-          <li>Interactive timelines and 3D scene exploration</li>
-          <li>Episode-level QA and review tools</li>
-          <li>Spot issues before they reach your model</li>
-        </ul>
-        <a href="#" class="pillar-learn">Learn more →</a>
-      </div>
-      <div class="pillar-visual">
-        <span class="pillar-visual-placeholder">Screenshot coming soon</span>
-      </div>
-    </div>
-  </section>
-
-  <section class="cta-banner" id="cta">
-    <div class="container cta-inner fade-in">
-      <h2 class="cta-title">Ready to improve your robotics data pipeline?</h2>
-      <a href="YOUR_CALENDLY_URL" class="btn btn-cta" target="_blank" rel="noopener">Book a Demo</a>
-    </div>
-  </section>
 
   <footer class="footer">
-    <div class="container footer-inner">
+    <div class="footer-inner">
       <span class="footer-copy">&copy; 2026 Shotwell AI</span>
       <a href="mailto:hello@shotwell.ai" class="footer-contact">hello@shotwell.ai</a>
     </div>

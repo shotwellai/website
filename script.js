@@ -1,14 +1,13 @@
 (function () {
   // ─── Hamburger menu toggle ───
-  const toggle = document.getElementById('nav-toggle');
-  const links = document.getElementById('nav-links');
+  var toggle = document.getElementById('nav-toggle');
+  var links = document.getElementById('nav-links');
 
   toggle.addEventListener('click', function () {
     toggle.classList.toggle('open');
     links.classList.toggle('open');
   });
 
-  // Close menu when a nav link is clicked (mobile)
   links.querySelectorAll('a').forEach(function (link) {
     link.addEventListener('click', function () {
       toggle.classList.remove('open');
@@ -16,8 +15,23 @@
     });
   });
 
-  // ─── Scroll-triggered fade-in ───
-  const fadeEls = document.querySelectorAll('.fade-in');
+  // ─── Nav scroll effect ───
+  var nav = document.getElementById('nav');
+  var scrolled = false;
+
+  function checkScroll() {
+    var shouldBeScrolled = window.scrollY > 40;
+    if (shouldBeScrolled !== scrolled) {
+      scrolled = shouldBeScrolled;
+      nav.classList.toggle('scrolled', scrolled);
+    }
+  }
+
+  window.addEventListener('scroll', checkScroll, { passive: true });
+  checkScroll();
+
+  // ─── Scroll-triggered reveals ───
+  var revealEls = document.querySelectorAll('.reveal, .reveal-group');
 
   if ('IntersectionObserver' in window) {
     var observer = new IntersectionObserver(
@@ -29,16 +43,28 @@
           }
         });
       },
-      { threshold: 0.15 }
+      { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
     );
 
-    fadeEls.forEach(function (el) {
+    revealEls.forEach(function (el) {
       observer.observe(el);
     });
   } else {
-    // Fallback: just show everything
-    fadeEls.forEach(function (el) {
+    revealEls.forEach(function (el) {
       el.classList.add('visible');
     });
   }
+
+  // ─── Staggered hero reveals ───
+  var heroReveals = document.querySelectorAll('.hero .reveal');
+  heroReveals.forEach(function (el, i) {
+    el.style.transitionDelay = (i * 0.12) + 's';
+  });
+
+  // Trigger hero reveals immediately after short delay
+  setTimeout(function () {
+    heroReveals.forEach(function (el) {
+      el.classList.add('visible');
+    });
+  }, 100);
 })();
