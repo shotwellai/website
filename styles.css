@@ -353,3 +353,78 @@ a {
     order: -1;
   }
 }
+
+/* ─── CTA Banner ─── */
+
+.cta-banner {
+  padding: var(--section-padding);
+  background: var(--color-accent);
+  text-align: center;
+}
+
+.cta-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+
+.cta-title {
+  font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--color-white);
+  max-width: 560px;
+}
+
+.btn-cta {
+  background: var(--color-white);
+  color: var(--color-accent);
+  padding: 14px 36px;
+  font-size: 1.0625rem;
+  border-radius: 10px;
+}
+
+.btn-cta:hover {
+  background: var(--color-bg);
+  color: var(--color-accent);
+}
+
+/* ─── Footer ─── */
+
+.footer {
+  padding: 32px 24px;
+  background: var(--color-text);
+}
+
+.footer-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-copy {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.footer-contact {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+  transition: color 0.2s;
+}
+
+.footer-contact:hover {
+  color: var(--color-white);
+}
+
+@media (max-width: 768px) {
+  .footer-inner {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+}
