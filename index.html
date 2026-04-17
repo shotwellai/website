@@ -45,7 +45,7 @@
       <h1 class="hero-title reveal">
         Better data.<br><em>Better robots.</em>
       </h1>
-      <p class="hero-subtitle reveal">Visualize and annotate multimodal data — purpose-built for robotics teams that need to move fast.</p>
+      <p class="hero-subtitle reveal">Shotwell gives you fast, accurate and high quality annotations so you can focus on robot design and intelligence.</p>
       <a href="https://calendly.com/nour-shotwell/30-minute-meeting-w-team" class="btn btn-hero reveal" target="_blank" rel="noopener">
         Book a Demo
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -60,6 +60,123 @@
     </div>
   </section>
 
+  <!-- Feature 1: Temporal Segmentation -->
+  <section class="feature" id="feature-segmentation" data-variant="default">
+    <div class="feature-inner">
+      <header class="feature-header reveal feature-header-center">
+        <span class="feature-eyebrow">Temporal segmentation</span>
+        <h2 class="feature-title">Break your training videos into <em>labeled actions.</em></h2>
+        <p class="feature-subtitle">Shotwell watches every teleop and imitation-learning trajectory frame-by-frame, then chunks it into the discrete sub-skills your robot actually needs to learn.</p>
+      </header>
+
+      <div class="feature-split reveal">
+        <!-- LEFT: Fake video -->
+        <div class="seg-video">
+          <div class="seg-video-head">
+            <span class="seg-video-title">episode_0431 · fold_shirt</span>
+            <span class="seg-video-meta"><span class="rec-dot"></span><span id="seg-rec-time">00:00.00</span></span>
+          </div>
+
+          <div class="seg-stage">
+            <video id="seg-video" class="seg-video-el" src="robot-folding.mp4" muted loop playsinline preload="auto"></video>
+            <div class="seg-yt-overlay" aria-hidden="true"></div>
+          </div>
+
+          <!-- Scrubber -->
+          <div class="seg-scrubber">
+            <div class="seg-scrubber-track" id="seg-track">
+              <!-- filled by JS -->
+            </div>
+            <div class="seg-timecode">
+              <span>00:00.00</span>
+              <span>00:12.00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Chunks -->
+        <aside class="seg-chunks" id="seg-chunks">
+          <div class="seg-chunks-label">
+            <span>Detected actions</span>
+            <span class="count" id="seg-count">0 / 5</span>
+          </div>
+          <!-- chunks injected by JS -->
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature 2: Quality Filtering -->
+  <section class="feature feature-quality" id="feature-quality">
+    <div class="feature-inner">
+      <header class="feature-header reveal feature-header-center">
+        <span class="feature-eyebrow">Quality control</span>
+        <h2 class="feature-title">Stop training on data that <em>fails your SOP.</em></h2>
+        <p class="feature-subtitle">Shotwell automatically finds failing videos and annotates the reason — so your model only learns from data that meets your standard.</p>
+      </header>
+
+      <div class="quality-stage reveal">
+        <div class="quality-grid" id="quality-grid" aria-hidden="true">
+          <!-- dots injected by JS -->
+        </div>
+        <svg class="quality-arrows" id="quality-arrows" aria-hidden="true"></svg>
+        <div class="quality-legend">
+          <div class="quality-legend-item">
+            <span class="dot dot-pass"></span>
+            <span>Passing videos</span>
+            <span class="legend-count" id="quality-pass-count">— / —</span>
+          </div>
+          <div class="quality-legend-item">
+            <span class="dot dot-fail"></span>
+            <span>Flagged by Shotwell</span>
+            <span class="legend-count legend-count-fail" id="quality-fail-count">— / —</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature 3: Better Performance -->
+  <section class="feature feature-performance" id="feature-performance">
+    <div class="feature-inner">
+      <header class="feature-header reveal feature-header-center">
+        <span class="feature-eyebrow">Better performance</span>
+        <h2 class="feature-title">Take your model to <em>new performance highs.</em></h2>
+        <p class="feature-subtitle">Your model is bottlenecked by the quality of your data. Shotwell lets you unblock your model's performance and get to higher accuracy, faster.</p>
+      </header>
+
+      <div class="perf-stage reveal">
+        <div class="perf-chart-frame">
+          <div class="perf-chart-head">
+            <div class="perf-chart-title">
+              <span class="perf-run-dot perf-run-dot--live"></span>
+              <span>validation / success_rate</span>
+            </div>
+            <div class="perf-chart-meta">
+              <span class="perf-meta-pill">smoothing 0.6</span>
+              <span class="perf-meta-pill">steps</span>
+            </div>
+          </div>
+          <div class="perf-chart-body">
+            <svg class="perf-chart" id="perf-chart" viewBox="0 0 820 420" preserveAspectRatio="none" aria-hidden="true"></svg>
+            <div class="perf-annotations" id="perf-annotations" aria-hidden="true"></div>
+          </div>
+          <div class="perf-chart-legend">
+            <div class="perf-legend-item">
+              <span class="perf-legend-swatch perf-legend-swatch--baseline"></span>
+              <span class="perf-legend-label">baseline · your model today</span>
+              <span class="perf-legend-value" id="perf-value-baseline">—</span>
+            </div>
+            <div class="perf-legend-item">
+              <span class="perf-legend-swatch perf-legend-swatch--shotwell"></span>
+              <span class="perf-legend-label">with Shotwell</span>
+              <span class="perf-legend-value" id="perf-value-shotwell">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <footer class="footer">
     <div class="footer-inner">
