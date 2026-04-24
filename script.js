@@ -91,8 +91,8 @@
   var PEDESTAL_W = 36;
   var PEDESTAL_H = 5;
 
-  var STIFFNESS = 0.028;
-  var DAMPING = 0.86;
+  var STIFFNESS = 0.012;
+  var DAMPING = 0.90;
 
   var mouseInCanvas = false;
   var mouseX = 0;
