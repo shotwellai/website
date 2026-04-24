@@ -328,12 +328,6 @@ a {
   max-width: 860px;
   position: relative;
   z-index: 2;
-  pointer-events: none;
-}
-
-.hero-inner a,
-.hero-inner button {
-  pointer-events: auto;
 }
 
 .hero-eyebrow {
@@ -423,7 +417,6 @@ a {
   top: 0;
   pointer-events: none;
   z-index: 0;
-  cursor: crosshair;
 }
 
 .arms-section canvas {
@@ -476,10 +469,6 @@ a {
   .hero {
     padding: 80px 24px 40px;
     align-items: center;
-  }
-
-  .hero-inner {
-    pointer-events: auto;
   }
 
   .hero-title {

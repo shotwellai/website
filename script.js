@@ -425,18 +425,18 @@
     requestAnimationFrame(loop);
   }
 
-  canvas.addEventListener('mousemove', function (e) {
+  window.addEventListener('mousemove', function (e) {
     var rect = canvas.getBoundingClientRect();
     mouseX = e.clientX - rect.left;
     mouseY = e.clientY - rect.top;
+    mouseInCanvas = (
+      e.clientX >= rect.left && e.clientX <= rect.right &&
+      e.clientY >= rect.top && e.clientY <= rect.bottom
+    );
   });
 
-  canvas.addEventListener('mouseenter', function () {
-    mouseInCanvas = true;
-  });
-
-  canvas.addEventListener('mouseleave', function () {
-    mouseInCanvas = false;
+  window.addEventListener('mouseout', function (e) {
+    if (!e.relatedTarget && !e.toElement) mouseInCanvas = false;
   });
 
   canvas.addEventListener('touchmove', function (e) {
