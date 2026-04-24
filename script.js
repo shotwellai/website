@@ -99,6 +99,7 @@
   var mouseY = 0;
   var idleTime = 0;
   var activeBlend = 0;
+  var ctaHovered = false;    // true while user hovers the CTA — suppresses cursor-follow
 
   var arms = [];
 
@@ -388,7 +389,7 @@
   function update() {
     idleTime += 1 / 60;
 
-    var targetBlend = mouseInCanvas ? 1 : 0;
+    var targetBlend = (mouseInCanvas && !ctaHovered) ? 1 : 0;
     activeBlend += (targetBlend - activeBlend) * 0.045;
 
     for (var i = 0; i < arms.length; i++) {
@@ -407,7 +408,7 @@
       springToward(arm, tx, ty);
       solveFABRIK(arm, arm.smoothTarget.x, arm.smoothTarget.y);
 
-      var gripTarget = mouseInCanvas ? 0.6 : 0.35;
+      var gripTarget = (mouseInCanvas && !ctaHovered) ? 0.6 : 0.35;
       arm.gripperOpen += (gripTarget - arm.gripperOpen) * 0.06;
     }
   }
@@ -450,6 +451,13 @@
 
   canvas.addEventListener('touchend', function () {
     mouseInCanvas = false;
+  });
+
+  document.querySelectorAll('.btn-hero').forEach(function (btn) {
+    btn.addEventListener('mouseenter', function () { ctaHovered = true; });
+    btn.addEventListener('mouseleave', function () { ctaHovered = false; });
+    btn.addEventListener('focus', function () { ctaHovered = true; });
+    btn.addEventListener('blur', function () { ctaHovered = false; });
   });
 
   window.addEventListener('resize', resize);
