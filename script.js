@@ -76,7 +76,7 @@
   var W, H;
 
   var ARM_COLOR = '#C8793E';
-  var BG_COLOR = '#EDE0D4';
+  var BG_COLOR = '#F5EADD';
   var NUM_ARMS = 5;
 
   var SEG_SCALE = 1;
@@ -91,8 +91,8 @@
   var PEDESTAL_W = 36;
   var PEDESTAL_H = 5;
 
-  var STIFFNESS = 0.055;
-  var DAMPING = 0.83;
+  var STIFFNESS = 0.028;
+  var DAMPING = 0.86;
 
   var mouseInCanvas = false;
   var mouseX = 0;
