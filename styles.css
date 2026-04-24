@@ -11,6 +11,9 @@
   --color-white: #FDFAF7;
   --color-dark: #2A2A32;
 
+  --color-bg-rgb: 245, 234, 221;
+  --color-text-rgb: 42, 42, 50;
+
   --font-display: 'Instrument Serif', Georgia, serif;
   --font-body: 'Outfit', system-ui, sans-serif;
 
@@ -22,6 +25,28 @@
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #1C1A18;
+    --color-bg-alt: #24211F;
+    --color-accent: #D6864A;
+    --color-accent-hover: #E49A63;
+    --color-secondary: #A7BF96;
+    --color-text: #F0E6D9;
+    --color-text-light: #A6998A;
+    --color-white: #FDFAF7;
+    --color-dark: #100E0D;
+
+    --color-bg-rgb: 28, 26, 24;
+    --color-text-rgb: 240, 230, 217;
+  }
+
+  .noise {
+    mix-blend-mode: screen;
+    opacity: 0.025;
+  }
 }
 
 /* ─── Reset ─── */
@@ -90,12 +115,12 @@ a {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(42, 42, 50, 0.12);
+  background: rgba(var(--color-text-rgb), 0.12);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(42, 42, 50, 0.22);
+  background: rgba(var(--color-text-rgb), 0.22);
 }
 
 /* ─── Navigation ─── */
@@ -111,10 +136,10 @@ a {
 }
 
 .nav.scrolled {
-  background: rgba(237, 224, 212, 0.92);
+  background: rgba(var(--color-bg-rgb), 0.92);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 1px 0 rgba(42, 42, 50, 0.06);
+  box-shadow: 0 1px 0 rgba(var(--color-text-rgb), 0.06);
 }
 
 .nav-inner {
@@ -211,7 +236,7 @@ a {
 
 .btn-nav:hover {
   background: var(--color-text);
-  color: var(--color-white);
+  color: var(--color-bg);
 }
 
 .btn-hero {
@@ -274,12 +299,12 @@ a {
     left: 0;
     right: 0;
     flex-direction: column;
-    background: rgba(237, 224, 212, 0.98);
+    background: rgba(var(--color-bg-rgb), 0.98);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     padding: 32px;
     gap: 24px;
-    border-bottom: 1px solid rgba(42, 42, 50, 0.06);
+    border-bottom: 1px solid rgba(var(--color-text-rgb), 0.06);
   }
 
   .nav-links.open {

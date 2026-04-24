@@ -75,9 +75,24 @@
   var dpr = window.devicePixelRatio || 1;
   var W, H;
 
-  var ARM_COLOR = '#C8793E';
-  var BG_COLOR = '#F5EADD';
+  function readCssColor(name, fallback) {
+    var v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    return v || fallback;
+  }
+
+  var ARM_COLOR = readCssColor('--color-accent', '#C8793E');
+  var BG_COLOR = readCssColor('--color-bg', '#F5EADD');
   var NUM_ARMS = 5;
+
+  if (window.matchMedia) {
+    var mql = window.matchMedia('(prefers-color-scheme: dark)');
+    var onSchemeChange = function () {
+      ARM_COLOR = readCssColor('--color-accent', ARM_COLOR);
+      BG_COLOR = readCssColor('--color-bg', BG_COLOR);
+    };
+    if (mql.addEventListener) mql.addEventListener('change', onSchemeChange);
+    else if (mql.addListener) mql.addListener(onSchemeChange);
+  }
 
   var SEG_SCALE = 1;
   var BASE_LENGTHS = [35, 58, 45];
