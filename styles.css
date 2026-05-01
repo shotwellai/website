@@ -153,10 +153,25 @@ a {
 }
 
 .nav-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   font-family: var(--font-display);
   font-size: 1.85rem;
   color: var(--color-text);
   letter-spacing: -0.01em;
+}
+
+.nav-logo-mark {
+  width: 1.35em;
+  height: 1.35em;
+  color: var(--color-accent);
+  flex-shrink: 0;
+}
+
+.nav-logo-text {
+  display: inline-block;
+  line-height: 1;
 }
 
 .nav-logo-dot {
