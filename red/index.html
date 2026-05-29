@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shotwell AI — The Data Engine for Robotics</title>
+  <meta name="description" content="Label, collect, and visualize multimodal robotics data. Shotwell AI helps robotics companies build better models with better data.">
+  <meta property="og:title" content="Shotwell AI — The Data Engine for Robotics">
+  <meta property="og:description" content="Label, collect, and visualize multimodal robotics data.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Noise texture overlay -->
+  <svg class="noise" aria-hidden="true">
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+    <rect width="100%" height="100%" filter="url(#grain)"/>
+  </svg>
+
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo"><img src="shotwell-logo.png" class="nav-logo-mark" alt="Shotwell logo" /><span class="nav-logo-word">Shotwell<span class="nav-logo-dot">.</span></span></a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <div class="nav-links" id="nav-links">
+        <a href="https://calendly.com/nour-shotwell/30-minute-meeting-w-team" class="btn btn-hero btn-nav-cta" target="_blank" rel="noopener">
+          Talk to us
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero" id="hero">
+    <div class="hero-inner">
+      <span class="hero-eyebrow reveal">The quality layer for robotics data</span>
+      <h1 class="hero-title reveal">
+        Better data.<br><em>Better robots.</em>
+      </h1>
+      <p class="hero-subtitle reveal">Shotwell provides fast, accurate and dense annotations for robotics training data.</p>
+      <a href="https://calendly.com/nour-shotwell/30-minute-meeting-w-team" class="btn btn-hero reveal" target="_blank" rel="noopener">
+        Talk to us
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+    <div class="hero-decoration" aria-hidden="true">
+      <div class="hero-circle hero-circle-1"></div>
+      <div class="hero-circle hero-circle-2"></div>
+    </div>
+  </section>
+
+  <!-- Trusted by -->
+  <section class="trusted" id="trusted">
+    <div class="trusted-inner">
+      <span class="trusted-label">Trusted by</span>      <div class="trusted-logos">
+        <a href="https://www.ultra.tech/" class="trusted-logo" target="_blank" rel="noopener">
+          <img src="ultra-logo.png" class="trusted-logo-ultra" alt="Ultra" />
+        </a>
+        <a href="https://www.parametric.company/" class="trusted-logo trusted-logo--parametric" target="_blank" rel="noopener">
+          <img src="parametric-logo.png" class="trusted-logo-mark" alt="Parametric" />
+          <span class="trusted-parametric-word">Parametric</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature 1: Temporal Segmentation -->
+  <section class="feature" id="feature-segmentation" data-variant="default">
+    <div class="feature-inner">
+      <header class="feature-header reveal feature-header-center">
+        <h2 class="feature-title">Break your training videos into <em>labeled actions.</em></h2>
+        <p class="feature-subtitle">Shotwell watches every video frame-by-frame, chunks it into discrete actions, and labels those actions on quality and task definition.</p>
+      </header>
+
+      <div class="feature-split reveal">
+        <!-- LEFT: video + scrubber + detected actions -->
+        <div class="seg-video">
+          <div class="seg-video-head">
+            <span class="seg-video-title">episode_0431 · fold_shirt</span>
+            <span class="seg-video-meta"><span class="rec-dot"></span><span id="seg-rec-time">00:00.00</span></span>
+          </div>
+
+          <div class="seg-stage">
+            <video id="seg-video" class="seg-video-el" src="fold-rubric.mp4" muted loop playsinline preload="auto"></video>
+            <div class="seg-yt-overlay" aria-hidden="true"></div>
+          </div>
+
+          <!-- Scrubber -->
+          <div class="seg-scrubber">
+            <div class="seg-scrubber-track seg-scrubber-track--single" id="seg-track">
+              <!-- segments injected by JS -->
+            </div>
+            <div class="seg-timecode">
+              <span>00:00.00</span>
+              <span id="seg-end-time">00:19.00</span>
+            </div>
+          </div>
+
+          <!-- Detected actions, under the scrubber -->
+          <div class="seg-actions">
+            <div class="seg-actions-head">
+              <span class="seg-actions-title">Detected actions</span>
+              <span class="seg-actions-current" id="seg-current-action">—</span>
+            </div>
+            <div class="seg-actions-list" id="seg-actions-list">
+              <!-- chips injected by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: SOP rubric -->
+        <aside class="seg-rubric-col">
+          <div class="seg-rubric" id="seg-rubric">
+            <div class="seg-rubric-head">
+              <span class="seg-rubric-title">SOP rubric</span>
+              <span class="seg-rubric-count" id="seg-count">0 / 6</span>
+            </div>
+            <!-- rubric items injected by JS -->
+          </div>
+          <div class="seg-demo-cta">
+            <p class="seg-demo-text">See it in action with open-source data</p>
+            <a href="http://demo.shotwell.ai/" class="btn btn-hero" target="_blank" rel="noopener">
+              See Demo
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section class="contact" id="contact">
+    <div class="contact-inner reveal">
+      <img src="shotwell-logo.png" class="contact-logo" alt="Shotwell" />
+      <h2 class="contact-title">Let's talk about your <em>data:</em> <span class="contact-email-wrap"><a href="mailto:hello@shotwell.ai" class="contact-email">hello@shotwell.ai</a><svg class="contact-underline" viewBox="0 0 320 18" fill="none" preserveAspectRatio="none" aria-hidden="true"><path d="M5 11 C50 5, 95 6, 150 9 C205 12, 255 7, 315 10" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></svg></span></h2>
+    </div>
+  </section>
+
+  <!-- Tweaks panel -->
+  <aside class="tweaks" id="tweaks">
+    <div class="tweaks-title">Tweaks</div>
+    <div class="tweaks-group">
+      <label class="tweaks-label">Section style</label>
+      <div class="tweak-opts" data-tweak="variant">
+        <button class="tweak-opt" data-value="default">Warm</button>
+        <button class="tweak-opt" data-value="paper">Paper</button>
+        <button class="tweak-opt" data-value="terminal">Dark</button>
+      </div>
+    </div>
+    <div class="tweaks-group">
+      <label class="tweaks-label">Layout</label>
+      <div class="tweak-opts" data-tweak="layout">
+        <button class="tweak-opt" data-value="split">Split</button>
+        <button class="tweak-opt" data-value="filmstrip">Filmstrip</button>
+      </div>
+    </div>
+    <div class="tweaks-group">
+      <label class="tweaks-label">Animation speed</label>
+      <div class="tweak-opts" data-tweak="speed">
+        <button class="tweak-opt" data-value="slow">Slow</button>
+        <button class="tweak-opt" data-value="normal">Normal</button>
+        <button class="tweak-opt" data-value="fast">Fast</button>
+      </div>
+    </div>
+  </aside>
+
+  <script src="script.js"></script>
+</body>
+</html>
