@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#F5EADD" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1C1A18" media="(prefers-color-scheme: dark)">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-X517HETWW0"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-X517HETWW0');
+  </script>
+
+  <title>Shotwell AI — The Data Engine for Robotics</title>
+  <meta name="description" content="The validation layer for physical AI. Purpose-built for robotics teams that need to move fast.">
+  <meta property="og:title" content="Shotwell AI — The Data Engine for Robotics">
+  <meta property="og:description" content="The validation layer for physical AI. Purpose-built for robotics teams that need to move fast.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Noise texture overlay -->
+  <svg class="noise" aria-hidden="true">
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+    <rect width="100%" height="100%" filter="url(#grain)"/>
+  </svg>
+
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">
+        <svg class="nav-logo-mark" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M16 3 L11 8 L21 8 Z"/>
+          <path d="M11 8 L9 18 L23 18 L21 8 Z"/>
+          <rect x="14.5" y="11.5" width="3" height="3" fill="currentColor" stroke="none"/>
+          <line x1="16" y1="18" x2="16" y2="28"/>
+          <line x1="12.5" y1="28" x2="19.5" y2="28"/>
+        </svg>
+        <span class="nav-logo-text">Shotwell<span class="nav-logo-dot">.</span></span>
+      </a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <div class="nav-links" id="nav-links">
+        <a href="https://calendly.com/nour-shotwell/30-minute-meeting-w-team" class="btn btn-nav" target="_blank" rel="noopener">Book a Demo</a>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero" id="hero">
+    <div class="hero-inner">
+      <span class="hero-eyebrow reveal">Unblock your model's performance</span>
+      <h1 class="hero-title reveal">
+        Better data.<br><em>Better robots.</em>
+      </h1>
+      <p class="hero-subtitle reveal">The validation layer for physical AI. Purpose-built for robotics teams that need to move fast.</p>
+      <a href="https://calendly.com/nour-shotwell/30-minute-meeting-w-team" class="btn btn-hero reveal" target="_blank" rel="noopener">
+        Book a Demo
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+    <div class="hero-decoration" aria-hidden="true">
+      <div class="hero-circle hero-circle-1"></div>
+      <div class="hero-circle hero-circle-2"></div>
+    </div>
+    <div class="arms-section" id="arms-section">
+      <canvas id="arms-canvas"></canvas>
+    </div>
+  </section>
+
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <span class="footer-copy">&copy; 2026 Shotwell AI</span>
+      <a href="mailto:hello@shotwell.ai" class="footer-contact">hello@shotwell.ai</a>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
