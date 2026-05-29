@@ -76,8 +76,8 @@
   var dpr = window.devicePixelRatio || 1;
   var W, H;
 
-  var ARM_COLOR = '#C8793E';
-  var BG_COLOR = '#EDE0D4';
+  var ARM_COLOR = '#6FA052';
+  var BG_COLOR = '#DDE3CF';
 
   var SEG_SCALE = 1;
   var BASE_LENGTHS = [35, 58, 45];
@@ -517,7 +517,7 @@
 
   // Detected actions (sequential), each a distinct color for strong contrast
   var ACTIONS = [
-    { label: 'Pick up',           start: 0,  end: 1,  color: '#C8793E' },
+    { label: 'Pick up',           start: 0,  end: 1,  color: '#6FA052' },
     { label: 'Straighten',        start: 1,  end: 7,  color: '#4F9E84' },
     { label: 'Fold right sleeve', start: 7,  end: 10, color: '#BF4D34' },
     { label: 'Fold left sleeve',  start: 10, end: 15, color: '#D6A02E' },
