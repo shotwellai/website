@@ -225,16 +225,16 @@ a {
 }
 
 .btn-hero {
-  border-color: #9CB892;
-  background: #9CB892;
+  border-color: #6A9B4E;
+  background: #6A9B4E;
   color: var(--color-white);
   padding: 14px 32px;
   font-size: 0.85rem;
 }
 
 .btn-hero:hover {
-  background: #9CB892;
-  border-color: #9CB892;
+  background: #6A9B4E;
+  border-color: #6A9B4E;
   color: var(--color-white);
 }
 
@@ -602,7 +602,7 @@ a {
 
 .seg-video {
   position: relative;
-  background: #DCE5D2;
+  background: rgba(40, 165, 90, 0.07);
   border: 1px solid rgba(42, 42, 50, 0.08);
   border-radius: var(--radius);
   padding: 20px;
