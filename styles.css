@@ -2,13 +2,13 @@
 
 :root {
   --color-bg: #F5F5F5;
-  --color-bg-alt: #F7FBF5;
-  --color-accent: #3F7A1E;
-  --color-accent-hover: #2A5A0E;
-  --color-secondary: #86B872;
+  --color-bg-alt: #F4F4F4;
+  --color-accent: #2A2A32;
+  --color-accent-hover: #111114;
+  --color-secondary: #9A9AA2;
   --color-text: #2A2A32;
   --color-text-light: #494952;
-  --color-white: #F7FBF5;
+  --color-white: #F4F4F4;
   --color-dark: #2A2A32;
 
   --font-display: 'Instrument Serif', Georgia, serif;
@@ -224,16 +224,16 @@ a {
 }
 
 .btn-hero {
-  border-color: #6A9B4E;
-  background: #6A9B4E;
+  border-color: var(--color-text);
+  background: var(--color-text);
   color: var(--color-white);
   padding: 14px 32px;
   font-size: 0.85rem;
 }
 
 .btn-hero:hover {
-  background: #6A9B4E;
-  border-color: #6A9B4E;
+  background: #111114;
+  border-color: #111114;
   color: var(--color-white);
 }
 
@@ -400,7 +400,7 @@ a {
 .hero-circle {
   position: absolute;
   border-radius: 50%;
-  border: 1px solid rgba(63, 122, 30, 0.08);
+  border: 1px solid rgba(42, 42, 50, 0.08);
 }
 
 .hero-circle-1 {
@@ -416,7 +416,7 @@ a {
   height: 350px;
   bottom: -10%;
   left: -8%;
-  border-color: rgba(167, 191, 150, 0.08);
+  border-color: rgba(42, 42, 50, 0.08);
   animation: float 25s ease-in-out infinite reverse;
 }
 
@@ -601,7 +601,7 @@ a {
 
 .seg-video {
   position: relative;
-  background: rgba(40, 165, 90, 0.07);
+  background: rgba(42, 42, 50, 0.07);
   border: 1px solid rgba(42, 42, 50, 0.08);
   border-radius: var(--radius);
   padding: 20px;
@@ -654,7 +654,7 @@ a {
   position: relative;
   aspect-ratio: 16 / 9;
   background:
-    radial-gradient(ellipse at center top, rgba(63, 122, 30, 0.06), transparent 60%),
+    radial-gradient(ellipse at center top, rgba(42, 42, 50, 0.06), transparent 60%),
     #EBEBEB;
   border-radius: 8px;
   overflow: hidden;
@@ -749,17 +749,17 @@ a {
 }
 
 .seg-chunk-bar[data-active="true"] {
-  background: rgba(63, 122, 30, 0.2);
+  background: rgba(42, 42, 50, 0.2);
 }
 
 .seg-chunk-bar[data-done="true"] {
-  background: rgba(167, 191, 150, 0.35);
+  background: rgba(42, 42, 50, 0.35);
 }
 
 .seg-chunk-bar-fill {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, var(--color-accent), rgba(63, 122, 30, 0.7));
+  background: linear-gradient(90deg, var(--color-accent), rgba(42, 42, 50, 0.7));
   transform-origin: left;
   transform: scaleX(var(--fill, 0));
   transition: transform 0.1s linear;
@@ -811,7 +811,7 @@ a {
   top: 0;
   bottom: 0;
   background: color-mix(in srgb, var(--seg-color) 20%, transparent);
-  box-shadow: inset -2px 0 0 #DCE5D2;
+  box-shadow: inset -2px 0 0 #E2E2E2;
   overflow: hidden;
   transition: background 0.3s var(--ease-out);
 }
@@ -1069,13 +1069,13 @@ a {
 }
 
 .seg-rule[data-verdict="pass"] {
-  border-color: rgba(40, 165, 90, 0.35);
-  background: rgba(40, 165, 90, 0.07);
+  border-color: rgba(42, 42, 50, 0.35);
+  background: rgba(42, 42, 50, 0.07);
 }
 
 .seg-rule[data-verdict="pass"] .seg-rule-result {
-  color: #1A8540;
-  background: rgba(40, 165, 90, 0.16);
+  color: #2A2A32;
+  background: rgba(42, 42, 50, 0.16);
 }
 
 .seg-rule[data-verdict="fail"] {
@@ -1150,8 +1150,8 @@ a {
 .seg-chunk[data-state="active"] {
   opacity: 1;
   background: var(--color-bg-alt);
-  border-color: rgba(63, 122, 30, 0.3);
-  box-shadow: 0 0 0 1px rgba(63, 122, 30, 0.15), 0 8px 24px -12px rgba(63, 122, 30, 0.3);
+  border-color: rgba(42, 42, 50, 0.3);
+  box-shadow: 0 0 0 1px rgba(42, 42, 50, 0.15), 0 8px 24px -12px rgba(42, 42, 50, 0.3);
   transform: translateX(2px);
 }
 
@@ -1278,7 +1278,7 @@ a {
   margin: 0 auto;
   max-width: 980px;
   padding: 56px 56px 40px;
-  background: #DCE5D2;
+  background: #E2E2E2;
   border: 1px solid rgba(42, 42, 50, 0.08);
   border-radius: var(--radius);
   box-shadow: 0 1px 0 rgba(42, 42, 50, 0.04), 0 24px 60px -30px rgba(42, 42, 50, 0.18);
@@ -1297,7 +1297,7 @@ a {
   width: 100%;
   aspect-ratio: 1 / 1;
   border-radius: 50%;
-  border: 1.4px solid rgba(108, 142, 90, 0.55);
+  border: 1.4px solid rgba(42, 42, 50, 0.55);
   background: transparent;
   transition:
     background 0.45s var(--ease-out),
@@ -1310,12 +1310,12 @@ a {
   background: var(--color-accent);
   border-color: var(--color-accent);
   transform: scale(1.18);
-  box-shadow: 0 0 0 4px rgba(63, 122, 30, 0.14);
+  box-shadow: 0 0 0 4px rgba(42, 42, 50, 0.14);
 }
 
 .q-dot[data-state="passed"] {
-  background: rgba(108, 142, 90, 0.85);
-  border-color: rgba(108, 142, 90, 0.95);
+  background: rgba(42, 42, 50, 0.85);
+  border-color: rgba(42, 42, 50, 0.95);
 }
 
 .q-dot[data-state="removed"] {
@@ -1372,8 +1372,8 @@ a {
 }
 
 .q-arrow-label-bg {
-  fill: #DCE5D2;
-  stroke: rgba(63, 122, 30, 0.35);
+  fill: #E2E2E2;
+  stroke: rgba(42, 42, 50, 0.35);
   stroke-width: 1;
   opacity: 0;
   transition: opacity 0.3s ease 0.45s;
@@ -1408,8 +1408,8 @@ a {
 }
 
 .quality-legend .dot-pass {
-  background: rgba(108, 142, 90, 0.85);
-  border: 1.4px solid rgba(108, 142, 90, 0.95);
+  background: rgba(42, 42, 50, 0.85);
+  border: 1.4px solid rgba(42, 42, 50, 0.95);
 }
 
 .quality-legend .dot-fail {
@@ -1513,7 +1513,7 @@ a {
 }
 
 .perf-chart-frame {
-  background: #DCE5D2;
+  background: #E2E2E2;
   border: 1px solid rgba(42, 42, 50, 0.10);
   border-radius: var(--radius);
   box-shadow: 0 1px 0 rgba(42, 42, 50, 0.04), 0 24px 60px -30px rgba(42, 42, 50, 0.18);
@@ -1543,7 +1543,7 @@ a {
   height: 7px;
   border-radius: 50%;
   background: var(--color-accent);
-  box-shadow: 0 0 0 3px rgba(63, 122, 30, 0.16);
+  box-shadow: 0 0 0 3px rgba(42, 42, 50, 0.16);
 }
 
 .perf-run-dot--live {
@@ -1551,8 +1551,8 @@ a {
 }
 
 @keyframes perfPulse {
-  0%, 100% { box-shadow: 0 0 0 3px rgba(63, 122, 30, 0.16); }
-  50%      { box-shadow: 0 0 0 6px rgba(63, 122, 30, 0.05); }
+  0%, 100% { box-shadow: 0 0 0 3px rgba(42, 42, 50, 0.16); }
+  50%      { box-shadow: 0 0 0 6px rgba(42, 42, 50, 0.05); }
 }
 
 .perf-chart-meta {
@@ -1616,7 +1616,7 @@ a {
 .perf-line--shotwell {
   stroke: var(--color-accent);
   stroke-width: 2.4;
-  filter: drop-shadow(0 2px 4px rgba(63, 122, 30, 0.18));
+  filter: drop-shadow(0 2px 4px rgba(42, 42, 50, 0.18));
 }
 
 .perf-fill {
@@ -1665,7 +1665,7 @@ a {
 
 .perf-annotation--shotwell {
   color: var(--color-accent);
-  border-color: rgba(63, 122, 30, 0.4);
+  border-color: rgba(42, 42, 50, 0.4);
   transition-delay: 2.0s;
 }
 
@@ -1677,8 +1677,8 @@ a {
 .perf-annotation--gap {
   color: var(--color-accent);
   font-weight: 500;
-  background: rgba(63, 122, 30, 0.1);
-  border-color: rgba(63, 122, 30, 0.3);
+  background: rgba(42, 42, 50, 0.1);
+  border-color: rgba(42, 42, 50, 0.3);
   transition-delay: 2.4s;
 }
 
@@ -1718,7 +1718,7 @@ a {
 
 .perf-legend-swatch--shotwell {
   background: var(--color-accent);
-  box-shadow: 0 0 0 3px rgba(63, 122, 30, 0.14);
+  box-shadow: 0 0 0 3px rgba(42, 42, 50, 0.14);
 }
 
 .perf-legend-label {
@@ -1820,7 +1820,7 @@ a {
 }
 
 .feature[data-variant="terminal"] .seg-stage {
-  background: radial-gradient(ellipse at center top, rgba(63, 122, 30, 0.1), transparent 60%), #0F0F13;
+  background: radial-gradient(ellipse at center top, rgba(42, 42, 50, 0.1), transparent 60%), #0F0F13;
   border-color: rgba(245, 235, 223, 0.06);
 }
 
@@ -1847,11 +1847,11 @@ a {
 }
 
 .feature[data-variant="terminal"] .seg-chunk-bar[data-active="true"] {
-  background: rgba(63, 122, 30, 0.25);
+  background: rgba(42, 42, 50, 0.25);
 }
 
 .feature[data-variant="terminal"] .seg-chunk-bar[data-done="true"] {
-  background: rgba(167, 191, 150, 0.2);
+  background: rgba(42, 42, 50, 0.2);
 }
 
 .feature[data-variant="terminal"] .seg-playhead,
@@ -1869,9 +1869,9 @@ a {
 }
 
 .feature[data-variant="terminal"] .seg-chunk[data-state="active"] {
-  background: rgba(63, 122, 30, 0.08);
-  border-color: rgba(63, 122, 30, 0.35);
-  box-shadow: 0 0 0 1px rgba(63, 122, 30, 0.15);
+  background: rgba(42, 42, 50, 0.08);
+  border-color: rgba(42, 42, 50, 0.35);
+  box-shadow: 0 0 0 1px rgba(42, 42, 50, 0.15);
 }
 
 .feature[data-variant="terminal"] .seg-chunk[data-state="done"] {
@@ -1898,7 +1898,7 @@ a {
 /* ─── Variation: Paper / warm cream ─── */
 
 .feature[data-variant="paper"] {
-  --feature-bg: #F7FBF5;
+  --feature-bg: #F4F4F4;
 }
 
 .feature[data-variant="paper"] .seg-video {
