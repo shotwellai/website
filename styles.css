@@ -13,6 +13,10 @@
 
   --font-display: 'Instrument Serif', Georgia, serif;
   --font-body: 'Outfit', system-ui, sans-serif;
+  --font-mono: 'Outfit', system-ui, sans-serif;
+
+  --color-cta: #4F9E84;
+  --color-cta-text: #F4F4F4;
 
   --nav-height: 72px;
   --max-width: 1280px;
@@ -224,17 +228,17 @@ a {
 }
 
 .btn-hero {
-  border-color: var(--color-text);
-  background: var(--color-text);
-  color: var(--color-white);
+  border-color: var(--color-cta);
+  background: var(--color-cta);
+  color: var(--color-cta-text);
   padding: 14px 32px;
   font-size: 0.85rem;
 }
 
 .btn-hero:hover {
-  background: #111114;
-  border-color: #111114;
-  color: var(--color-white);
+  background: var(--color-cta);
+  border-color: var(--color-cta);
+  color: var(--color-cta-text);
 }
 
 .btn-nav-cta {
@@ -628,7 +632,7 @@ a {
 }
 
 .seg-video-meta {
-  font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 0.72rem;
   color: var(--color-text-light);
   letter-spacing: 0.02em;
@@ -792,7 +796,7 @@ a {
   margin-top: 10px;
   display: flex;
   justify-content: space-between;
-  font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 0.68rem;
   color: var(--color-text-light);
   letter-spacing: 0.04em;
@@ -855,7 +859,7 @@ a {
 }
 
 .seg-actions-current {
-  font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 0.8rem;
   font-weight: 500;
   color: var(--color-text);
@@ -893,7 +897,7 @@ a {
 }
 
 .seg-chip-time {
-  font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 0.68rem;
   color: var(--color-text-light);
 }
@@ -966,7 +970,7 @@ a {
 }
 
 .seg-rubric-count {
-  font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 0.7rem;
   color: var(--color-text);
 }
@@ -984,7 +988,7 @@ a {
 
 .seg-rule-n {
   flex: 0 0 auto;
-  font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 0.72rem;
   font-weight: 500;
   color: var(--color-text-light);
@@ -1043,7 +1047,7 @@ a {
 }
 
 .seg-rule-result {
-  font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -1110,7 +1114,7 @@ a {
 }
 
 .seg-chunks-label .count {
-  font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 0.7rem;
   color: var(--color-accent);
 }
@@ -1162,7 +1166,7 @@ a {
 }
 
 .seg-chunk-time {
-  font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 0.7rem;
   color: var(--color-text-light);
   letter-spacing: 0.02em;
@@ -1360,7 +1364,7 @@ a {
 
 .q-arrow-label {
   fill: var(--color-text);
-  font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.02em;
   opacity: 0;
@@ -1417,7 +1421,7 @@ a {
 }
 
 .legend-count {
-  font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 0.72rem;
   color: var(--color-text);
   letter-spacing: 0.02em;
@@ -1518,7 +1522,7 @@ a {
   border-radius: var(--radius);
   box-shadow: 0 1px 0 rgba(42, 42, 50, 0.04), 0 24px 60px -30px rgba(42, 42, 50, 0.18);
   padding: 20px 24px 22px;
-  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--font-mono);
 }
 
 .perf-chart-head {
@@ -1591,13 +1595,13 @@ a {
 .perf-grid-label {
   fill: var(--color-text-light);
   font-size: 10px;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: var(--font-mono);
 }
 
 .perf-axis-label {
   fill: var(--color-text-light);
   font-size: 10px;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: var(--font-mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -1728,7 +1732,7 @@ a {
 
 .perf-legend-value {
   margin-left: auto;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 12px;
   color: var(--color-text);
   font-variant-numeric: tabular-nums;
