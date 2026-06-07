@@ -76,8 +76,8 @@
   var dpr = window.devicePixelRatio || 1;
   var W, H;
 
-  var ARM_COLOR = '#6FA052';
-  var BG_COLOR = '#DDE3CF';
+  var ARM_COLOR = '#6E6E78';
+  var BG_COLOR = '#E2E2E2';
 
   var SEG_SCALE = 1;
   var BASE_LENGTHS = [35, 58, 45];
@@ -517,11 +517,11 @@
 
   // Detected actions (sequential), each a distinct color for strong contrast
   var ACTIONS = [
-    { label: 'Pick up',           start: 0,  end: 1,  color: '#6FA052' },
-    { label: 'Straighten',        start: 1,  end: 7,  color: '#4F9E84' },
+    { label: 'Pick up',           start: 0,  end: 1,  color: '#6E6E78' },
+    { label: 'Straighten',        start: 1,  end: 7,  color: '#4A4A52' },
     { label: 'Fold right sleeve', start: 7,  end: 10, color: '#BF4D34' },
     { label: 'Fold left sleeve',  start: 10, end: 15, color: '#D6A02E' },
-    { label: 'Fold first third',  start: 15, end: 16, color: '#7BA63F' },
+    { label: 'Fold first third',  start: 15, end: 16, color: '#8E8E96' },
     { label: 'Fold second third', start: 16, end: 17, color: '#4E7CA8' },
     { label: 'Stack',             start: 17, end: 18, color: '#9D5690' },
     { label: 'Home',              start: 18, end: 19, color: '#7E7E8A' }
