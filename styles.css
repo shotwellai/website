@@ -1073,13 +1073,13 @@ a {
 }
 
 .seg-rule[data-verdict="pass"] {
-  border-color: rgba(42, 42, 50, 0.35);
-  background: rgba(42, 42, 50, 0.07);
+  border-color: rgba(47, 122, 62, 0.38);
+  background: rgba(47, 122, 62, 0.07);
 }
 
 .seg-rule[data-verdict="pass"] .seg-rule-result {
-  color: #2A2A32;
-  background: rgba(42, 42, 50, 0.16);
+  color: #2F7A3E;
+  background: rgba(47, 122, 62, 0.16);
 }
 
 .seg-rule[data-verdict="fail"] {
