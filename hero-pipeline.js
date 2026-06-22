@@ -10,6 +10,7 @@
 
   var VIDEO_SRC = 'fold-rubric.mp4';
   var DURATION = 19;
+  var SPEED = 2;   // playback speed multiplier for the stacked clips
 
   var SEGMENTS = [
     { label: 'Pick up',           start: 0,  end: 1,  rules: [{ t: 'One arm pick up',   v: 'pass' }] },
@@ -107,6 +108,7 @@
     v.src = src;
     v.addEventListener('loadedmetadata', function () {
       var r = v.duration ? v.duration / DURATION : 1;
+      r *= SPEED;
       if (isFinite(r) && r > 0) v.playbackRate = Math.min(16, Math.max(0.0625, r));
       try { v.currentTime = Math.min(0.6, (v.duration || 2) * 0.12); } catch (e) {}
     });
@@ -203,7 +205,8 @@
   // ─── Scaler ──────────────────────────────────
   var frame = root.parentElement;
   var DESIGN_W = 1400;
-  var SHIFT_X = 160;      // nudge whole graphic right so it sits more centered
+  var SHIFT_X = 160;      // horizontal nudge (design units); recomputed each fit
+                          // so the hub logo lands on the frame's centre line
   var curScale = 1;
   var FLY_DX = 280, FLY_DY = 0;
 
@@ -214,11 +217,26 @@
     FLY_DY = ((lo.top + lo.height / 2) - (inB.top + inB.height / 2)) / curScale;
   }
 
+  function applyTransform() {
+    root.style.transform = 'translateX(-50%) scale(' + curScale + ') translateX(' + SHIFT_X + 'px)';
+  }
+
+  // align the hub logo's centre to the frame's centre line (where the centred
+  // eyebrow + subtitle text sit). The screen shift is linear in SHIFT_X, so one
+  // measure-and-correct pass converges exactly.
+  function alignLogo() {
+    var fr = frame.getBoundingClientRect();
+    var lo = logo.getBoundingClientRect();
+    var delta = (fr.left + fr.width / 2) - (lo.left + lo.width / 2);
+    if (Math.abs(delta) > 0.5) { SHIFT_X += delta / curScale; applyTransform(); }
+  }
+
   function fit() {
     var avail = frame.clientWidth;
     if (!avail) return;
     curScale = Math.min(1, avail / DESIGN_W);
-    root.style.transform = 'translateX(-50%) scale(' + curScale + ') translateX(' + SHIFT_X + 'px)';
+    applyTransform();
+    alignLogo();
     frame.style.height = (root.offsetHeight * curScale) + 'px';
     computeFly();
     drawWires();
@@ -284,10 +302,11 @@
   }
 
   function playFront() {
-    order.forEach(function (ic, depth) {
+    // every stacked clip keeps playing, not just the front one, so the whole
+    // stack stays alive
+    order.forEach(function (ic) {
       if (!ic.video) return;
-      if (depth === 0) { var p = ic.video.play(); if (p && p.catch) p.catch(function () {}); }
-      else { try { ic.video.pause(); } catch (e) {} }
+      var p = ic.video.play(); if (p && p.catch) p.catch(function () {});
     });
   }
 
@@ -315,7 +334,7 @@
   function clearTimers() { timers.forEach(clearTimeout); timers = []; }
   function pulse() { logo.setAttribute('data-pulse', 'true'); after(1100, function () { logo.removeAttribute('data-pulse'); }); }
 
-  var PLAY_MS = 1300;   // front clip plays before being fed in
+  var PLAY_MS = 2800;   // front clip plays (and viewer can read it) before being fed in
   var HOLD_MS = 2200;   // pause on the full grid before resetting
 
   function hideOutputs() {
@@ -359,7 +378,6 @@
       after(280, function () { revealOutput(idx); });
       // once it's in, cycle that clip to the back and promote the next one
       after(600, function () {
-        if (gone && gone.video) { try { gone.video.pause(); } catch (e) {} }
         order.push(order.shift());
         if (gone) {
           // re-enter from the left into the back of the stack
