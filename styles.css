@@ -508,6 +508,12 @@ a {
   mix-blend-mode: multiply;
 }
 
+.trusted-logo-partner {
+  height: 29.7px;
+  width: auto;
+  mix-blend-mode: multiply;
+}
+
 .trusted-logo--parametric {
   gap: 14px;
 }
@@ -532,6 +538,7 @@ a {
 @media (max-width: 600px) {
   .trusted-logos { gap: 40px; }
   .trusted-logo-ultra { height: 24px; }
+  .trusted-logo-partner { height: 24.2px; }
 }
 
 /* ─── Feature Section: Temporal Segmentation ─── */
