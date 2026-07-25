@@ -515,15 +515,12 @@ a {
 }
 
 .trusted-logo-frontier {
-  height: 31.5px;
+  height: 41.93px;
   width: auto;
 }
 
 .trusted-logo--frontier {
-  background: #1a1a1a;
-  border-radius: 4px;
-  margin-left: -14px;
-  padding: 7px 10px;
+  margin-right: -14px;
 }
 
 .trusted-logo--parametric {
@@ -551,8 +548,8 @@ a {
   .trusted-logos { gap: 40px; }
   .trusted-logo-ultra { height: 24px; }
   .trusted-logo-weave { height: 24.2px; }
-  .trusted-logo-frontier { height: 25.2px; }
-  .trusted-logo--frontier { margin-left: -8px; }
+  .trusted-logo-frontier { height: 33.54px; }
+  .trusted-logo--frontier { margin-right: -8px; }
 }
 
 /* ─── Feature Section: Temporal Segmentation ─── */
