@@ -514,6 +514,18 @@ a {
   mix-blend-mode: multiply;
 }
 
+.trusted-logo-frontier {
+  height: 31.5px;
+  width: auto;
+}
+
+.trusted-logo--frontier {
+  background: #1a1a1a;
+  border-radius: 4px;
+  margin-left: -14px;
+  padding: 7px 10px;
+}
+
 .trusted-logo--parametric {
   gap: 14px;
 }
@@ -539,6 +551,8 @@ a {
   .trusted-logos { gap: 40px; }
   .trusted-logo-ultra { height: 24px; }
   .trusted-logo-weave { height: 24.2px; }
+  .trusted-logo-frontier { height: 25.2px; }
+  .trusted-logo--frontier { margin-left: -8px; }
 }
 
 /* ─── Feature Section: Temporal Segmentation ─── */
