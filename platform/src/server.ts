@@ -1,0 +1,69 @@
+import express, { type ErrorRequestHandler } from "express";
+import cookieParser from "cookie-parser";
+import helmet from "helmet";
+import morgan from "morgan";
+
+import { config } from "./config.js";
+import { appRouter } from "./routes/app.js";
+import { authRouter } from "./routes/auth.js";
+import { messagePage } from "./http/render.js";
+
+const app = express();
+
+app.disable("x-powered-by");
+app.set("trust proxy", 1);
+
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        baseUri: ["'self'"],
+        formAction: ["'self'"],
+        frameAncestors: ["'none'"],
+        imgSrc: ["'self'", "https:", "data:"],
+        objectSrc: ["'none'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        upgradeInsecureRequests: config.isProduction ? [] : null
+      }
+    }
+  })
+);
+
+app.use(morgan(config.isProduction ? "combined" : "dev"));
+app.use(cookieParser(config.sessionSecret));
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: "1mb" }));
+
+app.get("/healthz", (_req, res) => {
+  res.json({
+    ok: true,
+    service: "shotwell-platform",
+    environment: config.nodeEnv,
+    authStore: config.authStore,
+    databaseConfigured: Boolean(config.databaseUrl),
+    googleConfigured: Boolean(config.google.clientId && config.google.clientSecret)
+  });
+});
+
+app.use(authRouter);
+app.use(appRouter);
+
+app.use((_req, res) => {
+  res.status(404).type("html").send(messagePage("Not found", "That page does not exist."));
+});
+
+const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
+  console.error(error);
+  res
+    .status(500)
+    .type("html")
+    .send(messagePage("Something went wrong", "The request could not be completed."));
+};
+
+app.use(errorHandler);
+
+app.listen(config.port, () => {
+  console.log(`shotwell-platform listening on http://localhost:${config.port}`);
+});

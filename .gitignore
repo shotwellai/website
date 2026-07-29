@@ -4,3 +4,7 @@ node_modules/
 .claude/
 Visualizer Demo/
 docs/
+platform/.env
+platform/.env.*
+!platform/.env.example
+platform/dist/
