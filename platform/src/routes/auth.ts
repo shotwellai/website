@@ -63,10 +63,26 @@ authRouter.post("/login/email", emailLimiter, async (req, res, next) => {
 
     if (!config.allowDevEmailLogin) {
       const loginToken = await authStore.createEmailLoginToken(email, returnTo);
-      await sendLoginLink({
-        email,
-        token: loginToken.token
-      });
+      try {
+        await sendLoginLink({
+          email,
+          token: loginToken.token
+        });
+      } catch (error) {
+        console.error(error);
+        res
+          .status(503)
+          .type("html")
+          .send(
+            messagePage(
+              "Email unavailable",
+              "Email delivery is not ready yet. Use Google SSO for now.",
+              "/login",
+              "Back to login"
+            )
+          );
+        return;
+      }
 
       res
         .status(200)
