@@ -38,6 +38,13 @@ export type Handoff = {
   expiresAt: Date;
 };
 
+export type EmailLoginToken = {
+  token: string;
+  email: string;
+  returnTo: string;
+  expiresAt: Date;
+};
+
 export type UpsertUserInput = {
   email: string;
   name?: string;
@@ -59,6 +66,8 @@ export interface AuthStore {
   getUser(userId: string): Promise<User | null>;
   createOAuthState(returnTo: string): Promise<OAuthState>;
   consumeOAuthState(state: string | undefined): Promise<OAuthState | null>;
+  createEmailLoginToken(email: string, returnTo: string): Promise<EmailLoginToken>;
+  consumeEmailLoginToken(token: string | undefined): Promise<EmailLoginToken | null>;
   createHandoff(userId: string, returnTo: string): Promise<Handoff>;
   consumeHandoff(code: string | undefined): Promise<Handoff | null>;
 }
@@ -68,6 +77,7 @@ export class MemoryAuthStore implements AuthStore {
   private readonly userIdByEmail = new Map<string, string>();
   private readonly sessions = new Map<string, AuthSession>();
   private readonly oauthStates = new Map<string, OAuthState>();
+  private readonly emailLoginTokens = new Map<string, EmailLoginToken>();
   private readonly handoffs = new Map<string, Handoff>();
 
   async upsertUser(input: UpsertUserInput): Promise<User> {
@@ -169,6 +179,33 @@ export class MemoryAuthStore implements AuthStore {
 
     const entry = this.oauthStates.get(state);
     this.oauthStates.delete(state);
+
+    if (!entry || entry.expiresAt.getTime() <= Date.now()) {
+      return null;
+    }
+
+    return entry;
+  }
+
+  async createEmailLoginToken(email: string, returnTo: string): Promise<EmailLoginToken> {
+    const entry: EmailLoginToken = {
+      token: token(),
+      email: email.trim().toLowerCase(),
+      returnTo,
+      expiresAt: minutesFromNow(15)
+    };
+
+    this.emailLoginTokens.set(entry.token, entry);
+    return entry;
+  }
+
+  async consumeEmailLoginToken(tokenValue: string | undefined): Promise<EmailLoginToken | null> {
+    if (!tokenValue) {
+      return null;
+    }
+
+    const entry = this.emailLoginTokens.get(tokenValue);
+    this.emailLoginTokens.delete(tokenValue);
 
     if (!entry || entry.expiresAt.getTime() <= Date.now()) {
       return null;

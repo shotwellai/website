@@ -15,7 +15,7 @@ gcloud run deploy "${SERVICE}" \
   --project "${PROJECT}" \
   --region "${REGION}" \
   --allow-unauthenticated \
-  --update-env-vars "NODE_ENV=production,AUTH_STORE=postgres,PUBLIC_SITE_URL=https://shotwell.ai,AUTH_BASE_URL=https://auth.shotwell.ai,APP_BASE_URL=https://app.shotwell.ai,ALLOW_DEV_EMAIL_LOGIN=false" \
+  --update-env-vars "NODE_ENV=production,AUTH_STORE=postgres,PUBLIC_SITE_URL=https://shotwell.ai,AUTH_BASE_URL=https://auth.shotwell.ai,APP_BASE_URL=https://app.shotwell.ai,EMAIL_FROM=Shotwell <auth@shotwell.ai>,ALLOW_DEV_EMAIL_LOGIN=false" \
   --update-secrets "SESSION_SECRET=shotwell-platform-session-secret:latest,DATABASE_URL=shotwell-platform-database-url:latest,GOOGLE_CLIENT_ID=shotwell-platform-google-client-id:latest,GOOGLE_CLIENT_SECRET=shotwell-platform-google-client-secret:latest"
 
 cat <<EOF
@@ -26,6 +26,7 @@ Next:
    - shotwell-platform-database-url
    - shotwell-platform-google-client-id
    - shotwell-platform-google-client-secret
+   - shotwell-platform-resend-api-key, if enabling email login
 
 2. Attach custom domains for:
    - auth.shotwell.ai

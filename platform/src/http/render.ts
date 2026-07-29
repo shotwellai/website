@@ -263,6 +263,7 @@ export function page(title: string, body: string) {
 export function loginPage(input: {
   returnTo: string;
   googleEnabled: boolean;
+  emailEnabled: boolean;
   devEmailEnabled: boolean;
   error?: string;
 }) {
@@ -290,6 +291,8 @@ export function loginPage(input: {
         ${
           input.devEmailEnabled
             ? `<div class="notice">Development email login is enabled.</div>`
+            : input.emailEnabled
+              ? `<div class="notice">We'll email you a secure sign-in link.</div>`
             : `<div class="notice">Email delivery is not configured yet.</div>`
         }
       </section>

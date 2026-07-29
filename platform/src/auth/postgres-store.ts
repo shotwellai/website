@@ -4,6 +4,7 @@ import { Pool } from "pg";
 import { poolConfig } from "../db/pool.js";
 import type {
   AuthSession,
+  EmailLoginToken,
   AuthStore,
   Handoff,
   OAuthState,
@@ -49,6 +50,13 @@ type HandoffRow = {
   expires_at: Date;
 };
 
+type EmailLoginTokenRow = {
+  token: string;
+  email: string;
+  return_to: string;
+  expires_at: Date;
+};
+
 function mapUser(row: UserRow): User {
   return {
     id: row.id,
@@ -85,6 +93,15 @@ function mapHandoff(row: HandoffRow): Handoff {
   return {
     code: row.code,
     userId: row.user_id,
+    returnTo: row.return_to,
+    expiresAt: row.expires_at
+  };
+}
+
+function mapEmailLoginToken(row: EmailLoginTokenRow): EmailLoginToken {
+  return {
+    token: row.token,
+    email: row.email,
     returnTo: row.return_to,
     expiresAt: row.expires_at
   };
@@ -197,6 +214,32 @@ export class PostgresAuthStore implements AuthStore {
     );
 
     return result.rows[0] ? mapOAuthState(result.rows[0]) : null;
+  }
+
+  async createEmailLoginToken(email: string, returnTo: string): Promise<EmailLoginToken> {
+    const result = await this.pool.query<EmailLoginTokenRow>(
+      `insert into shotwell_auth_email_login_tokens (token, email, return_to, expires_at)
+      values ($1, $2, $3, $4)
+      returning token, email, return_to, expires_at`,
+      [token(), email.trim().toLowerCase(), returnTo, minutesFromNow(15)]
+    );
+
+    return mapEmailLoginToken(result.rows[0]);
+  }
+
+  async consumeEmailLoginToken(tokenValue: string | undefined): Promise<EmailLoginToken | null> {
+    if (!tokenValue) {
+      return null;
+    }
+
+    const result = await this.pool.query<EmailLoginTokenRow>(
+      `delete from shotwell_auth_email_login_tokens
+      where token = $1 and expires_at > now()
+      returning token, email, return_to, expires_at`,
+      [tokenValue]
+    );
+
+    return result.rows[0] ? mapEmailLoginToken(result.rows[0]) : null;
   }
 
   async createHandoff(userId: string, returnTo: string): Promise<Handoff> {

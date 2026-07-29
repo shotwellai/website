@@ -39,6 +39,9 @@ Required for Google SSO:
 Optional:
 
 - `GOOGLE_ALLOWED_DOMAIN`, for restricting Google SSO to a hosted domain.
+- `EMAIL_FROM`, the sender used for magic-link login email.
+- `EMAIL_REPLY_TO`, optional reply-to address for login email.
+- `RESEND_API_KEY`, required to enable production email login.
 - `ALLOW_DEV_EMAIL_LOGIN`, for local placeholder email login only.
 
 ## Current Auth Shape
@@ -47,6 +50,7 @@ The app already has the production route shape:
 
 - `GET /login`
 - `POST /login/email`
+- `GET /auth/email/complete`
 - `GET /login/google`
 - `GET /auth/google/callback`
 - `GET /auth/complete`
@@ -62,6 +66,17 @@ AUTH_STORE=postgres npm run dev
 ```
 
 Do not enable `AUTH_STORE=postgres` until `platform/migrations/001_auth.sql` has been applied to that database.
+
+## Email Login
+
+Production email login uses short-lived magic links. Configure a verified sender/domain in Resend, then set:
+
+```sh
+EMAIL_FROM="Shotwell <auth@shotwell.ai>"
+RESEND_API_KEY=...
+```
+
+If `RESEND_API_KEY` or `EMAIL_FROM` is missing, the email form stays visible but returns a configuration message instead of signing anyone in.
 
 ## Cloud Run
 

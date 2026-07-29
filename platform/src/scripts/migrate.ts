@@ -1,6 +1,6 @@
 import "dotenv/config";
 
-import { readFile } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Pool } from "pg";
@@ -14,14 +14,19 @@ if (!databaseUrl) {
 }
 
 const root = dirname(dirname(dirname(fileURLToPath(import.meta.url))));
-const migrationPath = join(root, "migrations", "001_auth.sql");
-const sql = await readFile(migrationPath, "utf8");
+const migrationsDir = join(root, "migrations");
+const migrationFiles = (await readdir(migrationsDir))
+  .filter((file) => file.endsWith(".sql"))
+  .sort();
 
 const pool = new Pool(poolConfig(databaseUrl, 1));
 
 try {
-  await pool.query(sql);
-  console.log("Applied migration: 001_auth.sql");
+  for (const migrationFile of migrationFiles) {
+    const sql = await readFile(join(migrationsDir, migrationFile), "utf8");
+    await pool.query(sql);
+    console.log(`Applied migration: ${migrationFile}`);
+  }
 } finally {
   await pool.end();
 }

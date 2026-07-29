@@ -9,6 +9,7 @@ import {
 } from "../auth/google.js";
 import { authStore, type User } from "../auth/store.js";
 import { config } from "../config.js";
+import { emailDeliveryConfigured, sendLoginLink } from "../email/sender.js";
 import { defaultReturnTo, normalizeReturnTo, withCode } from "../http/hosts.js";
 import { loginPage, messagePage } from "../http/render.js";
 
@@ -35,6 +36,7 @@ authRouter.get("/login", (req, res) => {
     loginPage({
       returnTo,
       googleEnabled: hasGoogleConfig(),
+      emailEnabled: emailDeliveryConfigured(),
       devEmailEnabled: config.allowDevEmailLogin,
       error: typeof req.query.error === "string" ? req.query.error : undefined
     })
@@ -51,11 +53,32 @@ authRouter.post("/login/email", emailLimiter, async (req, res, next) => {
       return;
     }
 
-    if (!config.allowDevEmailLogin) {
+    if (!config.allowDevEmailLogin && !emailDeliveryConfigured()) {
       res
         .status(501)
         .type("html")
         .send(messagePage("Email pending", "Email delivery is not configured for this environment.", "/login", "Back"));
+      return;
+    }
+
+    if (!config.allowDevEmailLogin) {
+      const loginToken = await authStore.createEmailLoginToken(email, returnTo);
+      await sendLoginLink({
+        email,
+        token: loginToken.token
+      });
+
+      res
+        .status(200)
+        .type("html")
+        .send(
+          messagePage(
+            "Check your email",
+            "We sent a sign-in link. It expires in 15 minutes.",
+            "/login",
+            "Back to login"
+          )
+        );
       return;
     }
 
@@ -66,6 +89,31 @@ authRouter.post("/login/email", emailLimiter, async (req, res, next) => {
     });
 
     await finishLogin(user, returnTo, res);
+  } catch (error) {
+    next(error);
+  }
+});
+
+authRouter.get("/auth/email/complete", async (req, res, next) => {
+  try {
+    const token = typeof req.query.token === "string" ? req.query.token : "";
+    const loginToken = await authStore.consumeEmailLoginToken(token);
+
+    if (!loginToken) {
+      res
+        .status(400)
+        .type("html")
+        .send(messagePage("Sign-in expired", "Start the email sign-in flow again.", "/login", "Back"));
+      return;
+    }
+
+    const user = await authStore.upsertUser({
+      email: loginToken.email,
+      provider: "email",
+      name: loginToken.email.split("@")[0]
+    });
+
+    await finishLogin(user, loginToken.returnTo, res);
   } catch (error) {
     next(error);
   }

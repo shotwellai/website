@@ -23,6 +23,9 @@ const envSchema = z.object({
   GOOGLE_CLIENT_ID: z.string().optional(),
   GOOGLE_CLIENT_SECRET: z.string().optional(),
   GOOGLE_ALLOWED_DOMAIN: z.string().optional(),
+  EMAIL_FROM: z.string().optional(),
+  EMAIL_REPLY_TO: z.string().optional(),
+  RESEND_API_KEY: z.string().optional(),
   ALLOW_DEV_EMAIL_LOGIN: booleanFromEnv.default(false)
 });
 
@@ -47,6 +50,11 @@ export const config = {
     clientId: parsedEnv.GOOGLE_CLIENT_ID,
     clientSecret: parsedEnv.GOOGLE_CLIENT_SECRET,
     allowedDomain: parsedEnv.GOOGLE_ALLOWED_DOMAIN
+  },
+  email: {
+    from: parsedEnv.EMAIL_FROM,
+    replyTo: parsedEnv.EMAIL_REPLY_TO,
+    resendApiKey: parsedEnv.RESEND_API_KEY
   },
   allowDevEmailLogin:
     parsedEnv.ALLOW_DEV_EMAIL_LOGIN || parsedEnv.NODE_ENV !== "production"
