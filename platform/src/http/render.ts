@@ -276,7 +276,7 @@ export function loginPage(input: {
     `<main class="auth-main">
       <section class="panel">
         <h1>Sign in to Shotwell</h1>
-        <p>Use a Shotwell account to continue.</p>
+        <p>Use Google SSO or any email address to continue.</p>
         ${input.error ? `<div class="notice">${escapeHtml(input.error)}</div>` : ""}
         <div style="display: grid; gap: 10px; margin-top: 22px;">${googleButton}</div>
         <div class="divider">or</div>
@@ -284,7 +284,7 @@ export function loginPage(input: {
           <input type="hidden" name="return_to" value="${escapeHtml(input.returnTo)}">
           <label>
             Email
-            <input name="email" type="email" autocomplete="email" placeholder="you@company.com" required>
+            <input name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
           </label>
           <button type="submit">Continue by email</button>
         </form>
