@@ -242,6 +242,7 @@ a {
 }
 
 .btn-nav-cta {
+  min-height: 50px;
   padding: 9px 22px;
   font-size: 0.8rem;
 }
