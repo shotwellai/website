@@ -980,8 +980,8 @@ Also keep track of "Retry" and "Fail" attributes for each step. "Retry" means mu
           <form>
             <label>
               Robot Episodes
-              <span class="field-description">Upload robot episodes as either MCAP files or raw video files, e.g. mp4 files of head cam.</span>
-              <input type="file" name="video" accept="video/*,.mcap">
+              <span class="field-description">Upload one or more robot episodes as MCAP files or raw video files, e.g. mp4 files of head cam.</span>
+              <input type="file" name="videos" accept="video/*,.mcap" multiple>
             </label>
             <label>
               Prompt
