@@ -857,7 +857,7 @@ export function appPage(user: User) {
 - Fold Right Side
 - Lower Lid
 - Stack Box
-If any step required retries, track that attribute per step.`;
+Also keep track of "Retry" and "Fail" attributes for each step. "Retry" means multiple attempts were required for the step. "Fail" means the step was not completed successfully.`;
 
   return page(
     "Shotwell App",
