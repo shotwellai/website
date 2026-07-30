@@ -408,6 +408,11 @@ export function page(title: string, body: string) {
       padding-bottom: 72px;
     }
 
+    .auth-main-single {
+      grid-template-columns: minmax(320px, 560px);
+      justify-content: center;
+    }
+
     .login-panel {
       background: rgba(253, 250, 247, 0.92);
     }
@@ -805,16 +810,15 @@ export function loginPage(input: {
   const emailNotice = input.devEmailEnabled
     ? `<div class="notice neutral">Development email login is enabled.</div>`
     : input.emailEnabled
-      ? `<div class="notice neutral">We'll email a secure sign-in link to any address.</div>`
+      ? ""
       : `<div class="notice">Email delivery is not configured yet.</div>`;
 
   return page(
     "Shotwell Login",
-    `<main class="auth-main">
+    `<main class="auth-main auth-main-single">
       <section class="panel login-panel">
-        <span class="eyebrow">Shotwell account</span>
-        <h1>Sign in to upload robot videos.</h1>
-        <p>Use Google SSO or a secure email link to reach the Shotwell upload workspace.</p>
+        <h1>Sign in.</h1>
+        <p>Login with your company email.</p>
         ${input.error ? `<div class="notice">${escapeHtml(input.error)}</div>` : ""}
         <div class="auth-actions">${googleButton}</div>
         <div class="divider">or</div>
@@ -828,34 +832,6 @@ export function loginPage(input: {
         </form>
         ${emailNotice}
       </section>
-      <aside class="auth-aside">
-        <span class="eyebrow">Authenticated intake</span>
-        <h1>Upload episodes. <em>Get dense action labels.</em></h1>
-        <p>Shotwell turns raw robot training video and task prompts into labeled segments, quality signals, and downloadable training data outputs.</p>
-        <div class="mini-flow">
-          <article class="mini-step">
-            <span class="mini-step-number">01</span>
-            <div>
-              <strong>Secure access</strong>
-              <p>Google SSO or email magic links for collaborators across domains.</p>
-            </div>
-          </article>
-          <article class="mini-step">
-            <span class="mini-step-number">02</span>
-            <div>
-              <strong>Prompted uploads</strong>
-              <p>Attach robot videos with the task prompt, SOP, or labeling rubric.</p>
-            </div>
-          </article>
-          <article class="mini-step">
-            <span class="mini-step-number">03</span>
-            <div>
-              <strong>Ready exports</strong>
-              <p>Track processing status and download completed labels when ready.</p>
-            </div>
-          </article>
-        </div>
-      </aside>
     </main>`
   );
 }
