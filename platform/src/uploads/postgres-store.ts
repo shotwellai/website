@@ -181,6 +181,17 @@ export class PostgresUploadStore implements UploadStore {
     );
   }
 
+  async updatePendingPrompt(userId: string, uploadId: string, prompt: string): Promise<boolean> {
+    const result = await this.pool.query(
+      `update shotwell_uploads
+      set prompt = $3, updated_at = now()
+      where id = $1 and user_id = $2 and status = 'pending'`,
+      [uploadId, userId, prompt]
+    );
+
+    return result.rowCount === 1;
+  }
+
   private async hydrateUploads(rows: UploadRow[]): Promise<UploadRecord[]> {
     if (rows.length === 0) {
       return [];

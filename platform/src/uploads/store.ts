@@ -52,6 +52,7 @@ export interface UploadStore {
   listUserUploads(userId: string): Promise<UploadRecord[]>;
   getUserUpload(userId: string, uploadId: string): Promise<UploadRecord | null>;
   markFilesUploaded(userId: string, uploadId: string): Promise<void>;
+  updatePendingPrompt(userId: string, uploadId: string, prompt: string): Promise<boolean>;
 }
 
 const now = () => new Date();
@@ -101,6 +102,17 @@ export class MemoryUploadStore implements UploadStore {
       upload.filesUploadedAt = now();
       upload.updatedAt = now();
     }
+  }
+
+  async updatePendingPrompt(userId: string, uploadId: string, prompt: string): Promise<boolean> {
+    const upload = await this.getUserUpload(userId, uploadId);
+    if (!upload || upload.status !== "pending") {
+      return false;
+    }
+
+    upload.prompt = prompt;
+    upload.updatedAt = now();
+    return true;
   }
 }
 

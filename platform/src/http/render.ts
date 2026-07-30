@@ -25,9 +25,10 @@ function publicAsset(path: string) {
   return new URL(path, config.publicSiteUrl).toString();
 }
 
-export function page(title: string, body: string) {
+export function page(title: string, body: string, options: { navHtml?: string } = {}) {
   const publicSiteUrl = config.publicSiteUrl.toString();
   const logoUrl = publicAsset("shotwell-logo.png");
+  const navHtml = options.navHtml ?? `<a class="button secondary" href="${escapeHtml(publicSiteUrl)}">Main Site</a>`;
 
   return `<!doctype html>
 <html lang="en">
@@ -113,16 +114,24 @@ export function page(title: string, body: string) {
       -webkit-backdrop-filter: blur(16px);
     }
 
-    .topbar-inner {
-      max-width: var(--max-width);
-      height: 100%;
-      margin: 0 auto;
-      padding: 0 32px;
+	    .topbar-inner {
+	      max-width: var(--max-width);
+	      height: 100%;
+	      margin: 0 auto;
+	      padding: 0 32px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 24px;
-    }
+	      gap: 24px;
+	    }
+
+	    .topbar nav {
+	      min-width: 0;
+	      display: flex;
+	      align-items: center;
+	      justify-content: flex-end;
+	      gap: 12px;
+	    }
 
     .brand {
       display: inline-flex;
@@ -492,32 +501,29 @@ export function page(title: string, body: string) {
       gap: 22px;
     }
 
-    .app-header {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      padding-top: 10px;
-    }
-
-    .app-title {
-      display: grid;
-      gap: 18px;
-    }
+	    .app-title {
+	      display: grid;
+	      gap: 18px;
+	    }
 
     .app-title p {
       max-width: 44rem;
       font-size: 1.05rem;
     }
 
-    .account-box {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      border: 1px solid var(--color-line);
-      border-radius: 8px;
-      padding: 10px;
-      background: rgba(253, 250, 247, 0.62);
-    }
+	    .account-box {
+	      display: flex;
+	      align-items: center;
+	      gap: 12px;
+	      border: 1px solid var(--color-line);
+	      border-radius: 8px;
+	      padding: 8px;
+	      background: rgba(253, 250, 247, 0.62);
+	    }
+
+	    .account-box form {
+	      display: block;
+	    }
 
     .identity {
       min-width: 0;
@@ -614,16 +620,22 @@ export function page(title: string, body: string) {
       gap: 10px;
     }
 
-    .job-row {
-      display: grid;
-      grid-template-columns: 1fr;
-      align-items: start;
-      gap: 16px;
-      border: 1px solid var(--color-line);
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.42);
-      padding: 14px;
-    }
+	    .job-row {
+	      display: grid;
+	      grid-template-columns: minmax(0, 1fr) auto;
+	      align-items: start;
+	      gap: 16px;
+	      border: 1px solid var(--color-line);
+	      border-radius: 8px;
+	      background: rgba(255, 255, 255, 0.42);
+	      padding: 14px;
+	    }
+
+	    .job-content {
+	      min-width: 0;
+	      display: grid;
+	      gap: 10px;
+	    }
 
     .job-title {
       display: grid;
@@ -638,17 +650,95 @@ export function page(title: string, body: string) {
       line-height: 1.25;
     }
 
-    .job-title span,
-    .job-meta,
-    .job-output {
-      color: var(--color-muted);
-      font-size: 0.84rem;
-      font-weight: 300;
-    }
+	    .job-title span,
+	    .job-meta,
+	    .job-output {
+	      color: var(--color-muted);
+	      font-size: 0.84rem;
+	      font-weight: 300;
+	    }
 
-    .job-row .button {
-      width: max-content;
-    }
+	    .job-prompt {
+	      display: grid;
+	      gap: 5px;
+	      border-left: 2px solid rgba(79, 158, 132, 0.28);
+	      padding-left: 10px;
+	    }
+
+	    .job-prompt-label {
+	      color: var(--color-muted);
+	      font-size: 0.68rem;
+	      font-weight: 600;
+	      letter-spacing: 0.12em;
+	      line-height: 1;
+	      text-transform: uppercase;
+	    }
+
+	    .job-prompt p {
+	      white-space: pre-wrap;
+	      overflow-wrap: anywhere;
+	      font-size: 0.9rem;
+	      line-height: 1.45;
+	    }
+
+	    .job-actions {
+	      display: flex;
+	      align-items: flex-start;
+	      justify-content: flex-end;
+	      gap: 8px;
+	    }
+
+	    .job-row .button,
+	    .job-row button {
+	      width: max-content;
+	    }
+
+	    .prompt-editor {
+	      grid-column: 1 / -1;
+	    }
+
+	    .prompt-editor summary {
+	      width: max-content;
+	      min-height: 34px;
+	      display: inline-flex;
+	      align-items: center;
+	      justify-content: center;
+	      border: 1px solid var(--color-cta);
+	      border-radius: 2px;
+	      padding: 0 12px;
+	      color: var(--color-cta);
+	      font-size: 0.68rem;
+	      font-weight: 500;
+	      letter-spacing: 0.04em;
+	      line-height: 1;
+	      text-transform: uppercase;
+	      cursor: pointer;
+	    }
+
+	    .prompt-editor summary::-webkit-details-marker {
+	      display: none;
+	    }
+
+	    .prompt-editor[open] summary {
+	      margin-bottom: 12px;
+	    }
+
+	    .prompt-editor form {
+	      gap: 10px;
+	    }
+
+	    .prompt-editor textarea {
+	      min-height: 190px;
+	    }
+
+	    .prompt-editor-actions {
+	      display: flex;
+	      justify-content: flex-end;
+	    }
+
+	    .prompt-editor-actions button {
+	      min-height: 36px;
+	    }
 
     .empty-row {
       border: 1px solid var(--color-line);
@@ -778,31 +868,29 @@ export function page(title: string, body: string) {
     }
 
     @media (max-width: 980px) {
-      .auth-main,
-      .workspace-grid,
-      .app-header {
-        grid-template-columns: 1fr;
-      }
+	      .auth-main,
+	      .workspace-grid {
+	        grid-template-columns: 1fr;
+	      }
 
-      .app-header {
-        align-items: start;
-      }
-
-      .account-box {
-        width: 100%;
-        justify-content: space-between;
-      }
+	      .account-box {
+	        justify-content: space-between;
+	      }
 
       .mini-flow,
       .results-grid {
         grid-template-columns: 1fr;
       }
 
-      .job-row {
-        grid-template-columns: 1fr;
-        align-items: start;
-      }
-    }
+	      .job-row {
+	        grid-template-columns: 1fr;
+	        align-items: start;
+	      }
+
+	      .job-actions {
+	        justify-content: flex-start;
+	      }
+	    }
 
     @media (max-width: 680px) {
       .topbar-inner {
@@ -818,11 +906,15 @@ export function page(title: string, body: string) {
         height: 38px;
       }
 
-      .topbar nav .button {
-        min-height: 38px;
-        padding: 0 12px;
-        font-size: 0.68rem;
-      }
+	      .topbar nav .button {
+	        min-height: 38px;
+	        padding: 0 12px;
+	        font-size: 0.68rem;
+	      }
+
+	      .topbar nav {
+	        gap: 8px;
+	      }
 
       main {
         width: min(100vw - 28px, var(--max-width));
@@ -838,11 +930,10 @@ export function page(title: string, body: string) {
         grid-template-columns: 1fr;
       }
 
-      .account-box {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-    }
+	      .account-box {
+	        gap: 8px;
+	      }
+	    }
   </style>
 </head>
 <body>
@@ -860,11 +951,9 @@ export function page(title: string, body: string) {
           <img class="brand-mark" src="${escapeHtml(logoUrl)}" alt="Shotwell logo">
           <span>Shotwell<span class="brand-dot">.</span></span>
         </a>
-        <nav>
-          <a class="button secondary" href="${escapeHtml(publicSiteUrl)}">Main Site</a>
-        </nav>
-      </div>
-    </header>
+	        <nav>${navHtml}</nav>
+	      </div>
+	    </header>
     ${body}
   </div>
 </body>
@@ -972,16 +1061,39 @@ function renderUploadRow(upload: UploadRecord) {
   const resultButton = upload.status === "completed" && upload.resultObjectName
     ? `<a class="button compact" href="/uploads/${escapeHtml(upload.id)}/results">Download Results</a>`
     : `<span class="status-pill">Pending</span>`;
+  const prompt = upload.prompt.trim() || "No prompt provided.";
+  const editPrompt = upload.status === "pending"
+    ? `<details class="prompt-editor">
+      <summary>Edit Prompt</summary>
+      <form method="post" action="/uploads/${escapeHtml(upload.id)}/prompt">
+        <label>
+          Prompt
+          <textarea name="prompt">${escapeHtml(upload.prompt)}</textarea>
+        </label>
+        <div class="prompt-editor-actions">
+          <button class="compact" type="submit">Save prompt</button>
+        </div>
+      </form>
+    </details>`
+    : "";
 
   return `<article class="job-row">
-    <div class="job-title">
-      <strong>${escapeHtml(uploadTitle(upload))}</strong>
+    <div class="job-content">
+      <div class="job-title">
+        <strong>${escapeHtml(uploadTitle(upload))}</strong>
+      </div>
+      <div class="job-prompt">
+        <span class="job-prompt-label">Prompt</span>
+        <p>${escapeHtml(prompt)}</p>
+      </div>
     </div>
-    ${resultButton}
+    <div class="job-actions">${resultButton}</div>
+    ${editPrompt}
   </article>`;
 }
 
 export function appPage(user: User, uploads: UploadRecord[] = []) {
+  const publicSiteUrl = config.publicSiteUrl.toString();
   const displayName = user.name ?? user.email;
   const avatar = user.avatarUrl
     ? `<img class="avatar" src="${escapeHtml(user.avatarUrl)}" alt="">`
@@ -1002,15 +1114,6 @@ Also keep track of "Retry" and "Fail" attributes for each step. "Retry" means mu
   return page(
     "Shotwell App",
     `<main class="app-main">
-      <section class="app-header">
-        <div class="account-box">
-          <div class="identity">${avatar}<span>${escapeHtml(displayName)}</span></div>
-          <form method="post" action="/logout">
-            <button class="secondary compact" type="submit">Sign out</button>
-          </form>
-        </div>
-      </section>
-
       <section class="workspace-grid">
         <section class="panel upload-panel">
           <div class="panel-heading">
@@ -1033,18 +1136,27 @@ Also keep track of "Retry" and "Fail" attributes for each step. "Retry" means mu
           </form>
         </section>
 
-        <section class="panel status-panel">
+        <section class="panel status-panel" id="previous-uploads">
           <div class="panel-heading">
             <div>
               <h2>Previous Uploads</h2>
             </div>
-            <a class="button secondary compact" href="#">Refresh</a>
+            <a class="button secondary compact" href="/#previous-uploads">Refresh</a>
           </div>
           <div class="job-list">${uploadRows}</div>
         </section>
       </section>
     </main>
-    <script src="/app.js" defer></script>`
+    <script src="/app.js" defer></script>`,
+    {
+      navHtml: `<a class="button secondary" href="${escapeHtml(publicSiteUrl)}">Main Site</a>
+        <div class="account-box">
+          <div class="identity">${avatar}<span>${escapeHtml(displayName)}</span></div>
+          <form method="post" action="/logout">
+            <button class="secondary compact" type="submit">Sign out</button>
+          </form>
+        </div>`
+    }
   );
 }
 

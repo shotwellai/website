@@ -95,6 +95,15 @@ function parseUploadRequest(body: unknown): { prompt: string; files: NewUploadFi
   };
 }
 
+function parsePromptInput(body: unknown) {
+  if (!body || typeof body !== "object") {
+    return "";
+  }
+
+  const input = body as { prompt?: unknown };
+  return typeof input.prompt === "string" ? input.prompt.trim().slice(0, 20_000) : "";
+}
+
 function appScript() {
   return `"use strict";
 
@@ -270,6 +279,33 @@ appRouter.post("/api/uploads/:uploadId/uploaded", async (req, res, next) => {
 
     await uploadStore.markFilesUploaded(user.id, req.params.uploadId);
     res.json({ ok: true });
+  } catch (error) {
+    next(error);
+  }
+});
+
+appRouter.post("/uploads/:uploadId/prompt", async (req, res, next) => {
+  try {
+    const user = await getAppUser(req, res);
+    if (!user) {
+      return;
+    }
+
+    const updated = await uploadStore.updatePendingPrompt(
+      user.id,
+      req.params.uploadId,
+      parsePromptInput(req.body)
+    );
+
+    if (!updated) {
+      res
+        .status(409)
+        .type("html")
+        .send(messagePage("Prompt locked", "Prompts can only be edited while an upload is pending.", "/", "Back to app"));
+      return;
+    }
+
+    res.redirect(303, "/#previous-uploads");
   } catch (error) {
     next(error);
   }
