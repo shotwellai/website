@@ -398,6 +398,13 @@ export function page(title: string, body: string) {
       color: var(--color-cta-dark);
     }
 
+    .inline-link {
+      color: var(--color-cta-dark);
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.18em;
+    }
+
     .auth-main {
       min-height: calc(100vh - var(--nav-height));
       display: grid;
@@ -715,6 +722,47 @@ export function page(title: string, body: string) {
       font-size: clamp(2rem, 4vw, 3rem);
     }
 
+    .policy-main {
+      display: grid;
+      gap: 22px;
+      padding-top: 56px;
+    }
+
+    .policy-panel {
+      width: min(860px, 100%);
+      margin: 0 auto;
+      display: grid;
+      gap: 24px;
+      background: rgba(253, 250, 247, 0.92);
+    }
+
+    .policy-panel h1 {
+      font-size: clamp(2.3rem, 5vw, 4rem);
+    }
+
+    .policy-section {
+      display: grid;
+      gap: 8px;
+    }
+
+    .policy-section h2 {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      line-height: 1.25;
+      text-transform: uppercase;
+    }
+
+    .policy-section ul {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding-left: 1.2rem;
+      color: var(--color-text-light);
+      font-weight: 300;
+    }
+
     @media (max-width: 980px) {
       .auth-main,
       .workspace-grid,
@@ -831,7 +879,7 @@ export function loginPage(input: {
     `<main class="auth-main auth-main-single">
       <section class="panel login-panel">
         <h1>Sign in to start uploading.</h1>
-        <p>Login with your company email. Get 10 hours of robot video annotated for free, with 24 hour turnaround time.</p>
+        <p>Login with your company email. Get 10 hours of robot video annotated for free, with 24 hour turnaround time. <a class="inline-link" href="/privacy">Zero Data Retention.</a></p>
         ${input.error ? `<div class="notice">${escapeHtml(input.error)}</div>` : ""}
         <div class="auth-actions">${googleButton}</div>
         <div class="divider">or</div>
@@ -844,6 +892,52 @@ export function loginPage(input: {
           <button class="full" type="submit">Continue by email</button>
         </form>
         ${emailNotice}
+      </section>
+    </main>`
+  );
+}
+
+export function privacyPolicyPage() {
+  return page(
+    "Shotwell Privacy Policy",
+    `<main class="policy-main">
+      <section class="panel policy-panel">
+        <span class="eyebrow">Privacy Policy</span>
+        <h1>Zero Data Retention.</h1>
+        <p>Last updated: July 30, 2026</p>
+        <section class="policy-section">
+          <h2>Summary</h2>
+          <p>Shotwell processes robot episode files, prompts, and generated annotations only to provide the annotation service requested by you. We do not retain uploaded customer data after processing and delivery, and we do not use it to train models.</p>
+        </section>
+        <section class="policy-section">
+          <h2>Customer Data</h2>
+          <p>Customer Data means robot episode files, raw video files, MCAP files, prompts, instructions, metadata included with an upload, generated labels, quality reports, and other output artifacts produced for that upload.</p>
+        </section>
+        <section class="policy-section">
+          <h2>Zero Retention Commitment</h2>
+          <ul>
+            <li>We use Customer Data only to process your upload and produce your requested annotation results.</li>
+            <li>We delete Customer Data after processing and delivery. Any transient copies exist only while the requested job is running or results are being transmitted to you.</li>
+            <li>We do not use Customer Data to train, fine-tune, improve, evaluate, or benchmark any model.</li>
+            <li>We do not sell, rent, disclose, or share Customer Data with third parties for advertising, model training, or unrelated analytics.</li>
+          </ul>
+        </section>
+        <section class="policy-section">
+          <h2>Operational Data</h2>
+          <p>We may retain limited account, authentication, billing, security, and service log information as needed to operate the service, prevent abuse, debug failures, satisfy legal obligations, and maintain business records. Operational Data does not include your uploaded robot episode content or annotation outputs.</p>
+        </section>
+        <section class="policy-section">
+          <h2>Vendors</h2>
+          <p>We may use infrastructure and service providers to host, secure, transmit, or process uploads on our behalf. They are permitted to process Customer Data only as needed to provide Shotwell's service and not for their own model training or advertising purposes.</p>
+        </section>
+        <section class="policy-section">
+          <h2>Deletion</h2>
+          <p>You can request deletion of Customer Data, account records, or related operational records by contacting Shotwell. We will delete eligible records from active systems unless we are required to keep them for security, legal, compliance, or dispute-resolution reasons.</p>
+        </section>
+        <section class="policy-section">
+          <h2>Contact</h2>
+          <p>Questions about this policy can be sent to <a class="inline-link" href="mailto:hello@shotwell.ai">hello@shotwell.ai</a>.</p>
+        </section>
       </section>
     </main>`
   );

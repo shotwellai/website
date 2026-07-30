@@ -11,7 +11,7 @@ import { authStore, type User } from "../auth/store.js";
 import { config } from "../config.js";
 import { emailDeliveryConfigured, sendLoginLink } from "../email/sender.js";
 import { defaultReturnTo, normalizeReturnTo, withCode } from "../http/hosts.js";
-import { loginPage, messagePage } from "../http/render.js";
+import { loginPage, messagePage, privacyPolicyPage } from "../http/render.js";
 
 const emailLimiter = rateLimit({
   windowMs: 10 * 60 * 1000,
@@ -41,6 +41,10 @@ authRouter.get("/login", (req, res) => {
       error: typeof req.query.error === "string" ? req.query.error : undefined
     })
   );
+});
+
+authRouter.get("/privacy", (_req, res) => {
+  res.type("html").send(privacyPolicyPage());
 });
 
 authRouter.post("/login/email", emailLimiter, async (req, res, next) => {
