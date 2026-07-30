@@ -153,7 +153,7 @@ a {
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 36px;
+  gap: 14px;
 }
 
 .nav-links a:not(.btn) {
@@ -246,6 +246,29 @@ a {
   font-size: 0.8rem;
 }
 
+.btn-upload-cta {
+  min-height: 48px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: 7px 18px 6px;
+  line-height: 1.05;
+}
+
+.btn-upload-main {
+  display: block;
+}
+
+.btn-upload-subtext {
+  display: block;
+  font-size: 0.62rem;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+  text-transform: none;
+  opacity: 0.78;
+}
+
 .btn-cta {
   border-color: rgba(253, 250, 247, 0.4);
   color: var(--color-white);
@@ -300,6 +323,11 @@ a {
     padding: 32px;
     gap: 24px;
     border-bottom: 1px solid rgba(42, 42, 50, 0.06);
+  }
+
+  .nav-links .btn {
+    justify-content: center;
+    min-width: 210px;
   }
 
   .nav-links.open {
