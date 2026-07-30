@@ -481,10 +481,9 @@ export function page(title: string, body: string) {
     }
 
     .app-header {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 24px;
-      align-items: end;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
       padding-top: 10px;
     }
 
@@ -536,7 +535,7 @@ export function page(title: string, body: string) {
 
     .workspace-grid {
       display: grid;
-      grid-template-columns: minmax(320px, 0.78fr) minmax(0, 1fr);
+      grid-template-columns: 1fr;
       gap: 18px;
       align-items: start;
     }
@@ -548,6 +547,15 @@ export function page(title: string, body: string) {
 
     .upload-panel form {
       gap: 16px;
+    }
+
+    .upload-description {
+      max-width: 58rem;
+      margin-top: 8px;
+    }
+
+    .upload-panel textarea {
+      min-height: 300px;
     }
 
     .prompt-tools {
@@ -595,7 +603,7 @@ export function page(title: string, body: string) {
 
     .job-row {
       display: grid;
-      grid-template-columns: minmax(220px, 1.2fr) minmax(170px, 0.9fr) minmax(120px, 0.7fr) minmax(190px, 0.9fr) auto;
+      grid-template-columns: minmax(220px, 1fr) minmax(260px, 1fr) auto;
       align-items: center;
       gap: 16px;
       border: 1px solid var(--color-line);
@@ -842,66 +850,19 @@ export function appPage(user: User) {
     ? `<img class="avatar" src="${escapeHtml(user.avatarUrl)}" alt="">`
     : `<span class="avatar"></span>`;
 
-  const jobs = [
-    {
-      title: "episode_0431 - fold_shirt",
-      detail: "12 videos, 48 min total",
-      status: "Processing",
-      statusClass: "",
-      meta: "68% complete - ETA 3h",
-      progress: 68,
-      output: "Action segments + QA flags",
-      action: `<a class="button compact" aria-disabled="true">Processing</a>`
-    },
-    {
-      title: "cabinet_loading_eval_set",
-      detail: "32 videos, prompt v3",
-      status: "Ready",
-      statusClass: "ready",
-      meta: "Completed today",
-      progress: 100,
-      output: "labels.jsonl, clips.csv, report.pdf",
-      action: `<a class="button compact" href="#">Download results</a>`
-    },
-    {
-      title: "bimanual_sorting_round_07",
-      detail: "8 videos, 14 min total",
-      status: "Queued",
-      statusClass: "",
-      meta: "Waiting for intake",
-      progress: 8,
-      output: "Dense actions + failure labels",
-      action: `<a class="button compact" aria-disabled="true">Queued</a>`
-    }
-  ];
-
-  const jobRows = jobs
-    .map(
-      (job) => `<article class="job-row">
-        <div class="job-title">
-          <strong>${escapeHtml(job.title)}</strong>
-          <span>${escapeHtml(job.detail)}</span>
-        </div>
-        <div>
-          <span class="status-pill ${job.statusClass}">${escapeHtml(job.status)}</span>
-          <div class="progress" aria-hidden="true"><span style="width: ${job.progress}%"></span></div>
-        </div>
-        <div class="job-meta">${escapeHtml(job.meta)}</div>
-        <div class="job-output">${escapeHtml(job.output)}</div>
-        ${job.action}
-      </article>`
-    )
-    .join("");
+  const promptPlaceholder = `These videos are episodes of a robot folding a box. Provide timestamps for all of the following events:
+- Pick Box
+- Assemble Base
+- Fold Left Side
+- Fold Right Side
+- Lower Lid
+- Stack Box
+If any step required retries, track that attribute per step.`;
 
   return page(
     "Shotwell App",
     `<main class="app-main">
       <section class="app-header">
-        <div class="app-title">
-          <span class="eyebrow">Robot training data</span>
-          <h1>Upload videos. <em>Track labels.</em> Download results.</h1>
-          <p>Submit robot training footage with task prompts, monitor every batch as it moves through labeling, and collect training-ready outputs when complete.</p>
-        </div>
         <div class="account-box">
           <div class="identity">${avatar}<span>${escapeHtml(displayName)}</span></div>
           <form method="post" action="/logout">
@@ -915,7 +876,8 @@ export function appPage(user: User) {
           <div class="panel-heading">
             <div>
               <span class="panel-kicker">New upload</span>
-              <h2>Send robot episodes for labeling.</h2>
+              <h2>Upload robot episodes for labeling.</h2>
+              <p class="upload-description">Upload robot episodes as either MCAP files or raw video files, e.g. mp4 files of head cam.</p>
             </div>
           </div>
           <form>
@@ -924,104 +886,32 @@ export function appPage(user: User) {
               <input type="file" name="video" accept="video/*">
             </label>
             <label>
-              Task prompt
-              <textarea name="prompt" placeholder="Segment the episode into pick, move, place, retry, and failure actions. Flag unsafe or off-task behavior."></textarea>
+              Prompt
+              <textarea name="prompt" placeholder="${escapeHtml(promptPlaceholder)}"></textarea>
             </label>
-            <div class="prompt-tools">
-              <label>
-                Output
-                <select name="output">
-                  <option>Action labels + QA report</option>
-                  <option>Action labels only</option>
-                  <option>Failure review</option>
-                </select>
-              </label>
-              <label>
-                Turnaround
-                <select name="turnaround">
-                  <option>24 hours</option>
-                  <option>Same day review</option>
-                  <option>Standard batch</option>
-                </select>
-              </label>
-            </div>
             <button type="button">Create upload</button>
           </form>
         </section>
-
-        <div class="metric-grid">
-          <article class="metric-card">
-            <span class="panel-kicker">Active</span>
-            <div>
-              <div class="metric-value">3</div>
-              <p>uploads in flight</p>
-            </div>
-          </article>
-          <article class="metric-card">
-            <span class="panel-kicker">Ready</span>
-            <div>
-              <div class="metric-value">1</div>
-              <p>result package available</p>
-            </div>
-          </article>
-          <article class="metric-card">
-            <span class="panel-kicker">Median</span>
-            <div>
-              <div class="metric-value">18h</div>
-              <p>placeholder turnaround</p>
-            </div>
-          </article>
-        </div>
 
         <section class="panel status-panel">
           <div class="panel-heading">
             <div>
               <span class="panel-kicker">Upload status</span>
-              <h2>Recent robot video batches.</h2>
+              <h2>Previous Uploads</h2>
             </div>
             <a class="button secondary compact" href="#">Refresh</a>
           </div>
-          <div class="job-list">${jobRows}</div>
+          <div class="job-list">
+            <article class="job-row">
+              <div class="job-title">
+                <strong>box_folding_headcam_batch_01</strong>
+                <span>10 videos, 2.4 hours total</span>
+              </div>
+              <div class="job-meta">Prompt: box folding event timestamps with retry attributes</div>
+              <a class="button compact" href="#">Download results</a>
+            </article>
+          </div>
         </section>
-      </section>
-
-      <section class="results-grid">
-        <article class="panel result-card">
-          <div>
-            <span class="panel-kicker">Completed export</span>
-            <h3>cabinet_loading_eval_set</h3>
-          </div>
-          <ul>
-            <li>labels.jsonl - dense frame actions</li>
-            <li>clips.csv - segment timestamps</li>
-            <li>report.pdf - QA summary</li>
-          </ul>
-          <a class="button compact" href="#">Download package</a>
-        </article>
-        <article class="panel result-card">
-          <div>
-            <span class="panel-kicker">Prompt library</span>
-            <h3>Reusable task instructions</h3>
-          </div>
-          <ul>
-            <li>Manipulation rubrics</li>
-            <li>Failure taxonomies</li>
-            <li>Dataset-specific SOPs</li>
-          </ul>
-          <a class="button secondary compact" href="#">Open prompts</a>
-        </article>
-        <article class="panel result-card">
-          <div>
-            <span class="panel-kicker">Next milestone</span>
-            <h3>Production upload API</h3>
-          </div>
-          <ul>
-            <li>Signed video uploads</li>
-            <li>Persistent batch records</li>
-            <li>Real downloadable artifacts</li>
-          </ul>
-          <a class="button secondary compact" href="#">View roadmap</a>
-        </article>
       </section>
     </main>`
   );
