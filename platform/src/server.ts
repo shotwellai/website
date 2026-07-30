@@ -24,7 +24,7 @@ app.use(
         imgSrc: ["'self'", "https:", "data:"],
         objectSrc: ["'none'"],
         scriptSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
         upgradeInsecureRequests: config.isProduction ? [] : null
       }
     }

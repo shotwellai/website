@@ -20,239 +20,770 @@ export function escapeHtml(value: string) {
   });
 }
 
+function publicAsset(path: string) {
+  return new URL(path, config.publicSiteUrl).toString();
+}
+
 export function page(title: string, body: string) {
+  const publicSiteUrl = config.publicSiteUrl.toString();
+  const logoUrl = publicAsset("shotwell-logo.png");
+
   return `<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${escapeHtml(title)}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       color-scheme: light;
-      --ink: #171717;
-      --muted: #666b73;
-      --line: #d9dee7;
-      --surface: #ffffff;
-      --wash: #f4f6f8;
-      --accent: #0f7a67;
-      --accent-ink: #ffffff;
-      --warn: #a35d00;
+      --color-bg: #f5f5f5;
+      --color-bg-alt: #f4f4f4;
+      --color-surface: #fdfaf7;
+      --color-panel: rgba(253, 250, 247, 0.74);
+      --color-text: #2a2a32;
+      --color-text-light: #494952;
+      --color-muted: #73737b;
+      --color-line: rgba(42, 42, 50, 0.12);
+      --color-line-strong: rgba(42, 42, 50, 0.22);
+      --color-cta: #4f9e84;
+      --color-cta-dark: #3d846d;
+      --color-cta-text: #f4f4f4;
+      --color-warn: #9d6500;
+      --color-warn-bg: #fff7e6;
+      --font-display: "Instrument Serif", Georgia, serif;
+      --font-body: "Outfit", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --nav-height: 72px;
+      --max-width: 1280px;
     }
-    * { box-sizing: border-box; }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       min-height: 100vh;
-      background: var(--wash);
-      color: var(--ink);
-      font: 15px/1.5 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.58), rgba(245, 245, 245, 0) 280px),
+        var(--color-bg);
+      color: var(--color-text);
+      font: 15px/1.6 var(--font-body);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
-    a { color: inherit; }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .noise {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      opacity: 0.035;
+      mix-blend-mode: multiply;
+    }
+
     .shell {
       min-height: 100vh;
       display: grid;
       grid-template-rows: auto 1fr;
     }
+
     .topbar {
-      height: 64px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      height: var(--nav-height);
+      border-bottom: 1px solid rgba(42, 42, 50, 0.06);
+      background: rgba(245, 245, 245, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .topbar-inner {
+      max-width: var(--max-width);
+      height: 100%;
+      margin: 0 auto;
+      padding: 0 32px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 24px;
-      padding: 0 28px;
-      border-bottom: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(12px);
     }
+
     .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 700;
-      letter-spacing: 0;
-    }
-    .mark {
-      width: 28px;
-      height: 28px;
-      display: inline-grid;
-      place-items: center;
-      border: 1px solid #151515;
-      border-radius: 6px;
-      font-size: 13px;
+      display: inline-flex;
+      align-items: flex-end;
+      gap: 6px;
+      color: var(--color-text);
+      font-family: var(--font-display);
+      font-size: 1.85rem;
       line-height: 1;
+      letter-spacing: -0.01em;
     }
-    main {
-      width: min(1120px, calc(100vw - 32px));
-      margin: 0 auto;
-      padding: 34px 0 56px;
-    }
-    .auth-main {
-      width: min(420px, calc(100vw - 32px));
-      display: grid;
-      align-content: center;
-      min-height: calc(100vh - 64px);
-      padding: 24px 0;
-    }
-    .panel {
-      background: var(--surface);
-      border: 1px solid var(--line);
+
+    .brand-mark {
+      width: 44px;
+      height: 44px;
+      object-fit: contain;
+      display: block;
       border-radius: 8px;
-      padding: 24px;
-      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
     }
-    h1 {
-      margin: 0 0 8px;
-      font-size: 28px;
-      line-height: 1.16;
-      letter-spacing: 0;
+
+    .brand-dot {
+      color: var(--color-cta);
     }
-    h2 {
+
+    main {
+      width: min(var(--max-width), calc(100vw - 64px));
+      margin: 0 auto;
+      padding: 36px 0 64px;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
       margin: 0;
-      font-size: 16px;
+    }
+
+    h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 5vw, 4.35rem);
+      font-weight: 400;
+      line-height: 0.98;
+      letter-spacing: -0.02em;
+    }
+
+    h1 em,
+    h2 em {
+      font-style: italic;
+    }
+
+    h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.65rem, 3vw, 2.7rem);
+      font-weight: 400;
+      line-height: 1.04;
+      letter-spacing: -0.02em;
+    }
+
+    h3 {
+      font-size: 1rem;
       line-height: 1.25;
       letter-spacing: 0;
     }
+
     p {
-      margin: 0;
-      color: var(--muted);
+      color: var(--color-text-light);
+      font-weight: 300;
     }
-    form {
-      display: grid;
-      gap: 12px;
-      margin-top: 22px;
-    }
-    label {
-      display: grid;
-      gap: 6px;
-      color: #2f3338;
-      font-size: 13px;
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      width: max-content;
+      max-width: 100%;
+      border: 1px solid var(--color-line-strong);
+      border-radius: 2px;
+      padding: 6px 12px;
+      color: var(--color-text);
+      font-size: 0.72rem;
       font-weight: 600;
+      letter-spacing: 0.15em;
+      line-height: 1;
+      text-transform: uppercase;
     }
-    input {
-      width: 100%;
-      height: 44px;
-      border: 1px solid #c8ced8;
-      border-radius: 6px;
-      padding: 0 12px;
-      background: #fff;
-      color: var(--ink);
-      font: inherit;
-    }
-    button,
-    .button {
-      min-height: 42px;
+
+    .button,
+    button {
+      min-height: 44px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      border: 1px solid #131313;
-      border-radius: 6px;
-      padding: 0 14px;
-      background: #131313;
-      color: #fff;
+      gap: 10px;
+      border: 1px solid var(--color-cta);
+      border-radius: 2px;
+      padding: 0 22px;
+      background: var(--color-cta);
+      color: var(--color-cta-text);
       font: inherit;
-      font-weight: 700;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      line-height: 1;
+      text-transform: uppercase;
       text-decoration: none;
       cursor: pointer;
+      transition:
+        background 0.35s var(--ease-out),
+        border-color 0.35s var(--ease-out),
+        color 0.35s var(--ease-out),
+        transform 0.35s var(--ease-out);
     }
-    .button.secondary {
-      background: #fff;
-      color: var(--ink);
-      border-color: #c8ced8;
+
+    .button:hover,
+    button:hover {
+      background: var(--color-cta-dark);
+      border-color: var(--color-cta-dark);
+      color: var(--color-cta-text);
     }
-    .button[aria-disabled="true"] {
-      color: #8b919b;
-      background: #eef1f5;
-      border-color: #d4d9e1;
+
+    .button.secondary,
+    button.secondary {
+      background: transparent;
+      color: var(--color-cta);
+      border-color: var(--color-cta);
+    }
+
+    .button.secondary:hover,
+    button.secondary:hover {
+      background: rgba(79, 158, 132, 0.08);
+      color: var(--color-cta);
+      border-color: var(--color-cta);
+    }
+
+    .button.compact,
+    button.compact {
+      min-height: 34px;
+      padding: 0 12px;
+      font-size: 0.68rem;
+    }
+
+    .button.full,
+    button.full {
+      width: 100%;
+    }
+
+    .button[aria-disabled="true"],
+    button:disabled {
+      color: rgba(42, 42, 50, 0.44);
+      background: rgba(42, 42, 50, 0.06);
+      border-color: rgba(42, 42, 50, 0.1);
       pointer-events: none;
     }
+
+    .panel {
+      background: var(--color-panel);
+      border: 1px solid var(--color-line);
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: 0 1px 2px rgba(42, 42, 50, 0.04);
+    }
+
+    .panel-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .panel-kicker {
+      color: var(--color-muted);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    form {
+      display: grid;
+      gap: 14px;
+      margin: 0;
+    }
+
+    label,
+    .field {
+      display: grid;
+      gap: 7px;
+      color: var(--color-text);
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      border: 1px solid rgba(42, 42, 50, 0.16);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.72);
+      color: var(--color-text);
+      font: inherit;
+      font-size: 0.96rem;
+      letter-spacing: 0;
+      text-transform: none;
+      outline: none;
+      transition:
+        border-color 0.2s var(--ease-out),
+        box-shadow 0.2s var(--ease-out),
+        background 0.2s var(--ease-out);
+    }
+
+    input,
+    select {
+      height: 46px;
+      padding: 0 12px;
+    }
+
+    input[type="file"] {
+      height: auto;
+      min-height: 46px;
+      padding: 10px 12px;
+    }
+
+    textarea {
+      min-height: 140px;
+      resize: vertical;
+      padding: 12px;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      background: #ffffff;
+      border-color: rgba(79, 158, 132, 0.72);
+      box-shadow: 0 0 0 3px rgba(79, 158, 132, 0.12);
+    }
+
     .divider {
       display: grid;
       grid-template-columns: 1fr auto 1fr;
       align-items: center;
       gap: 12px;
-      margin: 18px 0;
-      color: #7a808a;
-      font-size: 12px;
+      margin: 20px 0;
+      color: var(--color-muted);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
     }
+
     .divider::before,
     .divider::after {
       content: "";
-      border-top: 1px solid var(--line);
+      border-top: 1px solid var(--color-line);
     }
-    .toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 14px;
-    }
-    .card {
-      min-height: 132px;
-      display: grid;
-      align-content: space-between;
-      gap: 18px;
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 18px;
-    }
-    .metric {
-      font-size: 30px;
-      line-height: 1;
-      font-weight: 760;
-      letter-spacing: 0;
-    }
-    .muted { color: var(--muted); }
+
     .notice {
       margin-top: 16px;
-      padding: 12px;
-      border: 1px solid #e7c579;
+      border: 1px solid rgba(157, 101, 0, 0.22);
       border-radius: 6px;
-      background: #fff8e8;
-      color: var(--warn);
+      padding: 12px;
+      background: var(--color-warn-bg);
+      color: var(--color-warn);
+      font-size: 0.9rem;
+      line-height: 1.45;
     }
+
+    .notice.neutral {
+      background: rgba(79, 158, 132, 0.08);
+      border-color: rgba(79, 158, 132, 0.22);
+      color: var(--color-cta-dark);
+    }
+
+    .auth-main {
+      min-height: calc(100vh - var(--nav-height));
+      display: grid;
+      grid-template-columns: minmax(320px, 0.78fr) minmax(0, 1fr);
+      align-items: center;
+      gap: 40px;
+      padding-top: 42px;
+      padding-bottom: 72px;
+    }
+
+    .login-panel {
+      background: rgba(253, 250, 247, 0.92);
+    }
+
+    .login-panel h1 {
+      font-size: clamp(2rem, 3.5vw, 3.25rem);
+      margin-bottom: 10px;
+    }
+
+    .auth-actions {
+      display: grid;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .auth-aside {
+      display: grid;
+      gap: 24px;
+      padding: 8px 0;
+    }
+
+    .auth-aside p {
+      max-width: 42rem;
+      font-size: clamp(1rem, 1.6vw, 1.14rem);
+    }
+
+    .mini-flow {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .mini-step {
+      min-height: 156px;
+      display: grid;
+      align-content: space-between;
+      gap: 22px;
+      border: 1px solid var(--color-line);
+      border-radius: 8px;
+      background: rgba(253, 250, 247, 0.5);
+      padding: 18px;
+    }
+
+    .mini-step-number {
+      color: rgba(42, 42, 50, 0.46);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+    }
+
+    .mini-step strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 1rem;
+      line-height: 1.2;
+    }
+
+    .mini-step p {
+      font-size: 0.88rem;
+      line-height: 1.45;
+    }
+
+    .app-main {
+      display: grid;
+      gap: 22px;
+    }
+
+    .app-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 24px;
+      align-items: end;
+      padding-top: 10px;
+    }
+
+    .app-title {
+      display: grid;
+      gap: 18px;
+    }
+
+    .app-title p {
+      max-width: 44rem;
+      font-size: 1.05rem;
+    }
+
+    .account-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 1px solid var(--color-line);
+      border-radius: 8px;
+      padding: 10px;
+      background: rgba(253, 250, 247, 0.62);
+    }
+
     .identity {
+      min-width: 0;
       display: flex;
       align-items: center;
       gap: 10px;
-      color: var(--muted);
-      font-size: 14px;
+      color: var(--color-muted);
+      font-size: 0.9rem;
     }
+
+    .identity span:last-child {
+      max-width: 220px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
     .avatar {
-      width: 32px;
-      height: 32px;
+      width: 34px;
+      height: 34px;
+      flex: 0 0 34px;
       border-radius: 999px;
       object-fit: cover;
-      background: #e3e7ed;
+      background: linear-gradient(135deg, rgba(79, 158, 132, 0.22), rgba(42, 42, 50, 0.08));
+      border: 1px solid rgba(42, 42, 50, 0.08);
     }
-    @media (max-width: 780px) {
-      .topbar { padding: 0 16px; }
-      main { width: min(100vw - 24px, 1120px); padding-top: 24px; }
-      .toolbar { align-items: flex-start; flex-direction: column; }
-      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: minmax(320px, 0.78fr) minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
     }
-    @media (max-width: 480px) {
-      .grid { grid-template-columns: 1fr; }
+
+    .upload-panel {
+      display: grid;
+      gap: 18px;
+    }
+
+    .upload-panel form {
+      gap: 16px;
+    }
+
+    .prompt-tools {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .metric-card {
+      min-height: 124px;
+      display: grid;
+      align-content: space-between;
+      gap: 18px;
+      border: 1px solid var(--color-line);
+      border-radius: 8px;
+      background: rgba(253, 250, 247, 0.62);
+      padding: 18px;
+    }
+
+    .metric-value {
+      color: var(--color-text);
+      font-family: var(--font-display);
+      font-size: 2.35rem;
+      line-height: 0.95;
+    }
+
+    .metric-card p {
+      font-size: 0.86rem;
+    }
+
+    .status-panel {
+      grid-column: 1 / -1;
+    }
+
+    .job-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .job-row {
+      display: grid;
+      grid-template-columns: minmax(220px, 1.2fr) minmax(170px, 0.9fr) minmax(120px, 0.7fr) minmax(190px, 0.9fr) auto;
+      align-items: center;
+      gap: 16px;
+      border: 1px solid var(--color-line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.42);
+      padding: 14px;
+    }
+
+    .job-title {
+      display: grid;
+      gap: 3px;
+      min-width: 0;
+    }
+
+    .job-title strong {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      line-height: 1.25;
+    }
+
+    .job-title span,
+    .job-meta,
+    .job-output {
+      color: var(--color-muted);
+      font-size: 0.84rem;
+      font-weight: 300;
+    }
+
+    .status-pill {
+      width: max-content;
+      border: 1px solid rgba(42, 42, 50, 0.12);
+      border-radius: 999px;
+      padding: 4px 9px;
+      background: rgba(42, 42, 50, 0.04);
+      color: var(--color-text-light);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .status-pill.ready {
+      border-color: rgba(79, 158, 132, 0.24);
+      background: rgba(79, 158, 132, 0.12);
+      color: var(--color-cta-dark);
+    }
+
+    .progress {
+      height: 6px;
+      margin-top: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(42, 42, 50, 0.08);
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--color-cta);
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .result-card {
+      min-height: 180px;
+      display: grid;
+      align-content: space-between;
+      gap: 22px;
+    }
+
+    .result-card ul {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      color: var(--color-text-light);
+      font-size: 0.9rem;
+      font-weight: 300;
+    }
+
+    .message-main {
+      min-height: calc(100vh - var(--nav-height));
+      display: grid;
+      place-items: center;
+      padding-top: 32px;
+      padding-bottom: 64px;
+    }
+
+    .message-panel {
+      width: min(460px, 100%);
+      display: grid;
+      gap: 14px;
+      background: rgba(253, 250, 247, 0.92);
+    }
+
+    .message-panel h1 {
+      font-size: clamp(2rem, 4vw, 3rem);
+    }
+
+    @media (max-width: 980px) {
+      .auth-main,
+      .workspace-grid,
+      .app-header {
+        grid-template-columns: 1fr;
+      }
+
+      .app-header {
+        align-items: start;
+      }
+
+      .account-box {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .mini-flow,
+      .results-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .job-row {
+        grid-template-columns: 1fr;
+        align-items: start;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .topbar-inner {
+        padding: 0 18px;
+      }
+
+      .brand {
+        font-size: 1.5rem;
+      }
+
+      .brand-mark {
+        width: 38px;
+        height: 38px;
+      }
+
+      .topbar nav .button {
+        min-height: 38px;
+        padding: 0 12px;
+        font-size: 0.68rem;
+      }
+
+      main {
+        width: min(100vw - 28px, var(--max-width));
+        padding-top: 26px;
+      }
+
+      .panel {
+        padding: 18px;
+      }
+
+      .prompt-tools,
+      .metric-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .account-box {
+        align-items: flex-start;
+        flex-direction: column;
+      }
     }
   </style>
 </head>
 <body>
+  <svg class="noise" aria-hidden="true">
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"></feTurbulence>
+      <feColorMatrix type="saturate" values="0"></feColorMatrix>
+    </filter>
+    <rect width="100%" height="100%" filter="url(#grain)"></rect>
+  </svg>
   <div class="shell">
     <header class="topbar">
-      <a class="brand" href="${config.publicSiteUrl.toString()}">
-        <span class="mark">S</span>
-        <span>Shotwell</span>
-      </a>
-      <nav>
-        <a class="button secondary" href="${config.publicSiteUrl.toString()}">Main Site</a>
-      </nav>
+      <div class="topbar-inner">
+        <a class="brand" href="${escapeHtml(publicSiteUrl)}">
+          <img class="brand-mark" src="${escapeHtml(logoUrl)}" alt="Shotwell logo">
+          <span>Shotwell<span class="brand-dot">.</span></span>
+        </a>
+        <nav>
+          <a class="button secondary" href="${escapeHtml(publicSiteUrl)}">Main Site</a>
+        </nav>
+      </div>
     </header>
     ${body}
   </div>
@@ -268,17 +799,24 @@ export function loginPage(input: {
   error?: string;
 }) {
   const googleButton = input.googleEnabled
-    ? `<a class="button secondary" href="/login/google?return_to=${encodeURIComponent(input.returnTo)}">Continue with Google</a>`
-    : `<a class="button secondary" aria-disabled="true">Google SSO</a>`;
+    ? `<a class="button secondary full" href="/login/google?return_to=${encodeURIComponent(input.returnTo)}">Continue with Google</a>`
+    : `<a class="button secondary full" aria-disabled="true">Google SSO</a>`;
+
+  const emailNotice = input.devEmailEnabled
+    ? `<div class="notice neutral">Development email login is enabled.</div>`
+    : input.emailEnabled
+      ? `<div class="notice neutral">We'll email a secure sign-in link to any address.</div>`
+      : `<div class="notice">Email delivery is not configured yet.</div>`;
 
   return page(
     "Shotwell Login",
     `<main class="auth-main">
-      <section class="panel">
-        <h1>Sign in to Shotwell</h1>
-        <p>Use Google SSO or any email address to continue.</p>
+      <section class="panel login-panel">
+        <span class="eyebrow">Shotwell account</span>
+        <h1>Sign in to upload robot videos.</h1>
+        <p>Use Google SSO or a secure email link to reach the Shotwell upload workspace.</p>
         ${input.error ? `<div class="notice">${escapeHtml(input.error)}</div>` : ""}
-        <div style="display: grid; gap: 10px; margin-top: 22px;">${googleButton}</div>
+        <div class="auth-actions">${googleButton}</div>
         <div class="divider">or</div>
         <form method="post" action="/login/email">
           <input type="hidden" name="return_to" value="${escapeHtml(input.returnTo)}">
@@ -286,16 +824,38 @@ export function loginPage(input: {
             Email
             <input name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
           </label>
-          <button type="submit">Continue by email</button>
+          <button class="full" type="submit">Continue by email</button>
         </form>
-        ${
-          input.devEmailEnabled
-            ? `<div class="notice">Development email login is enabled.</div>`
-            : input.emailEnabled
-              ? `<div class="notice">We'll email you a secure sign-in link.</div>`
-            : `<div class="notice">Email delivery is not configured yet.</div>`
-        }
+        ${emailNotice}
       </section>
+      <aside class="auth-aside">
+        <span class="eyebrow">Authenticated intake</span>
+        <h1>Upload episodes. <em>Get dense action labels.</em></h1>
+        <p>Shotwell turns raw robot training video and task prompts into labeled segments, quality signals, and downloadable training data outputs.</p>
+        <div class="mini-flow">
+          <article class="mini-step">
+            <span class="mini-step-number">01</span>
+            <div>
+              <strong>Secure access</strong>
+              <p>Google SSO or email magic links for collaborators across domains.</p>
+            </div>
+          </article>
+          <article class="mini-step">
+            <span class="mini-step-number">02</span>
+            <div>
+              <strong>Prompted uploads</strong>
+              <p>Attach robot videos with the task prompt, SOP, or labeling rubric.</p>
+            </div>
+          </article>
+          <article class="mini-step">
+            <span class="mini-step-number">03</span>
+            <div>
+              <strong>Ready exports</strong>
+              <p>Track processing status and download completed labels when ready.</p>
+            </div>
+          </article>
+        </div>
+      </aside>
     </main>`
   );
 }
@@ -306,47 +866,185 @@ export function appPage(user: User) {
     ? `<img class="avatar" src="${escapeHtml(user.avatarUrl)}" alt="">`
     : `<span class="avatar"></span>`;
 
+  const jobs = [
+    {
+      title: "episode_0431 - fold_shirt",
+      detail: "12 videos, 48 min total",
+      status: "Processing",
+      statusClass: "",
+      meta: "68% complete - ETA 3h",
+      progress: 68,
+      output: "Action segments + QA flags",
+      action: `<a class="button compact" aria-disabled="true">Processing</a>`
+    },
+    {
+      title: "cabinet_loading_eval_set",
+      detail: "32 videos, prompt v3",
+      status: "Ready",
+      statusClass: "ready",
+      meta: "Completed today",
+      progress: 100,
+      output: "labels.jsonl, clips.csv, report.pdf",
+      action: `<a class="button compact" href="#">Download results</a>`
+    },
+    {
+      title: "bimanual_sorting_round_07",
+      detail: "8 videos, 14 min total",
+      status: "Queued",
+      statusClass: "",
+      meta: "Waiting for intake",
+      progress: 8,
+      output: "Dense actions + failure labels",
+      action: `<a class="button compact" aria-disabled="true">Queued</a>`
+    }
+  ];
+
+  const jobRows = jobs
+    .map(
+      (job) => `<article class="job-row">
+        <div class="job-title">
+          <strong>${escapeHtml(job.title)}</strong>
+          <span>${escapeHtml(job.detail)}</span>
+        </div>
+        <div>
+          <span class="status-pill ${job.statusClass}">${escapeHtml(job.status)}</span>
+          <div class="progress" aria-hidden="true"><span style="width: ${job.progress}%"></span></div>
+        </div>
+        <div class="job-meta">${escapeHtml(job.meta)}</div>
+        <div class="job-output">${escapeHtml(job.output)}</div>
+        ${job.action}
+      </article>`
+    )
+    .join("");
+
   return page(
     "Shotwell App",
-    `<main>
-      <div class="toolbar">
-        <div>
-          <h1>Operations</h1>
-          <p>Review queues, model runs, and account activity.</p>
+    `<main class="app-main">
+      <section class="app-header">
+        <div class="app-title">
+          <span class="eyebrow">Robot training data</span>
+          <h1>Upload videos. <em>Track labels.</em> Download results.</h1>
+          <p>Submit robot training footage with task prompts, monitor every batch as it moves through labeling, and collect training-ready outputs when complete.</p>
         </div>
-        <form method="post" action="/logout" style="margin: 0;">
-          <button class="button secondary" type="submit">Sign out</button>
-        </form>
-      </div>
-      <div class="identity">${avatar}<span>${escapeHtml(displayName)}</span></div>
-      <section class="grid" style="margin-top: 24px;">
-        <article class="card">
-          <h2>Intake Queue</h2>
-          <div>
-            <div class="metric">24</div>
-            <p class="muted">items pending</p>
+        <div class="account-box">
+          <div class="identity">${avatar}<span>${escapeHtml(displayName)}</span></div>
+          <form method="post" action="/logout">
+            <button class="secondary compact" type="submit">Sign out</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="workspace-grid">
+        <section class="panel upload-panel">
+          <div class="panel-heading">
+            <div>
+              <span class="panel-kicker">New upload</span>
+              <h2>Send robot episodes for labeling.</h2>
+            </div>
           </div>
+          <form>
+            <label>
+              Robot training video
+              <input type="file" name="video" accept="video/*">
+            </label>
+            <label>
+              Task prompt
+              <textarea name="prompt" placeholder="Segment the episode into pick, move, place, retry, and failure actions. Flag unsafe or off-task behavior."></textarea>
+            </label>
+            <div class="prompt-tools">
+              <label>
+                Output
+                <select name="output">
+                  <option>Action labels + QA report</option>
+                  <option>Action labels only</option>
+                  <option>Failure review</option>
+                </select>
+              </label>
+              <label>
+                Turnaround
+                <select name="turnaround">
+                  <option>24 hours</option>
+                  <option>Same day review</option>
+                  <option>Standard batch</option>
+                </select>
+              </label>
+            </div>
+            <button type="button">Create upload</button>
+          </form>
+        </section>
+
+        <div class="metric-grid">
+          <article class="metric-card">
+            <span class="panel-kicker">Active</span>
+            <div>
+              <div class="metric-value">3</div>
+              <p>uploads in flight</p>
+            </div>
+          </article>
+          <article class="metric-card">
+            <span class="panel-kicker">Ready</span>
+            <div>
+              <div class="metric-value">1</div>
+              <p>result package available</p>
+            </div>
+          </article>
+          <article class="metric-card">
+            <span class="panel-kicker">Median</span>
+            <div>
+              <div class="metric-value">18h</div>
+              <p>placeholder turnaround</p>
+            </div>
+          </article>
+        </div>
+
+        <section class="panel status-panel">
+          <div class="panel-heading">
+            <div>
+              <span class="panel-kicker">Upload status</span>
+              <h2>Recent robot video batches.</h2>
+            </div>
+            <a class="button secondary compact" href="#">Refresh</a>
+          </div>
+          <div class="job-list">${jobRows}</div>
+        </section>
+      </section>
+
+      <section class="results-grid">
+        <article class="panel result-card">
+          <div>
+            <span class="panel-kicker">Completed export</span>
+            <h3>cabinet_loading_eval_set</h3>
+          </div>
+          <ul>
+            <li>labels.jsonl - dense frame actions</li>
+            <li>clips.csv - segment timestamps</li>
+            <li>report.pdf - QA summary</li>
+          </ul>
+          <a class="button compact" href="#">Download package</a>
         </article>
-        <article class="card">
-          <h2>Review Runs</h2>
+        <article class="panel result-card">
           <div>
-            <div class="metric">8</div>
-            <p class="muted">active batches</p>
+            <span class="panel-kicker">Prompt library</span>
+            <h3>Reusable task instructions</h3>
           </div>
+          <ul>
+            <li>Manipulation rubrics</li>
+            <li>Failure taxonomies</li>
+            <li>Dataset-specific SOPs</li>
+          </ul>
+          <a class="button secondary compact" href="#">Open prompts</a>
         </article>
-        <article class="card">
-          <h2>Model Outputs</h2>
+        <article class="panel result-card">
           <div>
-            <div class="metric">96%</div>
-            <p class="muted">ready rate</p>
+            <span class="panel-kicker">Next milestone</span>
+            <h3>Production upload API</h3>
           </div>
-        </article>
-        <article class="card">
-          <h2>Account Health</h2>
-          <div>
-            <div class="metric">OK</div>
-            <p class="muted">all systems normal</p>
-          </div>
+          <ul>
+            <li>Signed video uploads</li>
+            <li>Persistent batch records</li>
+            <li>Real downloadable artifacts</li>
+          </ul>
+          <a class="button secondary compact" href="#">View roadmap</a>
         </article>
       </section>
     </main>`
@@ -356,11 +1054,12 @@ export function appPage(user: User) {
 export function messagePage(title: string, message: string, href = "/", label = "Continue") {
   return page(
     title,
-    `<main class="auth-main">
-      <section class="panel">
+    `<main class="message-main">
+      <section class="panel message-panel">
+        <span class="eyebrow">Shotwell</span>
         <h1>${escapeHtml(title)}</h1>
         <p>${escapeHtml(message)}</p>
-        <div style="margin-top: 22px;">
+        <div>
           <a class="button" href="${escapeHtml(href)}">${escapeHtml(label)}</a>
         </div>
       </section>
