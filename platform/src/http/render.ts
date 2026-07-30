@@ -535,7 +535,7 @@ export function page(title: string, body: string) {
 
     .workspace-grid {
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr) minmax(340px, 0.45fr);
       gap: 18px;
       align-items: start;
     }
@@ -549,9 +549,14 @@ export function page(title: string, body: string) {
       gap: 16px;
     }
 
-    .upload-description {
+    .field-description {
       max-width: 58rem;
-      margin-top: 8px;
+      color: var(--color-text-light);
+      font-size: 0.92rem;
+      font-weight: 300;
+      letter-spacing: 0;
+      line-height: 1.45;
+      text-transform: none;
     }
 
     .upload-panel textarea {
@@ -592,10 +597,6 @@ export function page(title: string, body: string) {
       font-size: 0.86rem;
     }
 
-    .status-panel {
-      grid-column: 1 / -1;
-    }
-
     .job-list {
       display: grid;
       gap: 10px;
@@ -603,8 +604,8 @@ export function page(title: string, body: string) {
 
     .job-row {
       display: grid;
-      grid-template-columns: minmax(220px, 1fr) minmax(260px, 1fr) auto;
-      align-items: center;
+      grid-template-columns: 1fr;
+      align-items: start;
       gap: 16px;
       border: 1px solid var(--color-line);
       border-radius: 8px;
@@ -631,6 +632,10 @@ export function page(title: string, body: string) {
       color: var(--color-muted);
       font-size: 0.84rem;
       font-weight: 300;
+    }
+
+    .job-row .button {
+      width: max-content;
     }
 
     .status-pill {
@@ -877,13 +882,13 @@ Also keep track of "Retry" and "Fail" attributes for each step. "Retry" means mu
             <div>
               <span class="panel-kicker">New upload</span>
               <h2>Upload robot episodes for labeling.</h2>
-              <p class="upload-description">Upload robot episodes as either MCAP files or raw video files, e.g. mp4 files of head cam.</p>
             </div>
           </div>
           <form>
             <label>
-              Robot training video
-              <input type="file" name="video" accept="video/*">
+              Robot Episodes
+              <span class="field-description">Upload robot episodes as either MCAP files or raw video files, e.g. mp4 files of head cam.</span>
+              <input type="file" name="video" accept="video/*,.mcap">
             </label>
             <label>
               Prompt
