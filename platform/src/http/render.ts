@@ -412,12 +412,19 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       color: var(--color-cta-dark);
     }
 
-    .inline-link {
-      color: var(--color-cta-dark);
-      text-decoration: underline;
-      text-decoration-thickness: 1px;
-      text-underline-offset: 0.18em;
-    }
+	    .inline-link {
+	      color: var(--color-cta-dark);
+	      text-decoration: underline;
+	      text-decoration-thickness: 1px;
+	      text-underline-offset: 0.18em;
+	    }
+
+	    .zdr-link {
+	      color: var(--color-text);
+	      text-decoration: underline;
+	      text-decoration-thickness: 1px;
+	      text-underline-offset: 0.18em;
+	    }
 
     .auth-main {
       min-height: calc(100vh - var(--nav-height));
@@ -496,10 +503,20 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       line-height: 1.45;
     }
 
-    .app-main {
-      display: grid;
-      gap: 22px;
-    }
+	    .app-main {
+	      display: grid;
+	      gap: 22px;
+	    }
+
+	    .app-intro {
+	      max-width: 820px;
+	    }
+
+	    .app-intro p {
+	      color: var(--color-text);
+	      font-size: 1.04rem;
+	      line-height: 1.55;
+	    }
 
 	    .app-title {
 	      display: grid;
@@ -982,7 +999,7 @@ export function loginPage(input: {
     `<main class="auth-main auth-main-single">
       <section class="panel login-panel">
         <h1>Sign in to start uploading.</h1>
-        <p>Login with your company email. Get 10 hours of robot video annotated for free, with 24 hour turnaround time. <a class="inline-link" href="/privacy">Zero Data Retention.</a></p>
+        <p>Login with your company email. Get 10 hours of robot video annotated for free, with 24 hour turnaround time. <a class="zdr-link" href="/privacy">Zero Data Retention.</a></p>
         ${input.error ? `<div class="notice">${escapeHtml(input.error)}</div>` : ""}
         <div class="auth-actions">${googleButton}</div>
         <div class="divider">or</div>
@@ -1057,11 +1074,25 @@ function uploadTitle(upload: UploadRecord) {
   return `${firstFile} & ${otherCount} ${otherCount === 1 ? "other" : "others"}`;
 }
 
+function promptPreview(prompt: string) {
+  const compact = prompt.trim().replace(/\s+/g, " ");
+
+  if (!compact) {
+    return "No prompt provided.";
+  }
+
+  if (compact.length <= 100) {
+    return compact;
+  }
+
+  return `${compact.slice(0, 97).trimEnd()}...`;
+}
+
 function renderUploadRow(upload: UploadRecord) {
   const resultButton = upload.status === "completed" && upload.resultObjectName
     ? `<a class="button compact" href="/uploads/${escapeHtml(upload.id)}/results">Download Results</a>`
     : `<span class="status-pill">Pending</span>`;
-  const prompt = upload.prompt.trim() || "No prompt provided.";
+  const prompt = promptPreview(upload.prompt);
   const editPrompt = upload.status === "pending"
     ? `<details class="prompt-editor">
       <summary>Edit Prompt</summary>
@@ -1114,6 +1145,10 @@ Also keep track of "Retry" and "Fail" attributes for each step. "Retry" means mu
   return page(
     "Shotwell App",
     `<main class="app-main">
+      <section class="app-intro">
+        <p>Try out our service for free with up to 10 hours of robot data. We'll annotate it and send it back within 24 hours. <a class="zdr-link" href="/privacy">Zero Data Retention.</a></p>
+      </section>
+
       <section class="workspace-grid">
         <section class="panel upload-panel">
           <div class="panel-heading">
