@@ -817,8 +817,8 @@ export function loginPage(input: {
     "Shotwell Login",
     `<main class="auth-main auth-main-single">
       <section class="panel login-panel">
-        <h1>Sign in.</h1>
-        <p>Login with your company email.</p>
+        <h1>Sign in to start uploading.</h1>
+        <p>Login with your company email. Get 10 hours of robot video annotated for free, with 24 hour turnaround time.</p>
         ${input.error ? `<div class="notice">${escapeHtml(input.error)}</div>` : ""}
         <div class="auth-actions">${googleButton}</div>
         <div class="divider">or</div>
