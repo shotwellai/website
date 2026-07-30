@@ -435,6 +435,19 @@ a {
   margin: 0 auto 44px;
 }
 
+.hero-actions {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  pointer-events: auto;
+}
+
+.hero-actions .btn {
+  min-width: 180px;
+}
+
 /* Hero decorations */
 .hero-decoration {
   position: absolute;
@@ -587,6 +600,16 @@ a {
 }
 
 @media (max-width: 600px) {
+  .hero-actions {
+    width: min(100%, 300px);
+    margin: 0 auto;
+    flex-direction: column;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
+  }
+
   .trusted-logos { gap: 40px; }
   .trusted-logo-ultra { height: 24px; }
   .trusted-logo-weave { height: 24.2px; }
