@@ -26,6 +26,9 @@ const envSchema = z.object({
   EMAIL_FROM: z.string().optional(),
   EMAIL_REPLY_TO: z.string().optional(),
   RESEND_API_KEY: z.string().optional(),
+  GCS_UPLOAD_BUCKET: z.string().optional(),
+  GCS_UPLOAD_PREFIX: z.string().default("uploads"),
+  GCS_RESULTS_PREFIX: z.string().default("results"),
   ALLOW_DEV_EMAIL_LOGIN: booleanFromEnv.default(false)
 });
 
@@ -34,6 +37,14 @@ const generatedDevSecret = randomBytes(32).toString("base64url");
 
 if (parsedEnv.NODE_ENV === "production" && !parsedEnv.SESSION_SECRET) {
   throw new Error("SESSION_SECRET is required in production.");
+}
+
+if (parsedEnv.NODE_ENV === "production" && !parsedEnv.GCS_UPLOAD_BUCKET) {
+  throw new Error("GCS_UPLOAD_BUCKET is required in production.");
+}
+
+function cleanPrefix(prefix: string) {
+  return prefix.replace(/^\/+|\/+$/g, "");
 }
 
 export const config = {
@@ -55,6 +66,11 @@ export const config = {
     from: parsedEnv.EMAIL_FROM,
     replyTo: parsedEnv.EMAIL_REPLY_TO,
     resendApiKey: parsedEnv.RESEND_API_KEY
+  },
+  uploads: {
+    bucketName: parsedEnv.GCS_UPLOAD_BUCKET,
+    uploadPrefix: cleanPrefix(parsedEnv.GCS_UPLOAD_PREFIX),
+    resultsPrefix: cleanPrefix(parsedEnv.GCS_RESULTS_PREFIX)
   },
   allowDevEmailLogin:
     parsedEnv.ALLOW_DEV_EMAIL_LOGIN || parsedEnv.NODE_ENV !== "production"

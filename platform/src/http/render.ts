@@ -1,5 +1,6 @@
 import type { User } from "../auth/store.js";
 import { config } from "../config.js";
+import type { UploadRecord } from "../uploads/store.js";
 
 export function escapeHtml(value: string) {
   return value.replace(/[&<>"']/g, (char) => {
@@ -392,6 +393,10 @@ export function page(title: string, body: string) {
       line-height: 1.45;
     }
 
+    .notice[hidden] {
+      display: none;
+    }
+
     .notice.neutral {
       background: rgba(79, 158, 132, 0.08);
       border-color: rgba(79, 158, 132, 0.22);
@@ -643,6 +648,15 @@ export function page(title: string, body: string) {
 
     .job-row .button {
       width: max-content;
+    }
+
+    .empty-row {
+      border: 1px solid var(--color-line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.42);
+      padding: 16px;
+      color: var(--color-muted);
+      font-weight: 300;
     }
 
     .status-pill {
@@ -943,11 +957,38 @@ export function privacyPolicyPage() {
   );
 }
 
-export function appPage(user: User) {
+function uploadTitle(upload: UploadRecord) {
+  const firstFile = upload.files[0]?.originalName ?? "Untitled upload";
+  const otherCount = Math.max(0, upload.files.length - 1);
+
+  if (otherCount === 0) {
+    return firstFile;
+  }
+
+  return `${firstFile} & ${otherCount} ${otherCount === 1 ? "other" : "others"}`;
+}
+
+function renderUploadRow(upload: UploadRecord) {
+  const resultButton = upload.status === "completed" && upload.resultObjectName
+    ? `<a class="button compact" href="/uploads/${escapeHtml(upload.id)}/results">Download Results</a>`
+    : `<span class="status-pill">Pending</span>`;
+
+  return `<article class="job-row">
+    <div class="job-title">
+      <strong>${escapeHtml(uploadTitle(upload))}</strong>
+    </div>
+    ${resultButton}
+  </article>`;
+}
+
+export function appPage(user: User, uploads: UploadRecord[] = []) {
   const displayName = user.name ?? user.email;
   const avatar = user.avatarUrl
     ? `<img class="avatar" src="${escapeHtml(user.avatarUrl)}" alt="">`
     : `<span class="avatar"></span>`;
+  const uploadRows = uploads.length > 0
+    ? uploads.map(renderUploadRow).join("")
+    : `<div class="empty-row">No uploads yet.</div>`;
 
   const promptPlaceholder = `These videos are episodes of a robot folding a box. Provide timestamps for all of the following events:
 - Pick Box
@@ -977,17 +1018,18 @@ Also keep track of "Retry" and "Fail" attributes for each step. "Retry" means mu
               <h2>Upload robot episodes for labeling.</h2>
             </div>
           </div>
-          <form>
+          <form data-upload-form>
             <label>
               Robot Episodes
-              <span class="field-description">Upload one or more robot episodes as MCAP files or raw video files, e.g. mp4 files of head cam.</span>
-              <input type="file" name="videos" accept="video/*,.mcap" multiple>
+              <span class="field-description">Upload one or more files for each robot episode, including MCAP files, raw videos, logs, images, or any supporting artifacts.</span>
+              <input type="file" name="videos" multiple data-upload-files>
             </label>
             <label>
               Prompt
-              <textarea name="prompt" placeholder="${escapeHtml(promptPlaceholder)}"></textarea>
+              <textarea name="prompt" placeholder="${escapeHtml(promptPlaceholder)}" data-upload-prompt></textarea>
             </label>
-            <button type="button">Create upload</button>
+            <button type="submit" data-upload-submit>Create upload</button>
+            <div class="notice neutral" data-upload-message hidden></div>
           </form>
         </section>
 
@@ -998,19 +1040,11 @@ Also keep track of "Retry" and "Fail" attributes for each step. "Retry" means mu
             </div>
             <a class="button secondary compact" href="#">Refresh</a>
           </div>
-          <div class="job-list">
-            <article class="job-row">
-              <div class="job-title">
-                <strong>box_folding_headcam_batch_01</strong>
-                <span>10 videos, 2.4 hours total</span>
-              </div>
-              <div class="job-meta">Prompt: box folding event timestamps with retry attributes</div>
-              <a class="button compact" href="#">Download results</a>
-            </article>
-          </div>
+          <div class="job-list">${uploadRows}</div>
         </section>
       </section>
-    </main>`
+    </main>
+    <script src="/app.js" defer></script>`
   );
 }
 

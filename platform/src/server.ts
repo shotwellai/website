@@ -23,6 +23,7 @@ app.use(
         frameAncestors: ["'none'"],
         imgSrc: ["'self'", "https:", "data:"],
         objectSrc: ["'none'"],
+        connectSrc: ["'self'", "https://storage.googleapis.com"],
         scriptSrc: ["'self'"],
         styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
         upgradeInsecureRequests: config.isProduction ? [] : null
@@ -43,7 +44,8 @@ app.get("/healthz", (_req, res) => {
     environment: config.nodeEnv,
     authStore: config.authStore,
     databaseConfigured: Boolean(config.databaseUrl),
-    googleConfigured: Boolean(config.google.clientId && config.google.clientSecret)
+    googleConfigured: Boolean(config.google.clientId && config.google.clientSecret),
+    uploadsConfigured: Boolean(config.uploads.bucketName)
   });
 });
 
