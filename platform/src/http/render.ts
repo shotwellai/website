@@ -974,7 +974,6 @@ Also keep track of "Retry" and "Fail" attributes for each step. "Retry" means mu
         <section class="panel upload-panel">
           <div class="panel-heading">
             <div>
-              <span class="panel-kicker">New upload</span>
               <h2>Upload robot episodes for labeling.</h2>
             </div>
           </div>
@@ -995,7 +994,6 @@ Also keep track of "Retry" and "Fail" attributes for each step. "Retry" means mu
         <section class="panel status-panel">
           <div class="panel-heading">
             <div>
-              <span class="panel-kicker">Upload status</span>
               <h2>Previous Uploads</h2>
             </div>
             <a class="button secondary compact" href="#">Refresh</a>
