@@ -726,35 +726,9 @@ a {
   color: var(--color-text);
 }
 
-.seg-video-meta {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  color: var(--color-text-light);
-  letter-spacing: 0.02em;
-  font-variant-numeric: tabular-nums;
-}
-
-#seg-rec-time {
-  display: inline-block;
-  width: 7ch;
-  text-align: right;
-}
-
-.seg-video-meta .rec-dot {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--color-accent);
-  margin-right: 6px;
-  vertical-align: middle;
-  animation: rec-pulse 1.6s ease-in-out infinite;
-}
-
 .seg-video-controls {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
 }
 
 .seg-play-toggle {
@@ -824,11 +798,6 @@ a {
 
 .seg-play-toggle[data-state="paused"] .seg-play-toggle-icon::after {
   display: none;
-}
-
-@keyframes rec-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.35; }
 }
 
 .seg-stage {

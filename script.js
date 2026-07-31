@@ -506,7 +506,6 @@
   var trackEl = document.getElementById('seg-track');
   var labelLayerEl = document.getElementById('seg-labels');
   var playToggleEl = document.getElementById('seg-play-toggle');
-  var recEl = document.getElementById('seg-rec-time');
   var endEl = document.getElementById('seg-end-time');
   var demoEl = document.getElementById('hero-segmentation') || videoEl;
 
@@ -617,7 +616,6 @@
   function update(t) {
     t = clamp(t, 0, DURATION);
     playhead.style.setProperty('--pos', (t / DURATION).toFixed(4));
-    recEl.textContent = fmt(t);
     trackEl.setAttribute('aria-valuenow', t.toFixed(2));
     trackEl.setAttribute('aria-valuetext', fmt(t));
 
