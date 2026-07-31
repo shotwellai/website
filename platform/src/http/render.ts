@@ -38,7 +38,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
   <title>${escapeHtml(title)}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       color-scheme: light;
@@ -56,8 +56,8 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       --color-cta-text: #f4f4f4;
       --color-warn: #9d6500;
       --color-warn-bg: #fff7e6;
-      --font-display: "Instrument Serif", Georgia, serif;
       --font-body: "Outfit", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-display: var(--font-body);
       --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
       --nav-height: 72px;
       --max-width: 1280px;
@@ -140,8 +140,9 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       color: var(--color-text);
       font-family: var(--font-display);
       font-size: 1.85rem;
+      font-weight: 600;
       line-height: 1;
-      letter-spacing: -0.01em;
+      letter-spacing: 0;
     }
 
     .brand-mark {
@@ -171,10 +172,10 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 
     h1 {
       font-family: var(--font-display);
-      font-size: clamp(2.2rem, 5vw, 4.35rem);
-      font-weight: 400;
-      line-height: 0.98;
-      letter-spacing: -0.02em;
+      font-size: 3.65rem;
+      font-weight: 600;
+      line-height: 1.04;
+      letter-spacing: 0;
     }
 
     h1 em,
@@ -184,10 +185,10 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 
     h2 {
       font-family: var(--font-display);
-      font-size: clamp(1.65rem, 3vw, 2.7rem);
-      font-weight: 400;
-      line-height: 1.04;
-      letter-spacing: -0.02em;
+      font-size: 2rem;
+      font-weight: 600;
+      line-height: 1.16;
+      letter-spacing: 0;
     }
 
     h3 {
@@ -625,6 +626,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       color: var(--color-text);
       font-family: var(--font-display);
       font-size: 2.35rem;
+      font-weight: 600;
       line-height: 0.95;
     }
 
@@ -858,7 +860,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
     }
 
     .policy-panel h1 {
-      font-size: clamp(2.3rem, 5vw, 4rem);
+      font-size: 3.3rem;
     }
 
     .policy-section {
@@ -940,6 +942,18 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 
       .panel {
         padding: 18px;
+      }
+
+      h1 {
+        font-size: 2.35rem;
+      }
+
+      h2 {
+        font-size: 1.55rem;
+      }
+
+      .policy-panel h1 {
+        font-size: 2.35rem;
       }
 
       .prompt-tools,
