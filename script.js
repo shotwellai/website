@@ -552,13 +552,14 @@
   playhead.className = 'seg-playhead';
   trackEl.appendChild(playhead);
 
-  // ─── Timeline labels, positioned below matching segments ───
+  // ─── Timeline labels, alternating above and below matching segments when space allows ───
   var labelEls = [];
   if (labelLayerEl) {
-    ACTIONS.forEach(function (a) {
+    ACTIONS.forEach(function (a, i) {
       var label = document.createElement('div');
       label.className = 'seg-label';
       label.setAttribute('data-state', 'pending');
+      label.setAttribute('data-side', i % 2 === 0 ? 'top' : 'bottom');
       label.style.setProperty('--seg-color', a.color);
       label.innerHTML =
         '<span class="seg-label-dot" aria-hidden="true"></span>' +
@@ -583,22 +584,34 @@
     var trackWidth = trackEl.clientWidth;
     if (!trackWidth) return;
 
-    var rows = [];
-    var gap = 8;
+    var lanes = { top: [], bottom: [] };
+    var gap = 4;
+    var crowded = false;
+    function fitsLane(lane, left, right) {
+      for (var j = 0; j < lane.length; j++) {
+        if (left < lane[j].right + gap && right + gap > lane[j].left) return false;
+      }
+      return true;
+    }
     labelEls.forEach(function (label, i) {
       var a = ACTIONS[i];
       var centerPx = (((a.start + a.end) / 2) / DURATION) * trackWidth;
       var width = label.offsetWidth || 80;
       var left = clamp(centerPx - width / 2, 0, Math.max(trackWidth - width, 0));
-      var row = 0;
-      while (rows[row] != null && left < rows[row] + gap) row++;
-      rows[row] = left + width;
+      var right = left + width;
+      var preferred = i % 2 === 0 ? 'top' : 'bottom';
+      var alternate = preferred === 'top' ? 'bottom' : 'top';
+      var side = fitsLane(lanes[preferred], left, right) ? preferred : (fitsLane(lanes[alternate], left, right) ? alternate : preferred);
+      if (!fitsLane(lanes[side], left, right)) crowded = true;
+      var lane = lanes[side];
+      lane.push({ left: left, right: left + width });
 
+      label.setAttribute('data-side', side);
       label.style.setProperty('--label-left', left.toFixed(1) + 'px');
       label.style.setProperty('--pointer-x', clamp(centerPx - left, 8, Math.max(width - 8, 8)).toFixed(1) + 'px');
-      label.style.setProperty('--row', row);
+      label.style.setProperty('--label-top', side === 'top' ? '-54px' : '0px');
     });
-    labelLayerEl.style.setProperty('--label-row-count', Math.max(rows.length, 1));
+    labelLayerEl.classList.toggle('is-condensed', crowded);
   }
 
   function update(t) {
