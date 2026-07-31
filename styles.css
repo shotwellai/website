@@ -1062,12 +1062,15 @@ a {
 }
 
 .seg-annotations-title {
-  margin: 0 0 16px;
+  margin: 0 0 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(42, 42, 50, 0.06);
   font-family: var(--font-body);
-  font-size: 0.76rem;
-  font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: 0.02em;
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.6;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: var(--color-text);
 }
 
