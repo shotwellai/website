@@ -1110,11 +1110,10 @@ a {
 .seg-annotations {
   margin-top: 14px;
   padding-top: 14px;
-  border-top: 1px solid rgba(42, 42, 50, 0.08);
 }
 
 .seg-annotations-title {
-  margin: 0;
+  margin: 0 0 16px;
   font-family: var(--font-body);
   font-size: 0.76rem;
   font-weight: 700;
