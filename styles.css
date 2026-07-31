@@ -15,14 +15,14 @@
   --font-display: var(--font-body);
   --font-mono: ui-monospace, 'SFMono-Regular', 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
 
-  --color-cta: #4F9E84;
+  --color-cta: #111114;
   --color-cta-text: #F4F4F4;
 
   --nav-height: 72px;
   --max-width: 1280px;
   --section-padding: 80px 32px;
-  --radius: 12px;
-  --radius-lg: 20px;
+  --radius: 0;
+  --radius-lg: 0;
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
@@ -92,7 +92,7 @@ a {
 
 ::-webkit-scrollbar-thumb {
   background: rgba(42, 42, 50, 0.12);
-  border-radius: 4px;
+  border-radius: 0;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -142,7 +142,7 @@ a {
 .nav-logo-mark {
   width: 48px;
   height: 48px;
-  border-radius: 10px;
+  border-radius: 0;
   object-fit: contain;
   display: block;
 }
@@ -198,7 +198,7 @@ a {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   padding: 10px 24px;
-  border-radius: 2px;
+  border-radius: 0;
   border: 1px solid;
   background: transparent;
   cursor: pointer;
@@ -279,7 +279,7 @@ a {
 }
 
 .btn-nav-outline:hover {
-  background: rgba(79, 158, 132, 0.08);
+  background: rgba(17, 17, 20, 0.06);
   border-color: var(--color-cta);
   color: var(--color-cta);
 }
@@ -315,7 +315,7 @@ a {
   width: 22px;
   height: 1.5px;
   background: var(--color-text);
-  border-radius: 2px;
+  border-radius: 0;
   transition: transform 0.4s var(--ease-out), opacity 0.3s;
   transform-origin: center;
 }
@@ -598,7 +598,7 @@ a {
 .trusted-logo-mark {
   height: 38px;
   width: 38px;
-  border-radius: 8px;
+  border-radius: 0;
   object-fit: cover;
   display: block;
 }
@@ -661,7 +661,7 @@ a {
   margin-bottom: 20px;
   padding: 6px 14px;
   border: 1px solid var(--color-accent);
-  border-radius: 2px;
+  border-radius: 0;
   white-space: nowrap;
 }
 
@@ -738,7 +738,7 @@ a {
   width: 26px;
   height: 26px;
   padding: 0;
-  border-radius: 999px;
+  border-radius: 0;
   border: 1px solid rgba(42, 42, 50, 0.14);
   background: rgba(253, 250, 247, 0.64);
   color: var(--color-text);
@@ -776,13 +776,13 @@ a {
 .seg-play-toggle[data-state="playing"] .seg-play-toggle-icon::before {
   left: 1px;
   width: 3px;
-  border-radius: 1px;
+  border-radius: 0;
 }
 
 .seg-play-toggle[data-state="playing"] .seg-play-toggle-icon::after {
   right: 1px;
   width: 3px;
-  border-radius: 1px;
+  border-radius: 0;
 }
 
 .seg-play-toggle[data-state="paused"] .seg-play-toggle-icon::before {
@@ -807,7 +807,7 @@ a {
   background:
     radial-gradient(ellipse at center top, rgba(42, 42, 50, 0.06), transparent 60%),
     #EBEBEB;
-  border-radius: 8px;
+  border-radius: 0;
   overflow: hidden;
   border: 1px solid rgba(42, 42, 50, 0.05);
 }
@@ -912,7 +912,7 @@ a {
 
 .seg-chunk-bar {
   background: rgba(42, 42, 50, 0.06);
-  border-radius: 3px;
+  border-radius: 0;
   overflow: hidden;
   transition: background 0.4s;
 }
@@ -965,7 +965,7 @@ a {
 .seg-scrubber-track--single {
   height: 24px;
   min-height: 0;
-  border-radius: 4px;
+  border-radius: 0;
 }
 
 .seg-seg {
@@ -978,8 +978,8 @@ a {
   transition: background 0.3s var(--ease-out);
 }
 
-.seg-seg:first-child { border-radius: 4px 0 0 4px; }
-.seg-seg:last-child { border-radius: 0 4px 4px 0; box-shadow: none; }
+.seg-seg:first-child { border-radius: 0; }
+.seg-seg:last-child { border-radius: 0; box-shadow: none; }
 
 .seg-seg[data-state="active"] {
   background: color-mix(in srgb, var(--seg-color) 32%, transparent);
@@ -1012,7 +1012,7 @@ a {
   align-items: center;
   gap: 5px;
   padding: 4px 7px;
-  border-radius: 999px;
+  border-radius: 0;
   border: 1px solid var(--label-border-color);
   background: rgba(253, 250, 247, 0.88);
   color: var(--color-text);
@@ -1060,7 +1060,7 @@ a {
 }
 
 .seg-label[data-result="pass"] .seg-label-status {
-  background: #4F9E84;
+  background: var(--color-cta);
 }
 
 .seg-label[data-result="pass"] .seg-label-status::before {
@@ -1135,7 +1135,7 @@ a {
   min-width: 0;
   padding: 6px 7px;
   border: 1px solid rgba(42, 42, 50, 0.08);
-  border-radius: 6px;
+  border-radius: 0;
   background: rgba(255, 255, 255, 0.42);
   color: var(--color-text);
   font-size: 0.64rem;
@@ -1168,7 +1168,7 @@ a {
   place-items: center;
   min-width: 34px;
   padding: 2px 5px;
-  border-radius: 999px;
+  border-radius: 0;
   color: #FFFFFF;
   font-size: 0.5rem;
   font-weight: 700;
@@ -1177,7 +1177,7 @@ a {
 }
 
 .seg-annotation[data-result="pass"] .seg-annotation-status {
-  background: #4F9E84;
+  background: var(--color-cta);
 }
 
 .seg-annotation[data-result="fail"] .seg-annotation-status {
@@ -1219,7 +1219,7 @@ a {
   padding: 14px 18px;
   background: rgba(253, 250, 247, 0.5);
   border: 1px solid rgba(42, 42, 50, 0.06);
-  border-radius: 8px;
+  border-radius: 0;
   transition: all 0.4s var(--ease-out);
   opacity: 0.5;
 }
@@ -1544,7 +1544,7 @@ a {
   display: block;
   width: 104px;
   height: 104px;
-  border-radius: 20px;
+  border-radius: 0;
   object-fit: contain;
   margin: 0 auto 34px;
 }
@@ -1663,7 +1663,7 @@ a {
   color: var(--color-text-light);
   padding: 4px 8px;
   border: 1px solid rgba(42, 42, 50, 0.12);
-  border-radius: 2px;
+  border-radius: 0;
 }
 
 .perf-chart-body {
@@ -1747,7 +1747,7 @@ a {
   padding: 6px 10px;
   background: #EDE2D5;
   border: 1px solid rgba(42, 42, 50, 0.12);
-  border-radius: 4px;
+  border-radius: 0;
   white-space: nowrap;
   opacity: 0;
   transform: translateY(4px);
@@ -1805,7 +1805,7 @@ a {
   display: inline-block;
   width: 18px;
   height: 2.5px;
-  border-radius: 1px;
+  border-radius: 0;
 }
 
 .perf-legend-swatch--baseline {
@@ -2137,8 +2137,9 @@ a {
   }
 
   .hero-headline {
-    max-width: 330px;
-    font-size: 2.55rem;
+    max-width: 300px;
+    font-size: 2.35rem;
+    text-wrap: wrap;
   }
 
   .hero-copy {
