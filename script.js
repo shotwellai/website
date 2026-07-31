@@ -1,20 +1,4 @@
 (function () {
-  // ─── Hamburger menu toggle ───
-  var toggle = document.getElementById('nav-toggle');
-  var links = document.getElementById('nav-links');
-
-  toggle.addEventListener('click', function () {
-    toggle.classList.toggle('open');
-    links.classList.toggle('open');
-  });
-
-  links.querySelectorAll('a').forEach(function (link) {
-    link.addEventListener('click', function () {
-      toggle.classList.remove('open');
-      links.classList.remove('open');
-    });
-  });
-
   // ─── Nav scroll effect ───
   var nav = document.getElementById('nav');
   var scrolled = false;
@@ -517,8 +501,8 @@
     { label: 'Straighten',        start: 1,  end: 7,  color: '#4A4A52', result: 'pass' },
     { label: 'Fold right sleeve', start: 7,  end: 10, color: '#BF4D34', result: 'pass' },
     { label: 'Fold left sleeve',  start: 10, end: 15, color: '#D6A02E', result: 'fail' },
-    { label: 'Fold first third',  start: 15, end: 16, color: '#8E8E96', result: 'pass' },
-    { label: 'Fold second third', start: 16, end: 17, color: '#4E7CA8', result: 'pass' },
+    { label: 'Fold up bottom',    start: 15, end: 16, color: '#8E8E96', result: 'pass' },
+    { label: 'Fold down top',     start: 16, end: 17, color: '#4E7CA8', result: 'pass' },
     { label: 'Stack',             start: 17, end: 18, color: '#9D5690', result: 'pass' },
     { label: 'Home',              start: 18, end: 19, color: '#7E7E8A', result: 'pass' }
   ];
