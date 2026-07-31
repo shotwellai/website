@@ -26,8 +26,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260730-cta4">
-  <link rel="stylesheet" href="hero-pipeline.css">
+  <link rel="stylesheet" href="styles.css?v=20260730-hero-segmentation">
 </head>
 <body>
 
@@ -63,9 +62,39 @@
 
   <section class="hero" id="hero">
     <div class="hero-inner hero-inner--wide">
-      <span class="hero-eyebrow reveal">The observability layer for robotics</span>
-      <div class="pipeline-frame reveal">
-        <div class="pipeline" id="pipeline"></div>
+      <span class="hero-eyebrow reveal">Annotations for robotics data</span>
+      <div class="hero-demo reveal" id="hero-segmentation">
+        <div class="seg-video seg-video--hero">
+          <div class="seg-video-head">
+            <span class="seg-video-title">episode_0431 · fold_shirt</span>
+            <span class="seg-video-meta"><span class="rec-dot"></span><span id="seg-rec-time">00:00.00</span></span>
+          </div>
+
+          <div class="seg-stage">
+            <video id="seg-video" class="seg-video-el" src="fold-rubric.mp4" muted loop playsinline preload="auto"></video>
+            <div class="seg-yt-overlay" aria-hidden="true"></div>
+          </div>
+
+          <div class="seg-scrubber">
+            <div class="seg-scrubber-track seg-scrubber-track--single" id="seg-track">
+              <!-- segments injected by JS -->
+            </div>
+            <div class="seg-timecode">
+              <span>00:00.00</span>
+              <span id="seg-end-time">00:19.00</span>
+            </div>
+          </div>
+
+          <div class="seg-actions">
+            <div class="seg-actions-head">
+              <span class="seg-actions-title">Detected actions</span>
+              <span class="seg-actions-current" id="seg-current-action">—</span>
+            </div>
+            <div class="seg-actions-list" id="seg-actions-list">
+              <!-- chips injected by JS -->
+            </div>
+          </div>
+        </div>
       </div>
       <p class="hero-subtitle reveal">Shotwell provides fast, accurate and dense annotations for robotics training data. We segment long videos into discrete steps and detect failures in each.</p>
       <div class="hero-actions reveal">
@@ -107,71 +136,6 @@
     </div>
   </section>
 
-  <!-- Feature 1: Temporal Segmentation -->
-  <section class="feature" id="feature-segmentation" data-variant="default">
-    <div class="feature-inner">
-      <header class="feature-header reveal feature-header-center">
-        <h2 class="feature-title">Segment your training videos into <em>labeled actions.</em></h2>
-        <p class="feature-subtitle">Shotwell watches every video frame-by-frame, chunks it into discrete actions, and labels those actions on quality and task definition.</p>
-      </header>
-
-      <div class="feature-split reveal">
-        <!-- LEFT: video + scrubber + detected actions -->
-        <div class="seg-video">
-          <div class="seg-video-head">
-            <span class="seg-video-title">episode_0431 · fold_shirt</span>
-            <span class="seg-video-meta"><span class="rec-dot"></span><span id="seg-rec-time">00:00.00</span></span>
-          </div>
-
-          <div class="seg-stage">
-            <video id="seg-video" class="seg-video-el" src="fold-rubric.mp4" muted loop playsinline preload="auto"></video>
-            <div class="seg-yt-overlay" aria-hidden="true"></div>
-          </div>
-
-          <!-- Scrubber -->
-          <div class="seg-scrubber">
-            <div class="seg-scrubber-track seg-scrubber-track--single" id="seg-track">
-              <!-- segments injected by JS -->
-            </div>
-            <div class="seg-timecode">
-              <span>00:00.00</span>
-              <span id="seg-end-time">00:19.00</span>
-            </div>
-          </div>
-
-          <!-- Detected actions, under the scrubber -->
-          <div class="seg-actions">
-            <div class="seg-actions-head">
-              <span class="seg-actions-title">Detected actions</span>
-              <span class="seg-actions-current" id="seg-current-action">—</span>
-            </div>
-            <div class="seg-actions-list" id="seg-actions-list">
-              <!-- chips injected by JS -->
-            </div>
-          </div>
-        </div>
-
-        <!-- RIGHT: SOP rubric -->
-        <aside class="seg-rubric-col">
-          <div class="seg-rubric" id="seg-rubric">
-            <div class="seg-rubric-head">
-              <span class="seg-rubric-title">SOP rubric</span>
-              <span class="seg-rubric-count" id="seg-count">0 / 6</span>
-            </div>
-            <!-- rubric items injected by JS -->
-          </div>
-          <div class="seg-demo-cta">
-            <p class="seg-demo-text">See it in action with open-source data</p>
-            <a href="http://demo.shotwell.ai/" class="btn btn-hero" target="_blank" rel="noopener">
-              See Demo
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </a>
-          </div>
-        </aside>
-      </div>
-    </div>
-  </section>
-
   <!-- Contact -->
   <section class="contact" id="contact">
     <div class="contact-inner reveal">
@@ -180,35 +144,6 @@
     </div>
   </section>
 
-  <!-- Tweaks panel -->
-  <aside class="tweaks" id="tweaks">
-    <div class="tweaks-title">Tweaks</div>
-    <div class="tweaks-group">
-      <label class="tweaks-label">Section style</label>
-      <div class="tweak-opts" data-tweak="variant">
-        <button class="tweak-opt" data-value="default">Warm</button>
-        <button class="tweak-opt" data-value="paper">Paper</button>
-        <button class="tweak-opt" data-value="terminal">Dark</button>
-      </div>
-    </div>
-    <div class="tweaks-group">
-      <label class="tweaks-label">Layout</label>
-      <div class="tweak-opts" data-tweak="layout">
-        <button class="tweak-opt" data-value="split">Split</button>
-        <button class="tweak-opt" data-value="filmstrip">Filmstrip</button>
-      </div>
-    </div>
-    <div class="tweaks-group">
-      <label class="tweaks-label">Animation speed</label>
-      <div class="tweak-opts" data-tweak="speed">
-        <button class="tweak-opt" data-value="slow">Slow</button>
-        <button class="tweak-opt" data-value="normal">Normal</button>
-        <button class="tweak-opt" data-value="fast">Fast</button>
-      </div>
-    </div>
-  </aside>
-
   <script src="script.js"></script>
-  <script src="hero-pipeline.js"></script>
 </body>
 </html>

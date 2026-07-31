@@ -506,12 +506,9 @@
   var trackEl = document.getElementById('seg-track');
   var actionsListEl = document.getElementById('seg-actions-list');
   var currentActionEl = document.getElementById('seg-current-action');
-  var rubricEl = document.getElementById('seg-rubric');
-  var countEl = document.getElementById('seg-count');
   var recEl = document.getElementById('seg-rec-time');
   var endEl = document.getElementById('seg-end-time');
-  var featureEl = document.getElementById('feature-segmentation');
-  var tweaksEl = document.getElementById('tweaks');
+  var demoEl = document.getElementById('hero-segmentation') || videoEl;
 
   if (!videoEl || !trackEl) return;
 
@@ -525,16 +522,6 @@
     { label: 'Fold second third', start: 16, end: 17, color: '#4E7CA8' },
     { label: 'Stack',             start: 17, end: 18, color: '#9D5690' },
     { label: 'Home',              start: 18, end: 19, color: '#7E7E8A' }
-  ];
-
-  // SOP rubric — verdict reveals when the playhead reaches the timestamp
-  var RUBRIC = [
-    { n: 1, title: 'One arm pick up',      desc: 'The shirt should be picked up from the pile and dropped into the center using one arm.',        at: 1,  verdict: 'pass' },
-    { n: 2, title: 'No slipping',          desc: "The shirt shouldn't fall from a gripper while it's supposed to be held.",                       at: 4,  verdict: 'fail' },
-    { n: 3, title: 'Shirt orientation',    desc: 'The shirt should be facing up with the right sleeve closer to the closer edge of the table.',   at: 5,  verdict: 'pass' },
-    { n: 4, title: 'Right sleeve first',   desc: 'The right (closer) sleeve should be folded first.',                                             at: 9,  verdict: 'pass' },
-    { n: 5, title: 'Sleeve tucked in',     desc: 'The sleeve is tucked in when the right or left sleeves are folded.',                            at: 14, verdict: 'fail' },
-    { n: 6, title: 'One arm stack',        desc: 'The folded shirt should be stacked using only one arm.',                                        at: 18, verdict: 'pass' }
   ];
 
   var DURATION = 19; // patched from video metadata
@@ -586,28 +573,6 @@
     chipEls.push(chip);
   });
 
-  // ─── Rubric items ───
-  var ruleEls = [];
-  RUBRIC.forEach(function (r) {
-    var item = document.createElement('div');
-    item.className = 'seg-rule';
-    item.setAttribute('data-verdict', 'pending');
-    item.innerHTML =
-      '<span class="seg-rule-n">' + (r.n < 10 ? '0' + r.n : r.n) + '</span>' +
-      '<div class="seg-rule-body">' +
-        '<div class="seg-rule-title">' + r.title + '</div>' +
-        '<div class="seg-rule-desc">' + r.desc + '</div>' +
-      '</div>' +
-      '<span class="seg-rule-verdict">' +
-        '<span class="seg-rule-pending">' +
-          '<span></span><span></span><span></span>' +
-        '</span>' +
-        '<span class="seg-rule-result"></span>' +
-      '</span>';
-    rubricEl.appendChild(item);
-    ruleEls.push({ root: item, result: item.querySelector('.seg-rule-result') });
-  });
-
   function findActiveAction(t) {
     for (var i = 0; i < ACTIONS.length; i++) {
       if (t >= ACTIONS[i].start && t < ACTIONS[i].end) return i;
@@ -633,22 +598,6 @@
       chip.setAttribute('data-state', t < a.start ? 'pending' : (t < a.end ? 'active' : 'done'));
     });
     if (currentActionEl) currentActionEl.textContent = active >= 0 ? ACTIONS[active].label : '—';
-
-    var evaluated = 0;
-    RUBRIC.forEach(function (r, i) {
-      var item = ruleEls[i];
-      if (t >= r.at) {
-        evaluated++;
-        if (item.root.getAttribute('data-verdict') !== r.verdict) {
-          item.root.setAttribute('data-verdict', r.verdict);
-          item.result.textContent = r.verdict === 'pass' ? 'PASS' : 'FAIL';
-        }
-      } else if (item.root.getAttribute('data-verdict') !== 'pending') {
-        item.root.setAttribute('data-verdict', 'pending');
-        item.result.textContent = '';
-      }
-    });
-    countEl.textContent = evaluated + ' / ' + RUBRIC.length;
   }
 
   function pollLoop() {
@@ -686,57 +635,12 @@
         if (e.isIntersecting) playClip(); else pauseClip();
       });
     }, { threshold: 0.25 });
-    io.observe(featureEl);
+    io.observe(demoEl);
   } else {
     playClip();
   }
 
   requestAnimationFrame(pollLoop);
-
-  // ─── Tweaks wiring ───
-  var TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
-    "variant": "default",
-    "layout": "split"
-  }/*EDITMODE-END*/;
-  var tweakState = Object.assign({}, TWEAK_DEFAULTS);
-
-  function applyTweaks() {
-    if (tweakState.layout === 'filmstrip') {
-      featureEl.setAttribute('data-variant', 'filmstrip');
-      featureEl.classList.toggle('color-terminal', tweakState.variant === 'terminal');
-      featureEl.classList.toggle('color-paper', tweakState.variant === 'paper');
-    } else {
-      featureEl.setAttribute('data-variant', tweakState.variant);
-      featureEl.classList.remove('color-terminal', 'color-paper');
-    }
-    tweaksEl.querySelectorAll('.tweak-opts').forEach(function (group) {
-      var key = group.getAttribute('data-tweak');
-      group.querySelectorAll('.tweak-opt').forEach(function (btn) {
-        btn.setAttribute('data-selected', btn.getAttribute('data-value') === tweakState[key] ? 'true' : 'false');
-      });
-    });
-  }
-
-  tweaksEl.querySelectorAll('.tweak-opt').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      var key = btn.parentElement.getAttribute('data-tweak');
-      var val = btn.getAttribute('data-value');
-      tweakState[key] = val;
-      applyTweaks();
-      try {
-        window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { [key]: val } }, '*');
-      } catch (e) {}
-    });
-  });
-
-  applyTweaks();
-
-  window.addEventListener('message', function (e) {
-    if (!e.data || typeof e.data !== 'object') return;
-    if (e.data.type === '__activate_edit_mode') tweaksEl.classList.add('open');
-    if (e.data.type === '__deactivate_edit_mode') tweaksEl.classList.remove('open');
-  });
-  try { window.parent.postMessage({ type: '__edit_mode_available' }, '*'); } catch (e) {}
 
   // ─── Quality Filtering animation ───
   (function initQuality() {
