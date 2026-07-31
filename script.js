@@ -506,6 +506,7 @@
   var trackEl = document.getElementById('seg-track');
   var actionsListEl = document.getElementById('seg-actions-list');
   var currentActionEl = document.getElementById('seg-current-action');
+  var currentActionCard = currentActionEl ? currentActionEl.closest('.seg-current-card') : null;
   var recEl = document.getElementById('seg-rec-time');
   var endEl = document.getElementById('seg-end-time');
   var demoEl = document.getElementById('hero-segmentation') || videoEl;
@@ -597,7 +598,13 @@
       var a = ACTIONS[i];
       chip.setAttribute('data-state', t < a.start ? 'pending' : (t < a.end ? 'active' : 'done'));
     });
-    if (currentActionEl) currentActionEl.textContent = active >= 0 ? ACTIONS[active].label : '—';
+    if (currentActionEl) {
+      var activeAction = active >= 0 ? ACTIONS[active] : null;
+      currentActionEl.textContent = activeAction ? activeAction.label : '—';
+      if (currentActionCard && activeAction) {
+        currentActionCard.style.setProperty('--seg-current-color', activeAction.color);
+      }
+    }
   }
 
   function pollLoop() {
