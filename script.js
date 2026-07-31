@@ -505,8 +505,6 @@
   var videoEl = document.getElementById('seg-video');
   var trackEl = document.getElementById('seg-track');
   var actionsListEl = document.getElementById('seg-actions-list');
-  var currentActionEl = document.getElementById('seg-current-action');
-  var currentActionCard = currentActionEl ? currentActionEl.closest('.seg-current-card') : null;
   var recEl = document.getElementById('seg-rec-time');
   var endEl = document.getElementById('seg-end-time');
   var demoEl = document.getElementById('hero-segmentation') || videoEl;
@@ -566,6 +564,7 @@
     var chip = document.createElement('div');
     chip.className = 'seg-chip';
     chip.setAttribute('data-state', 'pending');
+    chip.style.setProperty('--seg-color', a.color);
     chip.innerHTML =
       '<span class="seg-chip-dot" style="background:' + a.color + '"></span>' +
       '<span class="seg-chip-label">' + a.label + '</span>' +
@@ -574,18 +573,10 @@
     chipEls.push(chip);
   });
 
-  function findActiveAction(t) {
-    for (var i = 0; i < ACTIONS.length; i++) {
-      if (t >= ACTIONS[i].start && t < ACTIONS[i].end) return i;
-    }
-    return t >= DURATION ? ACTIONS.length - 1 : -1;
-  }
-
   function update(t) {
     playhead.style.setProperty('--pos', (t / DURATION).toFixed(4));
     recEl.textContent = fmt(t);
 
-    var active = findActiveAction(t);
     segEls.forEach(function (s, i) {
       var a = ACTIONS[i];
       var st = t < a.start ? 'pending' : (t < a.end ? 'active' : 'done');
@@ -598,13 +589,6 @@
       var a = ACTIONS[i];
       chip.setAttribute('data-state', t < a.start ? 'pending' : (t < a.end ? 'active' : 'done'));
     });
-    if (currentActionEl) {
-      var activeAction = active >= 0 ? ACTIONS[active] : null;
-      currentActionEl.textContent = activeAction ? activeAction.label : '—';
-      if (currentActionCard && activeAction) {
-        currentActionCard.style.setProperty('--seg-current-color', activeAction.color);
-      }
-    }
   }
 
   function pollLoop() {
