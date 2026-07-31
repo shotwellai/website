@@ -504,14 +504,15 @@
 (function () {
   var videoEl = document.getElementById('seg-video');
   var trackEl = document.getElementById('seg-track');
-  var actionsListEl = document.getElementById('seg-actions-list');
+  var labelLayerEl = document.getElementById('seg-labels');
+  var playToggleEl = document.getElementById('seg-play-toggle');
   var recEl = document.getElementById('seg-rec-time');
   var endEl = document.getElementById('seg-end-time');
   var demoEl = document.getElementById('hero-segmentation') || videoEl;
 
   if (!videoEl || !trackEl) return;
 
-  // Detected actions (sequential), each a distinct color for strong contrast
+  // Timeline actions (sequential), each a distinct color for strong contrast
   var ACTIONS = [
     { label: 'Pick up',           start: 0,  end: 1,  color: '#6E6E78' },
     { label: 'Straighten',        start: 1,  end: 7,  color: '#4A4A52' },
@@ -531,6 +532,8 @@
     return pad(m) + ':' + s.toFixed(2).padStart(5, '0');
   }
   function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
+  function actionState(a, t) { return t < a.start ? 'pending' : (t < a.end ? 'active' : 'done'); }
 
   // ─── Scrubber segments ───
   var segEls = [];
@@ -549,6 +552,22 @@
   playhead.className = 'seg-playhead';
   trackEl.appendChild(playhead);
 
+  // ─── Timeline labels, positioned below matching segments ───
+  var labelEls = [];
+  if (labelLayerEl) {
+    ACTIONS.forEach(function (a) {
+      var label = document.createElement('div');
+      label.className = 'seg-label';
+      label.setAttribute('data-state', 'pending');
+      label.style.setProperty('--seg-color', a.color);
+      label.innerHTML =
+        '<span class="seg-label-dot" aria-hidden="true"></span>' +
+        '<span class="seg-label-text">' + a.label + '</span>';
+      labelLayerEl.appendChild(label);
+      labelEls.push(label);
+    });
+  }
+
   function layoutSegments() {
     ACTIONS.forEach(function (a, i) {
       var startPct = (a.start / DURATION) * 100;
@@ -556,38 +575,49 @@
       segEls[i].root.style.left = startPct.toFixed(2) + '%';
       segEls[i].root.style.width = wPct.toFixed(2) + '%';
     });
+    positionTimelineLabels();
   }
 
-  // ─── Action chips (below scrubber) ───
-  var chipEls = [];
-  ACTIONS.forEach(function (a) {
-    var chip = document.createElement('div');
-    chip.className = 'seg-chip';
-    chip.setAttribute('data-state', 'pending');
-    chip.style.setProperty('--seg-color', a.color);
-    chip.innerHTML =
-      '<span class="seg-chip-dot" style="background:' + a.color + '"></span>' +
-      '<span class="seg-chip-label">' + a.label + '</span>' +
-      '<span class="seg-chip-time">' + fmt(a.start) + '</span>';
-    actionsListEl.appendChild(chip);
-    chipEls.push(chip);
-  });
+  function positionTimelineLabels() {
+    if (!labelLayerEl || !labelEls.length) return;
+    var trackWidth = trackEl.clientWidth;
+    if (!trackWidth) return;
+
+    var rows = [];
+    var gap = 8;
+    labelEls.forEach(function (label, i) {
+      var a = ACTIONS[i];
+      var centerPx = (((a.start + a.end) / 2) / DURATION) * trackWidth;
+      var width = label.offsetWidth || 80;
+      var left = clamp(centerPx - width / 2, 0, Math.max(trackWidth - width, 0));
+      var row = 0;
+      while (rows[row] != null && left < rows[row] + gap) row++;
+      rows[row] = left + width;
+
+      label.style.setProperty('--label-left', left.toFixed(1) + 'px');
+      label.style.setProperty('--pointer-x', clamp(centerPx - left, 8, Math.max(width - 8, 8)).toFixed(1) + 'px');
+      label.style.setProperty('--row', row);
+    });
+    labelLayerEl.style.setProperty('--label-row-count', Math.max(rows.length, 1));
+  }
 
   function update(t) {
+    t = clamp(t, 0, DURATION);
     playhead.style.setProperty('--pos', (t / DURATION).toFixed(4));
     recEl.textContent = fmt(t);
+    trackEl.setAttribute('aria-valuenow', t.toFixed(2));
+    trackEl.setAttribute('aria-valuetext', fmt(t));
 
     segEls.forEach(function (s, i) {
       var a = ACTIONS[i];
-      var st = t < a.start ? 'pending' : (t < a.end ? 'active' : 'done');
+      var st = actionState(a, t);
       s.root.setAttribute('data-state', st);
       var f = st === 'active' ? (t - a.start) / (a.end - a.start) : (st === 'done' ? 1 : 0);
       s.fill.style.transform = 'scaleX(' + f.toFixed(3) + ')';
     });
 
-    chipEls.forEach(function (chip, i) {
-      var a = ACTIONS[i];
-      chip.setAttribute('data-state', t < a.start ? 'pending' : (t < a.end ? 'active' : 'done'));
+    labelEls.forEach(function (label, i) {
+      label.setAttribute('data-state', actionState(ACTIONS[i], t));
     });
   }
 
@@ -603,6 +633,7 @@
   function onMeta() {
     if (!isNaN(videoEl.duration) && videoEl.duration > 0) {
       DURATION = videoEl.duration;
+      trackEl.setAttribute('aria-valuemax', DURATION.toFixed(2));
       if (endEl) endEl.textContent = fmt(DURATION);
       layoutSegments();
     }
@@ -612,6 +643,81 @@
   if (videoEl.readyState >= 1) onMeta();
   layoutSegments();
 
+  if ('ResizeObserver' in window) {
+    var resizeObserver = new ResizeObserver(positionTimelineLabels);
+    resizeObserver.observe(trackEl);
+  } else {
+    window.addEventListener('resize', positionTimelineLabels);
+  }
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(positionTimelineLabels).catch(function () {});
+  }
+
+  function seekTo(t) {
+    var maxTime = !isNaN(videoEl.duration) && videoEl.duration > 0 ? Math.min(DURATION, videoEl.duration) : DURATION;
+    var next = clamp(t, 0, maxTime);
+    videoEl.currentTime = next;
+    update(next);
+  }
+
+  function pointerTime(event) {
+    var rect = trackEl.getBoundingClientRect();
+    var ratio = rect.width ? (event.clientX - rect.left) / rect.width : 0;
+    return clamp(ratio, 0, 1) * DURATION;
+  }
+
+  var isScrubbing = false;
+  function startScrub(event) {
+    if (event.button != null && event.button !== 0) return;
+    event.preventDefault();
+    isScrubbing = true;
+    trackEl.classList.add('is-dragging');
+    if (trackEl.setPointerCapture && event.pointerId != null) trackEl.setPointerCapture(event.pointerId);
+    seekTo(pointerTime(event));
+  }
+
+  function moveScrub(event) {
+    if (!isScrubbing) return;
+    event.preventDefault();
+    seekTo(pointerTime(event));
+  }
+
+  function endScrub(event) {
+    if (!isScrubbing) return;
+    isScrubbing = false;
+    trackEl.classList.remove('is-dragging');
+    if (trackEl.releasePointerCapture && event.pointerId != null) {
+      try { trackEl.releasePointerCapture(event.pointerId); } catch (err) {}
+    }
+  }
+
+  trackEl.addEventListener('pointerdown', startScrub);
+  trackEl.addEventListener('pointermove', moveScrub);
+  trackEl.addEventListener('pointerup', endScrub);
+  trackEl.addEventListener('pointercancel', endScrub);
+  trackEl.addEventListener('keydown', function (event) {
+    var current = videoEl.currentTime || 0;
+    var step = event.shiftKey ? 5 : 1;
+    var next = null;
+    if (event.key === 'ArrowLeft') next = current - step;
+    if (event.key === 'ArrowRight') next = current + step;
+    if (event.key === 'Home') next = 0;
+    if (event.key === 'End') next = DURATION;
+    if (next == null) return;
+    event.preventDefault();
+    seekTo(next);
+  });
+
+  var manuallyPaused = false;
+  function updatePlayToggle() {
+    if (!playToggleEl) return;
+    var playing = !videoEl.paused && !videoEl.ended;
+    playToggleEl.dataset.state = playing ? 'playing' : 'paused';
+    playToggleEl.setAttribute('aria-label', playing ? 'Pause animation' : 'Play animation');
+    playToggleEl.setAttribute('aria-pressed', playing ? 'true' : 'false');
+    playToggleEl.title = playing ? 'Pause animation' : 'Play animation';
+  }
+
   function playClip() {
     if (!videoEl) return;
     videoEl.muted = true;
@@ -620,10 +726,27 @@
   }
   function pauseClip() { if (videoEl) videoEl.pause(); }
 
+  if (playToggleEl) {
+    playToggleEl.dataset.state = 'paused';
+    playToggleEl.addEventListener('click', function () {
+      if (videoEl.paused) {
+        manuallyPaused = false;
+        playClip();
+      } else {
+        manuallyPaused = true;
+        pauseClip();
+      }
+    });
+  }
+  videoEl.addEventListener('play', updatePlayToggle);
+  videoEl.addEventListener('pause', updatePlayToggle);
+  videoEl.addEventListener('ended', updatePlayToggle);
+  updatePlayToggle();
+
   if ('IntersectionObserver' in window) {
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
-        if (e.isIntersecting) playClip(); else pauseClip();
+        if (e.isIntersecting && !manuallyPaused) playClip(); else if (!e.isIntersecting) pauseClip();
       });
     }, { threshold: 0.25 });
     io.observe(demoEl);
