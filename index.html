@@ -62,50 +62,54 @@
 
   <section class="hero" id="hero">
     <div class="hero-inner hero-inner--wide">
-      <span class="hero-eyebrow reveal">Annotations for robotics data</span>
-      <div class="hero-demo reveal" id="hero-segmentation">
-        <div class="seg-video seg-video--hero">
-          <div class="seg-video-head">
-            <span class="seg-video-title">episode_0431 · fold_shirt</span>
-            <span class="seg-video-meta"><span class="rec-dot"></span><span id="seg-rec-time">00:00.00</span></span>
-          </div>
-
-          <div class="seg-stage">
-            <video id="seg-video" class="seg-video-el" src="fold-rubric.mp4" muted loop playsinline preload="auto"></video>
-            <div class="seg-yt-overlay" aria-hidden="true"></div>
-          </div>
-
-          <div class="seg-scrubber">
-            <div class="seg-scrubber-track seg-scrubber-track--single" id="seg-track">
-              <!-- segments injected by JS -->
+      <div class="hero-layout">
+        <div class="hero-demo reveal" id="hero-segmentation">
+          <div class="seg-video seg-video--hero">
+            <div class="seg-video-head">
+              <span class="seg-video-title">episode_0431 · fold_shirt</span>
+              <span class="seg-video-meta"><span class="rec-dot"></span><span id="seg-rec-time">00:00.00</span></span>
             </div>
-            <div class="seg-timecode">
-              <span>00:00.00</span>
-              <span id="seg-end-time">00:19.00</span>
-            </div>
-          </div>
 
-          <div class="seg-actions">
-            <div class="seg-actions-head">
-              <span class="seg-actions-title">Detected actions</span>
-              <span class="seg-actions-current" id="seg-current-action">—</span>
+            <div class="seg-stage">
+              <video id="seg-video" class="seg-video-el" src="fold-rubric.mp4" muted loop playsinline preload="auto"></video>
+              <div class="seg-yt-overlay" aria-hidden="true"></div>
             </div>
-            <div class="seg-actions-list" id="seg-actions-list">
-              <!-- chips injected by JS -->
+
+            <div class="seg-scrubber">
+              <div class="seg-scrubber-track seg-scrubber-track--single" id="seg-track">
+                <!-- segments injected by JS -->
+              </div>
+              <div class="seg-timecode">
+                <span>00:00.00</span>
+                <span id="seg-end-time">00:19.00</span>
+              </div>
+            </div>
+
+            <div class="seg-actions">
+              <div class="seg-actions-head">
+                <span class="seg-actions-title">Detected actions</span>
+                <span class="seg-actions-current" id="seg-current-action">—</span>
+              </div>
+              <div class="seg-actions-list" id="seg-actions-list">
+                <!-- chips injected by JS -->
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <p class="hero-subtitle reveal">Shotwell provides fast, accurate and dense annotations for robotics training data. We segment long videos into discrete steps and detect failures in each.</p>
-      <div class="hero-actions reveal">
-        <a href="https://app.shotwell.ai/" class="btn btn-hero btn-nav-cta btn-upload-cta">
-          <span class="btn-upload-main">Upload Videos Now</span>
-          <span class="btn-upload-subtext">24 hour turnaround</span>
-        </a>
-        <a href="https://calendly.com/nour-shotwell/30-minute-meeting-w-team" class="btn btn-hero btn-nav-cta btn-nav-outline" target="_blank" rel="noopener">
-          Talk to us
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </a>
+        <div class="hero-copy">
+          <span class="hero-eyebrow reveal">Annotations for robotics data</span>
+          <p class="hero-subtitle reveal">Shotwell provides fast, accurate and dense annotations for robotics training data. We segment long videos into discrete steps and detect failures in each.</p>
+          <div class="hero-actions reveal">
+            <a href="https://app.shotwell.ai/" class="btn btn-hero btn-nav-cta btn-upload-cta">
+              <span class="btn-upload-main">Upload Videos Now</span>
+              <span class="btn-upload-subtext">24 hour turnaround</span>
+            </a>
+            <a href="https://calendly.com/nour-shotwell/30-minute-meeting-w-team" class="btn btn-hero btn-nav-cta btn-nav-outline" target="_blank" rel="noopener">
+              Talk to us
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </div>
+        </div>
       </div>
     </div>
     <div class="hero-decoration" aria-hidden="true">
