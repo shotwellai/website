@@ -26,7 +26,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260731-black-square-2">
+  <link rel="stylesheet" href="styles.css?v=20260731-annotation-timeline">
 </head>
 <body>
 
@@ -80,14 +80,16 @@
             </div>
 
             <div class="seg-scrubber">
-              <div class="seg-scrubber-track seg-scrubber-track--single" id="seg-track" role="slider" tabindex="0" aria-label="Video timeline" aria-valuemin="0" aria-valuemax="19" aria-valuenow="0">
-                <!-- segments injected by JS -->
-              </div>
-              <div class="seg-timeline-labels" id="seg-labels" aria-hidden="true">
-                <!-- timeline labels injected by JS -->
-              </div>
               <div class="seg-annotations">
                 <h2 class="seg-annotations-title">Annotations</h2>
+                <div class="seg-timeline">
+                  <div class="seg-scrubber-track seg-scrubber-track--single" id="seg-track" role="slider" tabindex="0" aria-label="Video timeline" aria-valuemin="0" aria-valuemax="19" aria-valuenow="0">
+                    <!-- segments injected by JS -->
+                  </div>
+                  <div class="seg-timeline-labels" id="seg-labels" aria-hidden="true">
+                    <!-- timeline labels injected by JS -->
+                  </div>
+                </div>
                 <ul class="seg-annotations-list" id="seg-annotations-list" aria-label="Episode annotations">
                   <!-- annotations injected by JS -->
                 </ul>

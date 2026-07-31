@@ -884,6 +884,12 @@ a {
 .seg-scrubber {
   position: relative;
   margin-top: 16px;
+  padding: 0;
+}
+
+.seg-timeline {
+  position: relative;
+  margin: 0 0 10px;
   padding: 34px 4px 4px;
 }
 
@@ -1108,7 +1114,7 @@ a {
 }
 
 .seg-annotations-title {
-  margin: 0 0 9px;
+  margin: 0;
   font-family: var(--font-body);
   font-size: 0.76rem;
   font-weight: 700;
