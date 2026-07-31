@@ -1100,6 +1100,89 @@ a {
   opacity: 1;
 }
 
+.seg-annotations {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(42, 42, 50, 0.08);
+}
+
+.seg-annotations-title {
+  margin: 0 0 9px;
+  font-family: var(--font-body);
+  font-size: 0.76rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  color: var(--color-text);
+}
+
+.seg-annotations-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.seg-annotation {
+  --seg-color: var(--color-accent);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  padding: 6px 7px;
+  border: 1px solid rgba(42, 42, 50, 0.08);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.42);
+  color: var(--color-text);
+  font-size: 0.64rem;
+  line-height: 1.2;
+  transition: border-color 0.2s var(--ease-out), background 0.2s var(--ease-out);
+}
+
+.seg-annotation[data-state="active"] {
+  border-color: color-mix(in srgb, var(--seg-color) 55%, rgba(42, 42, 50, 0.1));
+  background: rgba(253, 250, 247, 0.88);
+}
+
+.seg-annotation-name {
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.seg-annotation-range {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.58rem;
+  color: rgba(42, 42, 50, 0.62);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.seg-annotation-status {
+  display: inline-grid;
+  place-items: center;
+  min-width: 34px;
+  padding: 2px 5px;
+  border-radius: 999px;
+  color: #FFFFFF;
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+}
+
+.seg-annotation[data-result="pass"] .seg-annotation-status {
+  background: #4F9E84;
+}
+
+.seg-annotation[data-result="fail"] .seg-annotation-status {
+  background: #BF4D34;
+}
+
 /* ─── Chunk List (right column) ─── */
 
 .seg-chunks {
@@ -2009,6 +2092,10 @@ a {
 
   .hero-subtitle {
     font-size: 1rem;
+  }
+
+  .seg-annotations-list {
+    grid-template-columns: 1fr;
   }
 
   .hero-headline {

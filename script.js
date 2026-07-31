@@ -505,6 +505,7 @@
   var videoEl = document.getElementById('seg-video');
   var trackEl = document.getElementById('seg-track');
   var labelLayerEl = document.getElementById('seg-labels');
+  var annotationListEl = document.getElementById('seg-annotations-list');
   var playToggleEl = document.getElementById('seg-play-toggle');
   var demoEl = document.getElementById('hero-segmentation') || videoEl;
 
@@ -528,6 +529,12 @@
     var m = Math.floor(t / 60);
     var s = t - m * 60;
     return pad(m) + ':' + s.toFixed(2).padStart(5, '0');
+  }
+  function fmtShort(t) {
+    var total = Math.max(0, Math.round(t));
+    var m = Math.floor(total / 60);
+    var s = total - m * 60;
+    return m + ':' + pad(s);
   }
   function pad(n) { return (n < 10 ? '0' : '') + n; }
   function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
@@ -565,6 +572,24 @@
         '<span class="seg-label-status" aria-hidden="true"></span>';
       labelLayerEl.appendChild(label);
       labelEls.push(label);
+    });
+  }
+
+  // ─── Compact annotation rows under the timeline ───
+  var annotationEls = [];
+  if (annotationListEl) {
+    ACTIONS.forEach(function (a) {
+      var row = document.createElement('li');
+      row.className = 'seg-annotation';
+      row.setAttribute('data-result', a.result);
+      row.setAttribute('data-state', 'pending');
+      row.style.setProperty('--seg-color', a.color);
+      row.innerHTML =
+        '<span class="seg-annotation-name">' + a.label + '</span>' +
+        '<span class="seg-annotation-range">[' + fmtShort(a.start) + ' - ' + fmtShort(a.end) + ']</span>' +
+        '<span class="seg-annotation-status">' + a.result.toUpperCase() + '</span>';
+      annotationListEl.appendChild(row);
+      annotationEls.push(row);
     });
   }
 
@@ -667,6 +692,10 @@
 
     labelEls.forEach(function (label, i) {
       label.setAttribute('data-state', actionState(ACTIONS[i], t));
+    });
+
+    annotationEls.forEach(function (row, i) {
+      row.setAttribute('data-state', actionState(ACTIONS[i], t));
     });
   }
 
