@@ -959,17 +959,6 @@ a {
   border-radius: 50%;
 }
 
-.seg-timecode {
-  margin-top: 10px;
-  display: flex;
-  justify-content: space-between;
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  color: var(--color-text-light);
-  letter-spacing: 0.04em;
-  font-variant-numeric: tabular-nums;
-}
-
 /* ─── Single-row multicolor scrubber ─── */
 
 .seg-scrubber-track--single {
@@ -1851,10 +1840,6 @@ a {
 .feature[data-variant="terminal"] .seg-playhead,
 .feature[data-variant="terminal"] .seg-playhead::before {
   background: #F5EBDF;
-}
-
-.feature[data-variant="terminal"] .seg-timecode {
-  color: rgba(245, 235, 223, 0.4);
 }
 
 .feature[data-variant="terminal"] .seg-chunk {

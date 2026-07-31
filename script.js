@@ -506,7 +506,6 @@
   var trackEl = document.getElementById('seg-track');
   var labelLayerEl = document.getElementById('seg-labels');
   var playToggleEl = document.getElementById('seg-play-toggle');
-  var endEl = document.getElementById('seg-end-time');
   var demoEl = document.getElementById('hero-segmentation') || videoEl;
 
   if (!videoEl || !trackEl) return;
@@ -645,7 +644,6 @@
     if (!isNaN(videoEl.duration) && videoEl.duration > 0) {
       DURATION = videoEl.duration;
       trackEl.setAttribute('aria-valuemax', DURATION.toFixed(2));
-      if (endEl) endEl.textContent = fmt(DURATION);
       layoutSegments();
     }
   }
