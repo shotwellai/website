@@ -512,14 +512,14 @@
 
   // Timeline actions (sequential), each a distinct color for strong contrast
   var ACTIONS = [
-    { label: 'Pick up',           start: 0,  end: 1,  color: '#6E6E78' },
-    { label: 'Straighten',        start: 1,  end: 7,  color: '#4A4A52' },
-    { label: 'Fold right sleeve', start: 7,  end: 10, color: '#BF4D34' },
-    { label: 'Fold left sleeve',  start: 10, end: 15, color: '#D6A02E' },
-    { label: 'Fold first third',  start: 15, end: 16, color: '#8E8E96' },
-    { label: 'Fold second third', start: 16, end: 17, color: '#4E7CA8' },
-    { label: 'Stack',             start: 17, end: 18, color: '#9D5690' },
-    { label: 'Home',              start: 18, end: 19, color: '#7E7E8A' }
+    { label: 'Pick up',           start: 0,  end: 1,  color: '#6E6E78', result: 'pass' },
+    { label: 'Straighten',        start: 1,  end: 7,  color: '#4A4A52', result: 'pass' },
+    { label: 'Fold right sleeve', start: 7,  end: 10, color: '#BF4D34', result: 'pass' },
+    { label: 'Fold left sleeve',  start: 10, end: 15, color: '#D6A02E', result: 'fail' },
+    { label: 'Fold first third',  start: 15, end: 16, color: '#8E8E96', result: 'pass' },
+    { label: 'Fold second third', start: 16, end: 17, color: '#4E7CA8', result: 'pass' },
+    { label: 'Stack',             start: 17, end: 18, color: '#9D5690', result: 'pass' },
+    { label: 'Home',              start: 18, end: 19, color: '#7E7E8A', result: 'pass' }
   ];
 
   var DURATION = 19; // patched from video metadata
@@ -558,10 +558,11 @@
       label.className = 'seg-label';
       label.setAttribute('data-state', 'pending');
       label.setAttribute('data-side', i % 2 === 0 ? 'top' : 'bottom');
+      label.setAttribute('data-result', a.result);
       label.style.setProperty('--seg-color', a.color);
       label.innerHTML =
-        '<span class="seg-label-dot" aria-hidden="true"></span>' +
-        '<span class="seg-label-text">' + a.label + '</span>';
+        '<span class="seg-label-text">' + a.label + '</span>' +
+        '<span class="seg-label-status" aria-hidden="true"></span>';
       labelLayerEl.appendChild(label);
       labelEls.push(label);
     });
@@ -584,31 +585,69 @@
 
     var lanes = { top: [], bottom: [] };
     var gap = 4;
-    var crowded = false;
-    function fitsLane(lane, left, right) {
-      for (var j = 0; j < lane.length; j++) {
-        if (left < lane[j].right + gap && right + gap > lane[j].left) return false;
+    var minFullLabelWidth = 520;
+    var crowded = trackWidth < minFullLabelWidth;
+
+    function setLabelPosition(item) {
+      item.label.setAttribute('data-side', item.side);
+      item.label.style.setProperty('--label-left', item.left.toFixed(1) + 'px');
+      item.label.style.setProperty('--pointer-x', clamp(item.center - item.left, 8, Math.max(item.width - 8, 8)).toFixed(1) + 'px');
+      item.label.style.setProperty('--label-top', item.side === 'top' ? '-54px' : '0px');
+    }
+
+    function packLane(items) {
+      if (!items.length) return true;
+      var totalWidth = 0;
+      items.forEach(function (item, i) {
+        totalWidth += item.width + (i === 0 ? 0 : gap);
+      });
+      if (totalWidth > trackWidth) return false;
+
+      items.sort(function (a, b) { return a.center - b.center; });
+      items.forEach(function (item) {
+        item.left = clamp(item.center - item.width / 2, 0, Math.max(trackWidth - item.width, 0));
+      });
+
+      for (var i = 1; i < items.length; i++) {
+        var minLeft = items[i - 1].left + items[i - 1].width + gap;
+        if (items[i].left < minLeft) items[i].left = minLeft;
       }
+
+      var last = items[items.length - 1];
+      var overflow = last.left + last.width - trackWidth;
+      if (overflow > 0) last.left -= overflow;
+
+      for (var j = items.length - 2; j >= 0; j--) {
+        var maxLeft = items[j + 1].left - gap - items[j].width;
+        if (items[j].left > maxLeft) items[j].left = maxLeft;
+      }
+
+      for (var k = 0; k < items.length; k++) {
+        if (items[k].left < 0 || items[k].left + items[k].width > trackWidth) return false;
+      }
+
+      items.forEach(setLabelPosition);
       return true;
     }
+
     labelEls.forEach(function (label, i) {
       var a = ACTIONS[i];
       var centerPx = (((a.start + a.end) / 2) / DURATION) * trackWidth;
       var width = label.offsetWidth || 80;
       var left = clamp(centerPx - width / 2, 0, Math.max(trackWidth - width, 0));
-      var right = left + width;
-      var preferred = i % 2 === 0 ? 'top' : 'bottom';
-      var alternate = preferred === 'top' ? 'bottom' : 'top';
-      var side = fitsLane(lanes[preferred], left, right) ? preferred : (fitsLane(lanes[alternate], left, right) ? alternate : preferred);
-      if (!fitsLane(lanes[side], left, right)) crowded = true;
-      var lane = lanes[side];
-      lane.push({ left: left, right: left + width });
-
-      label.setAttribute('data-side', side);
-      label.style.setProperty('--label-left', left.toFixed(1) + 'px');
-      label.style.setProperty('--pointer-x', clamp(centerPx - left, 8, Math.max(width - 8, 8)).toFixed(1) + 'px');
-      label.style.setProperty('--label-top', side === 'top' ? '-54px' : '0px');
+      var side = i % 2 === 0 ? 'top' : 'bottom';
+      var item = { label: label, side: side, center: centerPx, width: width, left: left };
+      lanes[side].push(item);
+      if (crowded) setLabelPosition(item);
     });
+
+    if (!crowded) {
+      crowded = !packLane(lanes.top) || !packLane(lanes.bottom);
+      if (crowded) {
+        lanes.top.concat(lanes.bottom).forEach(setLabelPosition);
+      }
+    }
+
     labelLayerEl.classList.toggle('is-condensed', crowded);
   }
 

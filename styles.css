@@ -996,25 +996,26 @@ a {
 
 .seg-timeline-labels {
   position: relative;
-  height: 23px;
-  margin-top: 7px;
+  height: 28px;
+  margin-top: 9px;
 }
 
 .seg-label {
   --seg-color: var(--color-accent);
+  --label-border-color: rgba(42, 42, 50, 0.12);
   --pointer-x: 50%;
   position: absolute;
   top: var(--label-top, 0px);
   left: var(--label-left, 0px);
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  padding: 2px 5px;
+  gap: 4px;
+  padding: 3px 6px;
   border-radius: 999px;
-  border: 1px solid rgba(42, 42, 50, 0.12);
+  border: 1px solid var(--label-border-color);
   background: rgba(253, 250, 247, 0.88);
   color: var(--color-text);
-  font-size: 0.46rem;
+  font-size: 0.52rem;
   line-height: 1.1;
   white-space: nowrap;
   pointer-events: none;
@@ -1030,8 +1031,8 @@ a {
   width: 7px;
   height: 7px;
   transform: translateX(-50%) rotate(45deg);
-  border-left: 1px solid rgba(42, 42, 50, 0.12);
-  border-top: 1px solid rgba(42, 42, 50, 0.12);
+  border-left: 1px solid var(--label-border-color);
+  border-top: 1px solid var(--label-border-color);
   background: inherit;
 }
 
@@ -1039,16 +1040,38 @@ a {
   top: auto;
   bottom: -5px;
   border: 0;
-  border-right: 1px solid rgba(42, 42, 50, 0.12);
-  border-bottom: 1px solid rgba(42, 42, 50, 0.12);
+  border-right: 1px solid var(--label-border-color);
+  border-bottom: 1px solid var(--label-border-color);
 }
 
-.seg-label-dot {
-  width: 4px;
-  height: 4px;
+.seg-label-status {
+  display: inline-grid;
+  place-items: center;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
-  background: var(--seg-color);
+  font-family: var(--font-body);
+  font-size: 0.43rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #FFFFFF;
   flex-shrink: 0;
+}
+
+.seg-label[data-result="pass"] .seg-label-status {
+  background: #4F9E84;
+}
+
+.seg-label[data-result="pass"] .seg-label-status::before {
+  content: '✓';
+}
+
+.seg-label[data-result="fail"] .seg-label-status {
+  background: #BF4D34;
+}
+
+.seg-label[data-result="fail"] .seg-label-status::before {
+  content: '×';
 }
 
 .seg-label-text {
@@ -1057,8 +1080,9 @@ a {
 }
 
 .seg-label[data-state="active"] {
+  --label-border-color: color-mix(in srgb, var(--seg-color) 82%, rgba(42, 42, 50, 0.16));
+  visibility: visible;
   opacity: 1;
-  border-color: color-mix(in srgb, var(--seg-color) 82%, rgba(42, 42, 50, 0.16));
   background: rgba(253, 250, 247, 0.96);
 }
 
@@ -1069,6 +1093,11 @@ a {
 .seg-timeline-labels.is-condensed .seg-label:not([data-state="active"]) {
   visibility: hidden;
   opacity: 0;
+}
+
+.seg-timeline-labels.is-condensed .seg-label[data-state="active"] {
+  visibility: visible;
+  opacity: 1;
 }
 
 /* ─── Chunk List (right column) ─── */
@@ -1897,7 +1926,12 @@ a {
     gap: 34px;
   }
 
+  .hero-demo {
+    order: 2;
+  }
+
   .hero-copy {
+    order: 1;
     justify-items: center;
     text-align: center;
   }
