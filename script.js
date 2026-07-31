@@ -617,7 +617,7 @@
       item.label.setAttribute('data-side', item.side);
       item.label.style.setProperty('--label-left', item.left.toFixed(1) + 'px');
       item.label.style.setProperty('--pointer-x', clamp(item.center - item.left, 8, Math.max(item.width - 8, 8)).toFixed(1) + 'px');
-      item.label.style.setProperty('--label-top', item.side === 'top' ? '-54px' : '0px');
+      item.label.style.setProperty('--label-top', item.side === 'top' ? '-62px' : '0px');
     }
 
     function packLane(items) {

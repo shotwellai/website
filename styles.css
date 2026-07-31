@@ -884,7 +884,7 @@ a {
 .seg-scrubber {
   position: relative;
   margin-top: 16px;
-  padding: 28px 4px 4px;
+  padding: 34px 4px 4px;
 }
 
 .seg-scrubber-track {
@@ -1010,13 +1010,13 @@ a {
   left: var(--label-left, 0px);
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 3px 6px;
+  gap: 5px;
+  padding: 4px 7px;
   border-radius: 999px;
   border: 1px solid var(--label-border-color);
   background: rgba(253, 250, 247, 0.88);
   color: var(--color-text);
-  font-size: 0.52rem;
+  font-size: 0.58rem;
   line-height: 1.1;
   white-space: nowrap;
   pointer-events: none;
@@ -1048,11 +1048,11 @@ a {
 .seg-label-status {
   display: inline-grid;
   place-items: center;
-  width: 9px;
-  height: 9px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   font-family: var(--font-body);
-  font-size: 0.43rem;
+  font-size: 0.48rem;
   font-weight: 700;
   line-height: 1;
   color: #FFFFFF;
