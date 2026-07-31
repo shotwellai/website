@@ -13,7 +13,7 @@
 
   --font-display: 'Instrument Serif', Georgia, serif;
   --font-body: 'Outfit', system-ui, sans-serif;
-  --font-mono: 'Outfit', system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
 
   --color-cta: #4F9E84;
   --color-cta-text: #F4F4F4;
@@ -752,6 +752,13 @@ a {
   font-size: 0.72rem;
   color: var(--color-text-light);
   letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+#seg-rec-time {
+  display: inline-block;
+  width: 7ch;
+  text-align: right;
 }
 
 .seg-video-meta .rec-dot {
@@ -916,6 +923,7 @@ a {
   font-size: 0.68rem;
   color: var(--color-text-light);
   letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
 }
 
 /* ─── Single-row multicolor scrubber ─── */
