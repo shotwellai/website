@@ -21,7 +21,7 @@ app.use(
         baseUri: ["'self'"],
         formAction: ["'self'"],
         frameAncestors: ["'none'"],
-        imgSrc: ["'self'", "https:", "data:"],
+        imgSrc: ["'self'", config.publicSiteUrl.origin, "https:", "data:"],
         objectSrc: ["'none'"],
         connectSrc: ["'self'", "https://storage.googleapis.com"],
         scriptSrc: ["'self'"],

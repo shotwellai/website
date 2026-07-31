@@ -44,15 +44,14 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       color-scheme: light;
       --color-bg: #f5f5f5;
       --color-bg-alt: #f4f4f4;
-      --color-surface: #fdfaf7;
-      --color-panel: rgba(253, 250, 247, 0.74);
+      --color-surface: #f5f5f5;
+      --color-panel: rgba(245, 245, 245, 0.78);
       --color-text: #2a2a32;
       --color-text-light: #494952;
       --color-muted: #73737b;
       --color-line: rgba(42, 42, 50, 0.12);
       --color-line-strong: rgba(42, 42, 50, 0.22);
-      --color-cta: #4f9e84;
-      --color-cta-dark: #3d846d;
+      --color-cta: #111114;
       --color-cta-text: #f4f4f4;
       --color-warn: #9d6500;
       --color-warn-bg: #fff7e6;
@@ -61,6 +60,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
       --nav-height: 72px;
       --max-width: 1280px;
+      --radius: 0;
     }
 
     *,
@@ -150,11 +150,11 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       height: 44px;
       object-fit: contain;
       display: block;
-      border-radius: 8px;
+      border-radius: var(--radius);
     }
 
     .brand-dot {
-      color: var(--color-cta);
+      color: var(--color-text);
     }
 
     main {
@@ -208,7 +208,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       width: max-content;
       max-width: 100%;
       border: 1px solid var(--color-line-strong);
-      border-radius: 2px;
+      border-radius: var(--radius);
       padding: 6px 12px;
       color: var(--color-text);
       font-size: 0.72rem;
@@ -226,7 +226,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       justify-content: center;
       gap: 10px;
       border: 1px solid var(--color-cta);
-      border-radius: 2px;
+      border-radius: var(--radius);
       padding: 0 22px;
       background: var(--color-cta);
       color: var(--color-cta-text);
@@ -247,8 +247,8 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 
     .button:hover,
     button:hover {
-      background: var(--color-cta-dark);
-      border-color: var(--color-cta-dark);
+      background: var(--color-text);
+      border-color: var(--color-text);
       color: var(--color-cta-text);
     }
 
@@ -261,7 +261,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 
     .button.secondary:hover,
     button.secondary:hover {
-      background: rgba(79, 158, 132, 0.08);
+      background: rgba(17, 17, 20, 0.06);
       color: var(--color-cta);
       border-color: var(--color-cta);
     }
@@ -289,7 +289,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
     .panel {
       background: var(--color-panel);
       border: 1px solid var(--color-line);
-      border-radius: 8px;
+      border-radius: var(--radius);
       padding: 24px;
       box-shadow: 0 1px 2px rgba(42, 42, 50, 0.04);
     }
@@ -300,6 +300,11 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       justify-content: space-between;
       gap: 18px;
       margin-bottom: 18px;
+    }
+
+    .panel h2 {
+      font-size: clamp(1.5rem, 2.2vw, 1.85rem);
+      line-height: 1.12;
     }
 
     .panel-kicker {
@@ -333,7 +338,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
     select {
       width: 100%;
       border: 1px solid rgba(42, 42, 50, 0.16);
-      border-radius: 6px;
+      border-radius: var(--radius);
       background: rgba(255, 255, 255, 0.72);
       color: var(--color-text);
       font: inherit;
@@ -369,8 +374,8 @@ export function page(title: string, body: string, options: { navHtml?: string } 
     textarea:focus,
     select:focus {
       background: #ffffff;
-      border-color: rgba(79, 158, 132, 0.72);
-      box-shadow: 0 0 0 3px rgba(79, 158, 132, 0.12);
+      border-color: var(--color-cta);
+      box-shadow: 0 0 0 2px rgba(17, 17, 20, 0.12);
     }
 
     .divider {
@@ -395,7 +400,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
     .notice {
       margin-top: 16px;
       border: 1px solid rgba(157, 101, 0, 0.22);
-      border-radius: 6px;
+      border-radius: var(--radius);
       padding: 12px;
       background: var(--color-warn-bg);
       color: var(--color-warn);
@@ -408,13 +413,13 @@ export function page(title: string, body: string, options: { navHtml?: string } 
     }
 
     .notice.neutral {
-      background: rgba(79, 158, 132, 0.08);
-      border-color: rgba(79, 158, 132, 0.22);
-      color: var(--color-cta-dark);
+      background: rgba(17, 17, 20, 0.05);
+      border-color: rgba(17, 17, 20, 0.16);
+      color: var(--color-text);
     }
 
 	    .inline-link {
-	      color: var(--color-cta-dark);
+	      color: var(--color-text);
 	      text-decoration: underline;
 	      text-decoration-thickness: 1px;
 	      text-underline-offset: 0.18em;
@@ -443,7 +448,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
     }
 
     .login-panel {
-      background: rgba(253, 250, 247, 0.92);
+      background: var(--color-panel);
     }
 
     .login-panel h1 {
@@ -480,8 +485,8 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       align-content: space-between;
       gap: 22px;
       border: 1px solid var(--color-line);
-      border-radius: 8px;
-      background: rgba(253, 250, 247, 0.5);
+      border-radius: var(--radius);
+      background: rgba(245, 245, 245, 0.72);
       padding: 18px;
     }
 
@@ -534,9 +539,9 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 	      align-items: center;
 	      gap: 12px;
 	      border: 1px solid var(--color-line);
-	      border-radius: 8px;
+	      border-radius: var(--radius);
 	      padding: 8px;
-	      background: rgba(253, 250, 247, 0.62);
+	      background: rgba(245, 245, 245, 0.72);
 	    }
 
 	    .account-box form {
@@ -563,9 +568,9 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       width: 34px;
       height: 34px;
       flex: 0 0 34px;
-      border-radius: 999px;
+      border-radius: var(--radius);
       object-fit: cover;
-      background: linear-gradient(135deg, rgba(79, 158, 132, 0.22), rgba(42, 42, 50, 0.08));
+      background: var(--color-cta);
       border: 1px solid rgba(42, 42, 50, 0.08);
     }
 
@@ -617,8 +622,8 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       align-content: space-between;
       gap: 18px;
       border: 1px solid var(--color-line);
-      border-radius: 8px;
-      background: rgba(253, 250, 247, 0.62);
+      border-radius: var(--radius);
+      background: rgba(245, 245, 245, 0.72);
       padding: 18px;
     }
 
@@ -645,7 +650,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 	      align-items: start;
 	      gap: 16px;
 	      border: 1px solid var(--color-line);
-	      border-radius: 8px;
+	      border-radius: var(--radius);
 	      background: rgba(255, 255, 255, 0.42);
 	      padding: 14px;
 	    }
@@ -680,7 +685,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 	    .job-prompt {
 	      display: grid;
 	      gap: 5px;
-	      border-left: 2px solid rgba(79, 158, 132, 0.28);
+	      border-left: 2px solid rgba(17, 17, 20, 0.28);
 	      padding-left: 10px;
 	    }
 
@@ -723,7 +728,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 	      align-items: center;
 	      justify-content: center;
 	      border: 1px solid var(--color-cta);
-	      border-radius: 2px;
+	      border-radius: var(--radius);
 	      padding: 0 12px;
 	      color: var(--color-cta);
 	      font-size: 0.68rem;
@@ -761,7 +766,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 
     .empty-row {
       border: 1px solid var(--color-line);
-      border-radius: 8px;
+      border-radius: var(--radius);
       background: rgba(255, 255, 255, 0.42);
       padding: 16px;
       color: var(--color-muted);
@@ -771,7 +776,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
     .status-pill {
       width: max-content;
       border: 1px solid rgba(42, 42, 50, 0.12);
-      border-radius: 999px;
+      border-radius: var(--radius);
       padding: 4px 9px;
       background: rgba(42, 42, 50, 0.04);
       color: var(--color-text-light);
@@ -782,23 +787,23 @@ export function page(title: string, body: string, options: { navHtml?: string } 
     }
 
     .status-pill.ready {
-      border-color: rgba(79, 158, 132, 0.24);
-      background: rgba(79, 158, 132, 0.12);
-      color: var(--color-cta-dark);
+      border-color: rgba(17, 17, 20, 0.24);
+      background: rgba(17, 17, 20, 0.08);
+      color: var(--color-cta);
     }
 
     .progress {
       height: 6px;
       margin-top: 8px;
       overflow: hidden;
-      border-radius: 999px;
+      border-radius: var(--radius);
       background: rgba(42, 42, 50, 0.08);
     }
 
     .progress span {
       display: block;
       height: 100%;
-      border-radius: inherit;
+      border-radius: var(--radius);
       background: var(--color-cta);
     }
 
@@ -838,7 +843,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       width: min(460px, 100%);
       display: grid;
       gap: 14px;
-      background: rgba(253, 250, 247, 0.92);
+      background: var(--color-panel);
     }
 
     .message-panel h1 {
@@ -856,7 +861,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       margin: 0 auto;
       display: grid;
       gap: 24px;
-      background: rgba(253, 250, 247, 0.92);
+      background: var(--color-panel);
     }
 
     .policy-panel h1 {
@@ -912,8 +917,17 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 	    }
 
     @media (max-width: 680px) {
+      .topbar {
+        height: auto;
+        min-height: var(--nav-height);
+      }
+
       .topbar-inner {
-        padding: 0 18px;
+        min-height: var(--nav-height);
+        padding: 12px 18px;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
       }
 
       .brand {
@@ -926,13 +940,27 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       }
 
 	      .topbar nav .button {
+	        flex: 1 1 120px;
 	        min-height: 38px;
 	        padding: 0 12px;
 	        font-size: 0.68rem;
 	      }
 
 	      .topbar nav {
+	        width: 100%;
+	        flex-wrap: wrap;
+	        justify-content: center;
 	        gap: 8px;
+	      }
+
+	      .topbar .account-box {
+	        width: 100%;
+	        max-width: 360px;
+	      }
+
+	      .topbar .account-box .button,
+	      .topbar .account-box button {
+	        flex: 0 0 auto;
 	      }
 
       main {
