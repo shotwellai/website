@@ -1036,7 +1036,7 @@ a {
 }
 
 .seg-label[data-state="active"] {
-  --label-border-color: color-mix(in srgb, var(--seg-color) 82%, rgba(42, 42, 50, 0.16));
+  --label-border-color: var(--color-cta);
   visibility: visible;
   opacity: 1;
   background: rgba(253, 250, 247, 0.96);
@@ -1101,7 +1101,7 @@ a {
 }
 
 .seg-annotation[data-state="active"] {
-  border-color: color-mix(in srgb, var(--seg-color) 55%, rgba(42, 42, 50, 0.1));
+  border-color: var(--color-cta);
   background: rgba(253, 250, 247, 0.88);
 }
 
