@@ -8,3 +8,6 @@ platform/.env
 platform/.env.*
 !platform/.env.example
 platform/dist/
+db-backups/
+*.sql
+*.sql.gz
