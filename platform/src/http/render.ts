@@ -1265,7 +1265,7 @@ Also keep track of "Retry" and "Fail" attributes for each step. "Retry" means mu
         <section class="panel upload-panel">
           <div class="panel-heading">
             <div>
-              <h2>Upload robot episodes for labeling.</h2>
+              <h2>Upload or provide a link to robot episodes for labeling.</h2>
             </div>
           </div>
           <form data-upload-form>
