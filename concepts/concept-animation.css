@@ -1,0 +1,407 @@
+/* Shared segmented-episode animation for the concept pages. */
+.concept-seg {
+  --concept-text: #24211d;
+  --concept-card: rgba(247, 240, 223, 0.78);
+  --concept-panel: rgba(255, 255, 255, 0.42);
+  --concept-line: rgba(36, 33, 29, 0.45);
+  --concept-muted: rgba(36, 33, 29, 0.62);
+  --concept-accent: #9e3727;
+  --concept-good: #24211d;
+  --concept-bad: #b03426;
+  --concept-video-filter: none;
+  color: var(--concept-text);
+}
+
+.concept-seg * {
+  box-sizing: border-box;
+}
+
+.concept-seg .seg-video-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--concept-line);
+}
+
+.concept-seg .seg-video-title,
+.concept-seg .seg-annotations-title {
+  margin: 0;
+  color: var(--concept-text);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.concept-seg .seg-play-toggle {
+  display: inline-grid;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  place-items: center;
+  border: 1px solid var(--concept-line);
+  border-radius: 0;
+  background: var(--concept-panel);
+  color: var(--concept-text);
+  cursor: pointer;
+}
+
+.concept-seg .seg-play-toggle-icon {
+  position: relative;
+  display: block;
+  width: 11px;
+  height: 12px;
+}
+
+.concept-seg .seg-play-toggle-icon::before,
+.concept-seg .seg-play-toggle-icon::after {
+  content: "";
+  position: absolute;
+  top: 1px;
+  bottom: 1px;
+  background: currentColor;
+}
+
+.concept-seg .seg-play-toggle[data-state="playing"] .seg-play-toggle-icon::before {
+  left: 1px;
+  width: 3px;
+}
+
+.concept-seg .seg-play-toggle[data-state="playing"] .seg-play-toggle-icon::after {
+  right: 1px;
+  width: 3px;
+}
+
+.concept-seg .seg-play-toggle[data-state="paused"] .seg-play-toggle-icon::before {
+  top: 0;
+  bottom: auto;
+  left: 2px;
+  width: 0;
+  height: 0;
+  background: transparent;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 9px solid currentColor;
+}
+
+.concept-seg .seg-play-toggle[data-state="paused"] .seg-play-toggle-icon::after {
+  display: none;
+}
+
+.concept-seg .seg-stage {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid var(--concept-line);
+  background: #000;
+}
+
+.concept-seg .seg-video-el {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  object-fit: cover;
+  filter: var(--concept-video-filter);
+}
+
+.concept-seg .seg-yt-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 68%, rgba(0, 0, 0, 0.14));
+  mix-blend-mode: multiply;
+}
+
+.concept-seg .seg-annotations {
+  margin-top: 18px;
+}
+
+.concept-seg .seg-annotations-title {
+  margin-bottom: 18px;
+}
+
+.concept-seg .seg-timeline {
+  position: relative;
+  margin: 0 0 12px;
+  padding: 34px 4px 6px;
+}
+
+.concept-seg .seg-scrubber-track {
+  position: relative;
+  height: 24px;
+  min-height: 24px;
+  cursor: pointer;
+  touch-action: none;
+}
+
+.concept-seg .seg-scrubber-track:focus-visible {
+  outline: 2px solid var(--concept-text);
+  outline-offset: 5px;
+}
+
+.concept-seg .seg-scrubber-track.is-dragging,
+.concept-seg .seg-scrubber-track.is-dragging .seg-playhead {
+  cursor: ew-resize;
+}
+
+.concept-seg .seg-seg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--seg-color) 19%, transparent);
+  box-shadow: inset -1px 0 0 var(--concept-card);
+  transition: background 0.2s ease;
+}
+
+.concept-seg .seg-seg[data-state="active"] {
+  background: color-mix(in srgb, var(--seg-color) 34%, transparent);
+}
+
+.concept-seg .seg-seg-fill {
+  position: absolute;
+  inset: 0;
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.concept-seg .seg-playhead {
+  position: absolute;
+  top: -7px;
+  bottom: -7px;
+  left: calc(var(--pos, 0) * 100%);
+  z-index: 3;
+  width: 2px;
+  background: var(--concept-text);
+  cursor: ew-resize;
+  touch-action: none;
+  transition: left 0.1s linear;
+}
+
+.concept-seg .seg-playhead::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: var(--concept-text);
+}
+
+.concept-seg .seg-timeline-labels {
+  position: relative;
+  height: 32px;
+  margin-top: 10px;
+}
+
+.concept-seg .seg-label {
+  --label-border-color: var(--concept-line);
+  --pointer-x: 50%;
+  position: absolute;
+  top: var(--label-top, 0px);
+  left: var(--label-left, 0px);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  border: 1px solid var(--label-border-color);
+  background: var(--concept-card);
+  color: var(--concept-text);
+  font-size: 0.66rem;
+  font-weight: 600;
+  line-height: 1.1;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0.62;
+}
+
+.concept-seg .seg-label::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: var(--pointer-x);
+  width: 0;
+  height: 0;
+  transform: translateX(-50%);
+  border-right: 5px solid transparent;
+  border-bottom: 6px solid var(--label-border-color);
+  border-left: 5px solid transparent;
+  background: transparent;
+}
+
+.concept-seg .seg-label[data-side="top"]::before {
+  top: auto;
+  bottom: -6px;
+  border-top: 6px solid var(--label-border-color);
+  border-right: 5px solid transparent;
+  border-bottom: 0;
+  border-left: 5px solid transparent;
+}
+
+.concept-seg .seg-label[data-state="active"] {
+  --label-border-color: var(--seg-color);
+  opacity: 1;
+  background: var(--concept-card);
+  color: var(--concept-text);
+}
+
+.concept-seg .seg-timeline-labels.is-condensed .seg-label:not([data-state="active"]) {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.concept-seg .seg-label-status {
+  display: inline-grid;
+  width: 12px;
+  height: 12px;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--concept-card);
+  font-size: 0.52rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.concept-seg .seg-label[data-result="pass"] .seg-label-status {
+  background: var(--concept-good);
+}
+
+.concept-seg .seg-label[data-result="pass"] .seg-label-status::before {
+  content: "✓";
+}
+
+.concept-seg .seg-label[data-result="fail"] .seg-label-status {
+  background: var(--concept-bad);
+}
+
+.concept-seg .seg-label[data-result="fail"] .seg-label-status::before {
+  content: "×";
+}
+
+.concept-seg .seg-annotations-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.concept-seg .seg-annotation {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  padding: 7px 8px;
+  border: 1px solid color-mix(in srgb, var(--concept-line) 70%, transparent);
+  background: var(--concept-panel);
+  color: var(--concept-text);
+  font-size: 0.66rem;
+  line-height: 1.2;
+}
+
+.concept-seg .seg-annotation[data-state="active"] {
+  border-color: var(--seg-color);
+  background: var(--concept-card);
+}
+
+.concept-seg .seg-annotation-name {
+  overflow: hidden;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.concept-seg .seg-annotation-range {
+  color: var(--concept-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.58rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.concept-seg .seg-annotation-status {
+  display: inline-grid;
+  min-width: 34px;
+  padding: 2px 5px;
+  place-items: center;
+  background: var(--concept-good);
+  color: var(--concept-card);
+  font-size: 0.5rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+}
+
+.concept-seg .seg-annotation[data-result="fail"] .seg-annotation-status {
+  background: var(--concept-bad);
+}
+
+.concept-seg--field {
+  --concept-card: #f7f0df;
+  --concept-panel: rgba(247, 240, 223, 0.72);
+  --concept-line: rgba(36, 33, 29, 0.5);
+  --concept-muted: #6b5d4d;
+  --concept-accent: #9e3727;
+  --concept-good: #24211d;
+}
+
+.concept-seg--dossier {
+  --concept-text: #201c17;
+  --concept-card: #efe5ce;
+  --concept-panel: rgba(255, 249, 232, 0.45);
+  --concept-line: #3d3428;
+  --concept-muted: #6d5e4b;
+  --concept-good: #201c17;
+}
+
+.concept-seg--ledger {
+  --concept-text: #172018;
+  --concept-card: #fafcf8;
+  --concept-panel: rgba(250, 252, 248, 0.58);
+  --concept-line: #172018;
+  --concept-muted: #667469;
+  --concept-good: #172018;
+}
+
+.concept-seg--debrief {
+  --concept-text: #241f1a;
+  --concept-card: #fff9ea;
+  --concept-panel: rgba(255, 249, 234, 0.64);
+  --concept-line: #241f1a;
+  --concept-muted: #55483c;
+  --concept-good: #241f1a;
+}
+
+.concept-seg--journal {
+  --concept-text: #efe8d4;
+  --concept-card: #10150f;
+  --concept-panel: rgba(239, 232, 212, 0.06);
+  --concept-line: rgba(239, 232, 212, 0.3);
+  --concept-muted: #b9aa87;
+  --concept-accent: #d9a34a;
+  --concept-good: #d9a34a;
+  --concept-bad: #c85f45;
+  --concept-video-filter: sepia(0.35) saturate(0.72) contrast(1.05);
+}
+
+@media (max-width: 720px) {
+  .concept-seg .seg-annotations-list {
+    grid-template-columns: 1fr;
+  }
+
+  .concept-seg .seg-label {
+    font-size: 0.62rem;
+  }
+}
