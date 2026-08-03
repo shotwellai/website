@@ -603,8 +603,48 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       text-transform: none;
     }
 
-    .upload-choice-divider {
-      margin: 2px 0;
+    .upload-tabs {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      border: 1px solid var(--color-line);
+      background: var(--color-panel-soft);
+    }
+
+    .upload-tab {
+      min-height: 44px;
+      border: 0;
+      background: transparent;
+      color: var(--color-text);
+      box-shadow: none;
+    }
+
+    .upload-tab + .upload-tab {
+      border-left: 1px solid var(--color-line);
+    }
+
+    .upload-tab[aria-selected="true"] {
+      background: var(--color-cta);
+      color: var(--color-cta-text);
+    }
+
+    .upload-tab:hover,
+    .upload-tab:focus-visible {
+      transform: none;
+      box-shadow: inset 0 0 0 2px var(--color-cta);
+    }
+
+    .upload-tab[aria-selected="true"]:hover,
+    .upload-tab[aria-selected="true"]:focus-visible {
+      color: var(--color-cta-text);
+    }
+
+    .upload-tab-panel {
+      display: grid;
+      gap: 12px;
+    }
+
+    .upload-tab-panel[hidden] {
+      display: none;
     }
 
     .upload-panel textarea {
@@ -1224,17 +1264,24 @@ Also keep track of "Retry" and "Fail" attributes for each step. "Retry" means mu
             </div>
           </div>
           <form data-upload-form>
-            <label>
-              Robot Episode Files
-              <span class="field-description">Upload one or more files for each robot episode, including MCAP files, raw videos, logs, images, or any supporting artifacts.</span>
-              <input type="file" name="videos" multiple data-upload-files>
-            </label>
-            <div class="divider upload-choice-divider">or</div>
-            <label>
-              Episode URL
-              <span class="field-description">Enter URL to episodes, e.g. HuggingFace LeRobot dataset, S3 bucket link, etc.</span>
-              <input type="text" name="sourceUrl" placeholder="https://huggingface.co/datasets/... or s3://bucket/path" data-upload-source-url>
-            </label>
+            <div class="upload-tabs" role="tablist" aria-label="Episode source">
+              <button class="upload-tab" type="button" role="tab" id="upload-tab-files" aria-controls="upload-panel-files" aria-selected="true" data-upload-tab="files">Upload Files</button>
+              <button class="upload-tab" type="button" role="tab" id="upload-tab-url" aria-controls="upload-panel-url" aria-selected="false" data-upload-tab="url">Provide Link</button>
+            </div>
+            <div class="upload-tab-panel" role="tabpanel" id="upload-panel-files" aria-labelledby="upload-tab-files" data-upload-panel="files">
+              <label>
+                Robot Episode Files
+                <span class="field-description">Upload one or more files for each robot episode, including MCAP files, raw videos, logs, images, or any supporting artifacts.</span>
+                <input type="file" name="videos" multiple data-upload-files>
+              </label>
+            </div>
+            <div class="upload-tab-panel" role="tabpanel" id="upload-panel-url" aria-labelledby="upload-tab-url" data-upload-panel="url" hidden>
+              <label>
+                Episode URL
+                <span class="field-description">Enter URL to episodes, e.g. HuggingFace LeRobot dataset, S3 bucket link, etc.</span>
+                <input type="text" name="sourceUrl" placeholder="https://huggingface.co/datasets/... or s3://bucket/path" data-upload-source-url disabled>
+              </label>
+            </div>
             <label>
               Prompt
               <textarea name="prompt" placeholder="${escapeHtml(promptPlaceholder)}" data-upload-prompt></textarea>

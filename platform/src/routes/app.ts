@@ -194,14 +194,56 @@ document.addEventListener("DOMContentLoaded", () => {
   const promptInput = form.querySelector("[data-upload-prompt]");
   const submit = form.querySelector("[data-upload-submit]");
   const message = form.querySelector("[data-upload-message]");
+  const tabs = Array.from(form.querySelectorAll("[data-upload-tab]"));
+  const panels = Array.from(form.querySelectorAll("[data-upload-panel]"));
+
+  function setUploadMode(mode) {
+    form.dataset.uploadMode = mode;
+    for (const tab of tabs) {
+      const isActive = tab.dataset.uploadTab === mode;
+      tab.setAttribute("aria-selected", String(isActive));
+    }
+
+    for (const panel of panels) {
+      panel.hidden = panel.dataset.uploadPanel !== mode;
+    }
+
+    if (fileInput) {
+      fileInput.disabled = mode !== "files";
+      if (mode !== "files") {
+        fileInput.value = "";
+      }
+    }
+
+    if (sourceUrlInput) {
+      sourceUrlInput.disabled = mode !== "url";
+      if (mode !== "url") {
+        sourceUrlInput.value = "";
+      }
+    }
+  }
+
+  for (const tab of tabs) {
+    tab.addEventListener("click", () => {
+      setUploadMode(tab.dataset.uploadTab || "files");
+    });
+  }
+
+  setUploadMode("files");
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const files = Array.from(fileInput.files || []);
-    const sourceUrl = (sourceUrlInput ? sourceUrlInput.value : "").trim();
+    const uploadMode = form.dataset.uploadMode || "files";
+    const files = uploadMode === "files" ? Array.from(fileInput.files || []) : [];
+    const sourceUrl = uploadMode === "url" ? (sourceUrlInput ? sourceUrlInput.value : "").trim() : "";
 
-    if (files.length === 0 && !sourceUrl) {
-      setUploadMessage(message, "Choose files or provide a link.", true);
+    if (uploadMode === "files" && files.length === 0) {
+      setUploadMessage(message, "Choose at least one file to upload.", true);
+      return;
+    }
+
+    if (uploadMode === "url" && !sourceUrl) {
+      setUploadMessage(message, "Enter a URL to episodes.", true);
       return;
     }
 
