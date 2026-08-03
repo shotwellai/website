@@ -36,9 +36,6 @@ export function page(title: string, body: string, options: { navHtml?: string } 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${escapeHtml(title)}</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       color-scheme: light;
@@ -58,8 +55,8 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       --color-accent-soft: #ead8b7;
       --color-warn: #9b3328;
       --color-warn-bg: #f6ecd5;
-      --font-body: "Outfit", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      --font-display: Georgia, "Times New Roman", serif;
+      --font-body: Arial, Helvetica, sans-serif;
+      --font-display: Georgia, serif;
       --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
       --nav-height: 72px;
       --max-width: 1280px;
