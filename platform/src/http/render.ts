@@ -42,21 +42,24 @@ export function page(title: string, body: string, options: { navHtml?: string } 
   <style>
     :root {
       color-scheme: light;
-      --color-bg: #f5f5f5;
-      --color-bg-alt: #f4f4f4;
-      --color-surface: #f5f5f5;
-      --color-panel: rgba(245, 245, 245, 0.78);
-      --color-text: #2a2a32;
-      --color-text-light: #494952;
-      --color-muted: #73737b;
-      --color-line: rgba(42, 42, 50, 0.12);
-      --color-line-strong: rgba(42, 42, 50, 0.22);
-      --color-cta: #111114;
-      --color-cta-text: #f4f4f4;
-      --color-warn: #9d6500;
-      --color-warn-bg: #fff7e6;
+      --color-bg: #d7c7a9;
+      --color-bg-alt: #ddc596;
+      --color-surface: #efe5ce;
+      --color-panel: #efe5ce;
+      --color-panel-soft: #f6ecd5;
+      --color-text: #201c17;
+      --color-text-light: #4a4034;
+      --color-muted: #6d5e4b;
+      --color-line: #3d3428;
+      --color-line-strong: #3d3428;
+      --color-cta: #201c17;
+      --color-cta-text: #efe5ce;
+      --color-accent: #9b3328;
+      --color-accent-soft: #ead8b7;
+      --color-warn: #9b3328;
+      --color-warn-bg: #f6ecd5;
       --font-body: "Outfit", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      --font-display: var(--font-body);
+      --font-display: Georgia, "Times New Roman", serif;
       --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
       --nav-height: 72px;
       --max-width: 1280px;
@@ -72,9 +75,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
     body {
       margin: 0;
       min-height: 100vh;
-      background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.58), rgba(245, 245, 245, 0) 280px),
-        var(--color-bg);
+      background: var(--color-bg);
       color: var(--color-text);
       font: 15px/1.6 var(--font-body);
       -webkit-font-smoothing: antialiased;
@@ -93,14 +94,19 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       width: 100%;
       height: 100%;
       pointer-events: none;
-      opacity: 0.035;
+      opacity: 0.04;
       mix-blend-mode: multiply;
     }
 
     .shell {
-      min-height: 100vh;
+      width: min(1220px, calc(100% - 34px));
+      min-height: calc(100vh - 68px);
+      margin: 34px auto 80px;
       display: grid;
       grid-template-rows: auto 1fr;
+      background: var(--color-surface);
+      border: 1px solid var(--color-line);
+      box-shadow: 10px 12px 0 rgba(32, 28, 23, 0.18);
     }
 
     .topbar {
@@ -108,17 +114,17 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       top: 0;
       z-index: 20;
       height: var(--nav-height);
-      border-bottom: 1px solid rgba(42, 42, 50, 0.06);
-      background: rgba(245, 245, 245, 0.92);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--color-line);
+      background: rgba(239, 229, 206, 0.96);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
     }
 
 	    .topbar-inner {
-	      max-width: var(--max-width);
+	      max-width: none;
 	      height: 100%;
 	      margin: 0 auto;
-	      padding: 0 32px;
+	      padding: 0 22px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -135,19 +141,19 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 
     .brand {
       display: inline-flex;
-      align-items: flex-end;
-      gap: 6px;
+      align-items: center;
+      gap: 12px;
       color: var(--color-text);
-      font-family: var(--font-display);
-      font-size: 1.85rem;
-      font-weight: 600;
+      font-family: var(--font-body);
+      font-size: 1.5rem;
+      font-weight: 800;
       line-height: 1;
-      letter-spacing: 0;
+      letter-spacing: -0.03em;
     }
 
     .brand-mark {
-      width: 44px;
-      height: 44px;
+      width: 42px;
+      height: 42px;
       object-fit: contain;
       display: block;
       border-radius: var(--radius);
@@ -158,9 +164,9 @@ export function page(title: string, body: string, options: { navHtml?: string } 
     }
 
     main {
-      width: min(var(--max-width), calc(100vw - 64px));
+      width: 100%;
       margin: 0 auto;
-      padding: 36px 0 64px;
+      padding: clamp(34px, 5vw, 64px);
     }
 
     h1,
@@ -172,10 +178,10 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 
     h1 {
       font-family: var(--font-display);
-      font-size: 3.65rem;
-      font-weight: 600;
-      line-height: 1.04;
-      letter-spacing: 0;
+      font-size: clamp(3rem, 6vw, 5.25rem);
+      font-weight: 400;
+      line-height: 0.96;
+      letter-spacing: -0.045em;
     }
 
     h1 em,
@@ -185,10 +191,10 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 
     h2 {
       font-family: var(--font-display);
-      font-size: 2rem;
-      font-weight: 600;
-      line-height: 1.16;
-      letter-spacing: 0;
+      font-size: clamp(2rem, 3.5vw, 3.3rem);
+      font-weight: 400;
+      line-height: 1.02;
+      letter-spacing: -0.04em;
     }
 
     h3 {
@@ -207,32 +213,32 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       align-items: center;
       width: max-content;
       max-width: 100%;
-      border: 1px solid var(--color-line-strong);
+      border: 1px solid var(--color-accent);
       border-radius: var(--radius);
-      padding: 6px 12px;
-      color: var(--color-text);
+      padding: 7px 9px;
+      color: var(--color-accent);
       font-size: 0.72rem;
-      font-weight: 600;
-      letter-spacing: 0.15em;
+      font-weight: 800;
+      letter-spacing: 0.14em;
       line-height: 1;
       text-transform: uppercase;
     }
 
     .button,
     button {
-      min-height: 44px;
+      min-height: 52px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
       border: 1px solid var(--color-cta);
       border-radius: var(--radius);
-      padding: 0 22px;
+      padding: 0 18px;
       background: var(--color-cta);
       color: var(--color-cta-text);
       font: inherit;
       font-size: 0.82rem;
-      font-weight: 500;
+      font-weight: 700;
       letter-spacing: 0.04em;
       line-height: 1;
       text-transform: uppercase;
@@ -247,8 +253,8 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 
     .button:hover,
     button:hover {
-      background: var(--color-text);
-      border-color: var(--color-text);
+      background: var(--color-accent);
+      border-color: var(--color-accent);
       color: var(--color-cta-text);
     }
 
@@ -261,7 +267,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 
     .button.secondary:hover,
     button.secondary:hover {
-      background: rgba(17, 17, 20, 0.06);
+      background: rgba(32, 28, 23, 0.06);
       color: var(--color-cta);
       border-color: var(--color-cta);
     }
@@ -280,9 +286,9 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 
     .button[aria-disabled="true"],
     button:disabled {
-      color: rgba(42, 42, 50, 0.44);
-      background: rgba(42, 42, 50, 0.06);
-      border-color: rgba(42, 42, 50, 0.1);
+      color: rgba(32, 28, 23, 0.44);
+      background: rgba(32, 28, 23, 0.06);
+      border-color: rgba(32, 28, 23, 0.18);
       pointer-events: none;
     }
 
@@ -291,7 +297,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       border: 1px solid var(--color-line);
       border-radius: var(--radius);
       padding: 24px;
-      box-shadow: 0 1px 2px rgba(42, 42, 50, 0.04);
+      box-shadow: none;
     }
 
     .panel-heading {
@@ -303,14 +309,14 @@ export function page(title: string, body: string, options: { navHtml?: string } 
     }
 
     .panel h2 {
-      font-size: clamp(1.5rem, 2.2vw, 1.85rem);
-      line-height: 1.12;
+      font-size: clamp(1.8rem, 2.8vw, 2.55rem);
+      line-height: 1.02;
     }
 
     .panel-kicker {
       color: var(--color-muted);
       font-size: 0.72rem;
-      font-weight: 600;
+      font-weight: 800;
       letter-spacing: 0.14em;
       line-height: 1;
       text-transform: uppercase;
@@ -337,9 +343,9 @@ export function page(title: string, body: string, options: { navHtml?: string } 
     textarea,
     select {
       width: 100%;
-      border: 1px solid rgba(42, 42, 50, 0.16);
+      border: 1px solid var(--color-line);
       border-radius: var(--radius);
-      background: rgba(255, 255, 255, 0.72);
+      background: var(--color-panel-soft);
       color: var(--color-text);
       font: inherit;
       font-size: 0.96rem;
@@ -373,9 +379,9 @@ export function page(title: string, body: string, options: { navHtml?: string } 
     input:focus,
     textarea:focus,
     select:focus {
-      background: #ffffff;
-      border-color: var(--color-cta);
-      box-shadow: 0 0 0 2px rgba(17, 17, 20, 0.12);
+      background: #fff4dd;
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 2px rgba(155, 51, 40, 0.16);
     }
 
     .divider {
@@ -413,8 +419,8 @@ export function page(title: string, body: string, options: { navHtml?: string } 
     }
 
     .notice.neutral {
-      background: rgba(17, 17, 20, 0.05);
-      border-color: rgba(17, 17, 20, 0.16);
+      background: var(--color-panel-soft);
+      border-color: var(--color-line);
       color: var(--color-text);
     }
 
@@ -486,12 +492,12 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       gap: 22px;
       border: 1px solid var(--color-line);
       border-radius: var(--radius);
-      background: rgba(245, 245, 245, 0.72);
+      background: var(--color-panel-soft);
       padding: 18px;
     }
 
     .mini-step-number {
-      color: rgba(42, 42, 50, 0.46);
+      color: var(--color-accent);
       font-size: 0.72rem;
       font-weight: 600;
       letter-spacing: 0.14em;
@@ -518,9 +524,9 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 	      max-width: 820px;
 	    }
 
-	    .app-intro p {
-	      color: var(--color-text);
-	      font-size: 1.04rem;
+    .app-intro p {
+      color: var(--color-text);
+      font-size: 1.08rem;
 	      line-height: 1.55;
 	    }
 
@@ -541,7 +547,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 	      border: 1px solid var(--color-line);
 	      border-radius: var(--radius);
 	      padding: 8px;
-	      background: rgba(245, 245, 245, 0.72);
+	      background: var(--color-panel-soft);
 	    }
 
 	    .account-box form {
@@ -571,7 +577,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       border-radius: var(--radius);
       object-fit: cover;
       background: var(--color-cta);
-      border: 1px solid rgba(42, 42, 50, 0.08);
+      border: 1px solid var(--color-line);
     }
 
     .workspace-grid {
@@ -623,15 +629,15 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       gap: 18px;
       border: 1px solid var(--color-line);
       border-radius: var(--radius);
-      background: rgba(245, 245, 245, 0.72);
+      background: var(--color-panel-soft);
       padding: 18px;
     }
 
     .metric-value {
       color: var(--color-text);
       font-family: var(--font-display);
-      font-size: 2.35rem;
-      font-weight: 600;
+      font-size: 2.9rem;
+      font-weight: 400;
       line-height: 0.95;
     }
 
@@ -651,7 +657,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 	      gap: 16px;
 	      border: 1px solid var(--color-line);
 	      border-radius: var(--radius);
-	      background: rgba(255, 255, 255, 0.42);
+	      background: var(--color-panel-soft);
 	      padding: 14px;
 	    }
 
@@ -685,7 +691,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 	    .job-prompt {
 	      display: grid;
 	      gap: 5px;
-	      border-left: 2px solid rgba(17, 17, 20, 0.28);
+	      border-left: 2px solid var(--color-accent);
 	      padding-left: 10px;
 	    }
 
@@ -767,7 +773,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
     .empty-row {
       border: 1px solid var(--color-line);
       border-radius: var(--radius);
-      background: rgba(255, 255, 255, 0.42);
+      background: var(--color-panel-soft);
       padding: 16px;
       color: var(--color-muted);
       font-weight: 300;
@@ -775,10 +781,10 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 
     .status-pill {
       width: max-content;
-      border: 1px solid rgba(42, 42, 50, 0.12);
+      border: 1px solid var(--color-line);
       border-radius: var(--radius);
-      padding: 4px 9px;
-      background: rgba(42, 42, 50, 0.04);
+      padding: 5px 9px;
+      background: rgba(32, 28, 23, 0.04);
       color: var(--color-text-light);
       font-size: 0.72rem;
       font-weight: 600;
@@ -787,8 +793,8 @@ export function page(title: string, body: string, options: { navHtml?: string } 
     }
 
     .status-pill.ready {
-      border-color: rgba(17, 17, 20, 0.24);
-      background: rgba(17, 17, 20, 0.08);
+      border-color: var(--color-accent);
+      background: var(--color-accent-soft);
       color: var(--color-cta);
     }
 
@@ -917,6 +923,13 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 	    }
 
     @media (max-width: 680px) {
+      .shell {
+        width: min(100% - 24px, 1220px);
+        min-height: calc(100vh - 36px);
+        margin: 18px auto 48px;
+        box-shadow: 6px 8px 0 rgba(32, 28, 23, 0.18);
+      }
+
       .topbar {
         height: auto;
         min-height: var(--nav-height);
@@ -964,8 +977,15 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 	      }
 
       main {
-        width: min(100vw - 28px, var(--max-width));
+        width: 100%;
+        padding: 26px 18px 40px;
+      }
+
+      .auth-main,
+      .auth-main-single {
+        grid-template-columns: minmax(0, 1fr);
         padding-top: 26px;
+        padding-bottom: 40px;
       }
 
       .panel {
