@@ -563,7 +563,7 @@ a {
   gap: 34px;
   justify-items: center;
   max-width: 980px;
-  margin: 48px auto 0;
+  margin: clamp(72px, 7vw, 96px) auto 0;
   text-align: center;
 }
 
@@ -655,7 +655,7 @@ a {
   .trusted-proof {
     grid-template-columns: 1fr;
     gap: 26px;
-    margin-top: 36px;
+    margin-top: 52px;
     text-align: left;
     justify-items: stretch;
   }
