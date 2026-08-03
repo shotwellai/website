@@ -1,5 +1,5 @@
 (function () {
-  var ACTIONS = [
+  var DEFAULT_ACTIONS = [
     { label: "Pick up", start: 0, end: 1, color: "#6E6E78", result: "pass" },
     { label: "Straighten", start: 1, end: 7, color: "#4A4A52", result: "pass" },
     { label: "Fold right sleeve", start: 7, end: 10, color: "#BF4D34", result: "pass" },
@@ -35,6 +35,27 @@
     return time < action.start ? "pending" : time < action.end ? "active" : "done";
   }
 
+  function normalizeAction(action, index) {
+    var palette = ["#6E6E78", "#4A4A52", "#BF4D34", "#D6A02E", "#8E8E96", "#4E7CA8", "#9D5690", "#7E7E8A"];
+    return {
+      label: action.label || "Action " + pad(index + 1),
+      start: Number(action.start) || 0,
+      end: Number(action.end) || Number(action.start) + 1 || 1,
+      color: action.color || palette[index % palette.length],
+      result: action.result === "fail" ? "fail" : "pass"
+    };
+  }
+
+  function getActions(root) {
+    var raw = root.getAttribute("data-actions");
+    if (!raw) return DEFAULT_ACTIONS;
+    try {
+      var parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length) return parsed.map(normalizeAction);
+    } catch (err) {}
+    return DEFAULT_ACTIONS;
+  }
+
   function initSegmentation(root) {
     var videoEl = root.querySelector(".seg-video-el");
     var trackEl = root.querySelector(".seg-scrubber-track");
@@ -43,12 +64,13 @@
     var playToggleEl = root.querySelector(".seg-play-toggle");
     if (!videoEl || !trackEl) return;
 
-    var duration = 19;
+    var actions = getActions(root);
+    var duration = actions.reduce(function (max, action) { return Math.max(max, action.end); }, 0) || 19;
     var segEls = [];
     var labelEls = [];
     var annotationEls = [];
 
-    ACTIONS.forEach(function (action) {
+    actions.forEach(function (action) {
       var seg = document.createElement("div");
       seg.className = "seg-seg";
       seg.style.setProperty("--seg-color", action.color);
@@ -67,7 +89,7 @@
     trackEl.appendChild(playhead);
 
     if (labelLayerEl) {
-      ACTIONS.forEach(function (action, index) {
+      actions.forEach(function (action, index) {
         var label = document.createElement("div");
         label.className = "seg-label";
         label.setAttribute("data-state", "pending");
@@ -83,7 +105,7 @@
     }
 
     if (annotationListEl) {
-      ACTIONS.forEach(function (action) {
+      actions.forEach(function (action) {
         var row = document.createElement("li");
         row.className = "seg-annotation";
         row.setAttribute("data-result", action.result);
@@ -99,7 +121,7 @@
     }
 
     function layoutSegments() {
-      ACTIONS.forEach(function (action, index) {
+      actions.forEach(function (action, index) {
         var startPct = action.start / duration * 100;
         var widthPct = (Math.min(action.end, duration) - action.start) / duration * 100;
         segEls[index].root.style.left = startPct.toFixed(2) + "%";
@@ -160,7 +182,7 @@
       }
 
       labelEls.forEach(function (label, index) {
-        var action = ACTIONS[index];
+        var action = actions[index];
         var centerPx = (action.start + action.end) / 2 / duration * trackWidth;
         var width = label.offsetWidth || 80;
         var item = {
@@ -188,7 +210,7 @@
       trackEl.setAttribute("aria-valuetext", fmt(time));
 
       segEls.forEach(function (seg, index) {
-        var action = ACTIONS[index];
+        var action = actions[index];
         var state = actionState(action, time);
         var fill = state === "active" ? (time - action.start) / (action.end - action.start) : state === "done" ? 1 : 0;
         seg.root.setAttribute("data-state", state);
@@ -196,11 +218,11 @@
       });
 
       labelEls.forEach(function (label, index) {
-        label.setAttribute("data-state", actionState(ACTIONS[index], time));
+        label.setAttribute("data-state", actionState(actions[index], time));
       });
 
       annotationEls.forEach(function (row, index) {
-        row.setAttribute("data-state", actionState(ACTIONS[index], time));
+        row.setAttribute("data-state", actionState(actions[index], time));
       });
     }
 

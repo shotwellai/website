@@ -37,6 +37,8 @@
     strong { color: #201c17; }
     .intro { font-size: 19px; line-height: 1.6; color: #4a4034; }
     .note { margin: 30px 0; padding-left: 18px; border-left: 2px solid #9b3328; color: #201c17; font-size: 20px; line-height: 1.45; }
+    .case-study-demo { margin: 34px 0; padding: 16px; border: 1px solid #3d3428; background: #ddc596; }
+    .case-study-demo .seg-stage { background: #000; }
     @media (max-width: 720px) {
       .page { width: min(360px, calc(100vw - 24px)); max-width: none; margin: 18px 12px 64px; padding: 28px 22px; }
       article { font-size: 17px; }
@@ -45,6 +47,7 @@
       h1 span { display: block; }
     }
   </style>
+  <link rel="stylesheet" href="../concepts/concept-animation.css">
 </head>
 <body>
   <main class="page">
@@ -73,6 +76,26 @@
 
       <h2>The Solution</h2>
       <p>Shotwell provided Ultra with dense event and subtask annotations across its teleoperation data. Instead of treating each episode as a single opaque video, Shotwell decomposed episodes into meaningful subtasks with attributes and failure mode detection per subtask.</p>
+      <figure class="case-study-demo concept-seg concept-seg--dossier" data-concept-seg data-actions='[{"label":"Action 01","start":0,"end":8,"color":"#6E6E78","result":"pass"},{"label":"Action 02","start":8,"end":16,"color":"#4A4A52","result":"pass"},{"label":"Action 03","start":16,"end":25,"color":"#BF4D34","result":"pass"},{"label":"Action 04","start":25,"end":34,"color":"#D6A02E","result":"pass"},{"label":"Action 05","start":34,"end":43,"color":"#8E8E96","result":"pass"},{"label":"Action 06","start":43,"end":52,"color":"#4E7CA8","result":"pass"}]'>
+        <div class="seg-video-head">
+          <span class="seg-video-title">Input Ultra Teleoperation Episode</span>
+          <button class="seg-play-toggle" type="button" aria-label="Pause animation" aria-pressed="false">
+            <span class="seg-play-toggle-icon" aria-hidden="true"></span>
+          </button>
+        </div>
+        <div class="seg-stage">
+          <video class="seg-video-el" src="assets/ultra-teleop-episode.mp4" muted loop playsinline preload="auto"></video>
+          <div class="seg-yt-overlay" aria-hidden="true"></div>
+        </div>
+        <div class="seg-annotations">
+          <h2 class="seg-annotations-title">Output Placeholder Action Labels</h2>
+          <div class="seg-timeline">
+            <div class="seg-scrubber-track" role="slider" tabindex="0" aria-label="Video timeline" aria-valuemin="0" aria-valuemax="52" aria-valuenow="0"></div>
+            <div class="seg-timeline-labels" aria-hidden="true"></div>
+          </div>
+          <ul class="seg-annotations-list" aria-label="Episode annotations"></ul>
+        </div>
+      </figure>
       <p>For Ultra's tower stacking toy task, Shotwell annotated each "Pick", "Set", and "Unstack" subtask the robot performed. For each subtask, Shotwell provided color attributes and failure attributes. Shotwell also highlighted "Off Task" segments of the video that were not relevant to the active task.</p>
       <p>For Ultra's other tasks, there is a separate vocabulary of subtasks and a separate list of attributes per subtask. Ultra can then slice training data along the dimensions they care about to curate the right training set. Noisy or failed attempts can be excluded or filtered in different ways for different policy experiments. Subtask boundaries can be used to train more precise policies. Operator behavior can be measured consistently over time.</p>
       <p>The result is a data layer that makes robotics training data more transparent, searchable, and useful.</p>
@@ -102,5 +125,6 @@
       <p>When it comes to training robot policies, data quality is everything, and Shotwell guarantees it.</p>
     </article>
   </main>
+  <script src="../concepts/concept-animation.js"></script>
 </body>
 </html>
