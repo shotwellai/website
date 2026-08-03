@@ -65,10 +65,14 @@
     if (!videoEl || !trackEl) return;
 
     var actions = getActions(root);
+    var playbackRate = Number(root.getAttribute("data-playback-rate")) || 1;
     var duration = actions.reduce(function (max, action) { return Math.max(max, action.end); }, 0) || 19;
     var segEls = [];
     var labelEls = [];
     var annotationEls = [];
+
+    videoEl.defaultPlaybackRate = playbackRate;
+    videoEl.playbackRate = playbackRate;
 
     actions.forEach(function (action) {
       var seg = document.createElement("div");
@@ -282,6 +286,7 @@
 
     function playClip() {
       videoEl.muted = true;
+      videoEl.playbackRate = playbackRate;
       var promise = videoEl.play();
       if (promise && promise.catch) promise.catch(function () {});
     }
