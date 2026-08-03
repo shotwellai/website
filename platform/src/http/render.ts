@@ -616,6 +616,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       background: transparent;
       color: var(--color-text);
       box-shadow: none;
+      transition: none;
     }
 
     .upload-tab + .upload-tab {
@@ -629,12 +630,16 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 
     .upload-tab:hover,
     .upload-tab:focus-visible {
+      background: transparent;
+      border-color: transparent;
+      color: var(--color-text);
       transform: none;
-      box-shadow: inset 0 0 0 2px var(--color-cta);
+      box-shadow: none;
     }
 
     .upload-tab[aria-selected="true"]:hover,
     .upload-tab[aria-selected="true"]:focus-visible {
+      background: var(--color-cta);
       color: var(--color-cta-text);
     }
 
