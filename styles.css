@@ -558,6 +558,113 @@ a {
   color: #1a1a1a;
 }
 
+.trusted-proof {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.82fr) minmax(320px, 1fr);
+  align-items: stretch;
+  gap: 28px;
+  max-width: 980px;
+  margin: 48px auto 0;
+  text-align: left;
+}
+
+.trusted-proof-media {
+  min-height: 260px;
+  border: 1px solid rgba(42, 42, 50, 0.18);
+  background:
+    linear-gradient(135deg, rgba(42, 42, 50, 0.08) 0 1px, transparent 1px 32px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.46), rgba(42, 42, 50, 0.04)),
+    #ECECEC;
+  overflow: hidden;
+}
+
+.trusted-proof-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  padding: 28px;
+}
+
+.trusted-proof-frame::before,
+.trusted-proof-frame::after {
+  content: '';
+  position: absolute;
+  border: 1px solid rgba(42, 42, 50, 0.18);
+}
+
+.trusted-proof-frame::before {
+  inset: 28px;
+}
+
+.trusted-proof-frame::after {
+  left: 28px;
+  right: 28px;
+  bottom: 28px;
+  height: 56px;
+  background: rgba(245, 245, 245, 0.72);
+}
+
+.trusted-proof-line,
+.trusted-proof-marker {
+  position: absolute;
+  display: block;
+  background: var(--color-text);
+}
+
+.trusted-proof-line {
+  left: 48px;
+  right: 48px;
+  height: 2px;
+  opacity: 0.28;
+}
+
+.trusted-proof-line--top { top: 76px; }
+.trusted-proof-line--middle { top: 122px; }
+.trusted-proof-line--bottom { top: 168px; }
+
+.trusted-proof-marker {
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(245, 245, 245, 0.72);
+  box-shadow: 64px 16px 0 rgba(42, 42, 50, 0.58), 132px -14px 0 rgba(42, 42, 50, 0.36);
+}
+
+.trusted-proof-marker--one {
+  left: 58px;
+  top: 92px;
+}
+
+.trusted-proof-marker--two {
+  right: 92px;
+  top: 72px;
+  width: 56px;
+  height: 56px;
+  opacity: 0.72;
+}
+
+.trusted-proof-marker--three {
+  left: 46%;
+  bottom: 48px;
+  width: 34px;
+  height: 34px;
+  opacity: 0.48;
+}
+
+.trusted-quote {
+  margin: 0;
+  border: 1px solid rgba(42, 42, 50, 0.18);
+  background: rgba(245, 245, 245, 0.68);
+  padding: clamp(28px, 4vw, 44px);
+  display: flex;
+  align-items: center;
+  font-size: clamp(1.45rem, 3vw, 2.45rem);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: 0;
+  color: var(--color-text);
+}
+
 @media (max-width: 600px) {
   .hero-actions {
     width: 100%;
@@ -577,6 +684,21 @@ a {
   .trusted-logo-weave { height: 24.2px; }
   .trusted-logo-frontier { height: 33.54px; }
   .trusted-logo--frontier { margin-right: -8px; }
+
+  .trusted-proof {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-top: 36px;
+  }
+
+  .trusted-proof-media {
+    min-height: 210px;
+  }
+
+  .trusted-quote {
+    font-size: clamp(1.32rem, 8vw, 2rem);
+    padding: 24px;
+  }
 }
 
 /* ─── Feature Section: Temporal Segmentation ─── */
