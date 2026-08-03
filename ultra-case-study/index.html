@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shotwell x Ultra Case Study</title>
+  <meta name="description" content="How Shotwell helped Ultra turn raw robot teleoperation episodes into searchable, high-signal training data for policy improvement and operator feedback.">
+  <meta property="og:title" content="Shotwell x Ultra: Robot Teleoperation Data Case Study">
+  <meta property="og:description" content="Dense subtask annotations, failure labels, and 24 hour review loops for robot teleoperation data.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://shotwell.ai/ultra-case-study/">
+  <meta property="og:site_name" content="Shotwell AI">
+  <meta property="og:image" content="https://shotwell.ai/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Shotwell x Ultra: Robot Teleoperation Data Case Study">
+  <meta name="twitter:description" content="Dense subtask annotations, failure labels, and 24 hour review loops for robot teleoperation data.">
+  <meta name="twitter:image" content="https://shotwell.ai/og-default.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { overflow-x: hidden; }
+    body { margin: 0; min-height: 100vh; background: #d7c7a9; color: #201c17; font-family: Arial, Helvetica, sans-serif; }
+    a { color: inherit; text-decoration: none; }
+    .page { width: min(1000px, calc(100vw - 34px)); margin: 34px auto 80px; background: #efe5ce; border: 1px solid #3d3428; box-shadow: 10px 12px 0 rgba(32, 28, 23, .18); overflow: hidden; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 18px 22px; border-bottom: 1px solid #3d3428; }
+    .brand { display: inline-flex; align-items: center; gap: 12px; border: 1px solid #201c17; padding: 10px 18px; font-weight: 800; }
+    .brand img { width: 42px; display: block; }
+    .brand span { font-size: 24px; letter-spacing: -.03em; }
+    .back-link { display: inline-flex; min-height: 42px; align-items: center; justify-content: center; border: 1px solid #201c17; padding: 10px 14px; text-transform: uppercase; font-size: 12px; letter-spacing: .04em; }
+    article { max-width: 760px; min-width: 0; margin: 0 auto; padding: clamp(42px, 7vw, 86px) clamp(24px, 6vw, 64px); font-size: 19px; line-height: 1.62; color: #3e352b; overflow-wrap: break-word; }
+    .kicker { display: inline-block; margin-bottom: 24px; padding: 7px 9px; border: 1px solid #9b3328; color: #9b3328; text-transform: uppercase; letter-spacing: .14em; font-size: 12px; font-weight: 800; }
+    h1, h2, h3 { color: #201c17; }
+    h1 { margin: 0 0 26px; font-size: clamp(42px, 7vw, 72px); line-height: .98; letter-spacing: -.045em; }
+    h2 { margin: 56px 0 16px; padding-top: 28px; border-top: 1px solid rgba(61, 52, 40, .35); font-size: clamp(28px, 4vw, 38px); line-height: 1.1; letter-spacing: -.025em; }
+    h3 { margin: 32px 0 8px; text-transform: uppercase; letter-spacing: .12em; font-size: 13px; }
+    p { margin: 0 0 22px; }
+    ul, ol { margin: 0 0 28px; padding-left: 24px; }
+    li { margin: 10px 0; }
+    strong { color: #201c17; }
+    .intro { font-size: 21px; line-height: 1.5; color: #4a4034; }
+    .note { margin: 34px 0; padding: 22px 0; border-top: 1px solid #3d3428; border-bottom: 1px solid #3d3428; color: #201c17; font-size: 22px; line-height: 1.35; }
+    @media (max-width: 720px) {
+      .page { width: calc(100vw - 24px); margin-top: 18px; }
+      header { align-items: stretch; flex-direction: column; }
+      .brand, .back-link { justify-content: center; width: 100%; }
+      article { font-size: 17px; }
+      .intro { font-size: 18px; }
+      h1 { font-size: clamp(34px, 9vw, 40px); line-height: 1.04; letter-spacing: -.035em; overflow-wrap: break-word; }
+      h1 span { display: block; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <a class="brand" href="../"><img src="../shotwell-logo.png" alt="Shotwell logo"><span>Shotwell.</span></a>
+      <a class="back-link" href="../">Back to site</a>
+    </header>
+
+    <article>
+      <span class="kicker">Case study</span>
+      <h1><span>Shotwell x Ultra:</span> <span>Turning Robot</span> <span>Teleoperation Data</span> <span>Into Reliable</span> <span>Training Data</span></h1>
+
+      <h2>Introduction</h2>
+      <p class="intro">Ultra is one of the leading robotics companies deploying robots in factories and logistics centers across the US. In these settings, teleoperators produce large volumes of data that are used for policy training. Across thousands of hours, teleoperators make mistakes: they drop items, pack things incorrectly, or place things in the wrong containers.</p>
+      <p>Shotwell partnered with Ultra to label and structure teleoperation episodes from real robot camera feeds, turning raw video into searchable, high-signal training data. With Shotwell, Ultra can identify clean demonstrations and build high-quality datasets for policy training.</p>
+
+      <h2>The Challenge</h2>
+      <p>Ultra's robot policies are trained on teleoperation data collected in real, unscripted environments. This data is valuable because it captures the messiness of production that scripted demos lack. But raw teleoperation video is difficult to use at scale.</p>
+      <p>Before Shotwell, Ultra's team had to spend significant engineering time reviewing episodes, giving feedback to operators, and manually identifying which demonstrations were suitable for training. One engineer could keep up with feedback and quality management for the output of 10 teleoperators. As the teleoperation operation grew, this workflow became a bottleneck.</p>
+      <p>Ultra needed a way to answer questions like:</p>
+      <ul>
+        <li>Which episodes contain clean task executions?</li>
+        <li>Where exactly does each subtask begin and end?</li>
+        <li>Which episodes include missed grasps and retries? Do these demonstrations help or hurt policy training?</li>
+        <li>Are new operators following the SOP consistently? Are old operators showing regressions?</li>
+        <li>Which parts of the task are responsible for most failures?</li>
+      </ul>
+      <p class="note">Without dense labels, these questions required manual review. With Shotwell, they became database queries.</p>
+
+      <h2>The Solution</h2>
+      <p>Shotwell provided Ultra with dense event and subtask annotations across its teleoperation data. Instead of treating each episode as a single opaque video, Shotwell decomposed episodes into meaningful subtasks with attributes and failure mode detection per subtask.</p>
+      <p>For Ultra's tower stacking toy task, Shotwell annotated each "Pick", "Set", and "Unstack" subtask the robot performed. For each subtask, Shotwell provided color attributes and failure attributes. Shotwell also highlighted "Off Task" segments of the video that were not relevant to the active task.</p>
+      <p>For Ultra's other tasks, there is a separate vocabulary of subtasks and a separate list of attributes per subtask. Ultra can then slice training data along the dimensions they care about to curate the right training set. Noisy or failed attempts can be excluded or filtered in different ways for different policy experiments. Subtask boundaries can be used to train more precise policies. Operator behavior can be measured consistently over time.</p>
+      <p>The result is a data layer that makes robotics training data more transparent, searchable, and useful.</p>
+
+      <h2>The Process</h2>
+      <p>Shotwell and Ultra built the annotation workflow in three stages.</p>
+
+      <h3>1. SOP Creation</h3>
+      <p>The first step was to define what "good" looked like.</p>
+      <p>Shotwell worked with Ultra to translate task goals and substeps into a concrete annotation SOP. This included the task schema, event definitions, and success criteria.</p>
+
+      <h3>2. Manual Annotation and Schema Alignment</h3>
+      <p>Shotwell began with manual annotation to align closely with Ultra's internal understanding of each task.</p>
+      <p>This stage resolved ambiguity such as what motion counts as a retry, when a subtask begins, and what exactly is considered a failure. Going through many examples of episodes and annotating them manually allowed Shotwell to quickly align with Ultra on these questions.</p>
+
+      <h3>3. Model Training + Human-in-the-Loop</h3>
+      <p>Once the schema was stable, Shotwell trained models to identify events and segment boundaries on an initial batch of approved human annotations.</p>
+      <p>Shotwell then moved the workflow into a steady-state model-plus-human review process. In tasks where the models had lower confidence, the models provided pre-annotations that a human annotator could quickly fix.</p>
+      <p>As more episodes were annotated, the model was further trained and developed higher confidence across the subtasks. At this stage, humans were still used to check for data drift and perform model QA. Humans could also be flagged to re-annotate low confidence segments of otherwise high confidence episodes. This annotation flywheel continuously improves model performance and speeds up the overall annotation process.</p>
+      <p>Shotwell's approach scaled quickly to Ultra's load to provide 24 hour turnaround times, which were particularly useful for operator feedback.</p>
+
+      <h2>Outcomes</h2>
+      <p>With Shotwell, Ultra transformed teleoperation data review from a manual bottleneck into a scalable data operation.</p>
+      <p>One engineer who previously struggled to manage feedback and quality review for around 10 operators can now support 60+ operators using Shotwell's annotation and review pipeline. That unlocks a major scaling advantage: Ultra can grow teleoperation data collection without growing engineering overhead at the same rate.</p>
+      <p>With higher quality annotations, Ultra was able to improve their policy success rate and task adherence.</p>
+      <p>Shotwell also delivered materially faster turnaround than competing annotation solutions. Ultra had tried two approaches prior to Shotwell. They had teleoperators perform task annotation as they performed actions, but those annotations were lower quality, around 80% accurate, and far less granular than what Shotwell provided. They also tried hiring labeling companies that were more expensive, lower fidelity in annotation, and unable to provide single day turnaround times because they relied entirely on offshore manual labor.</p>
+      <p>When it comes to training robot policies, data quality is everything, and Shotwell guarantees it.</p>
+    </article>
+  </main>
+</body>
+</html>

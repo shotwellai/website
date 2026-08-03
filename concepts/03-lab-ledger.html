@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab Ledger - Shotwell concept</title>
+  <meta name="robots" content="noindex">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #eef1ec; color: #172018; font-family: "Helvetica Neue", Arial, sans-serif; }
+    a { color: inherit; text-decoration: none; }
+    img, video { display: block; max-width: 100%; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 24px 34px; border-bottom: 1px solid #172018; }
+    header b { font-size: 24px; letter-spacing: -.04em; }
+    header nav { display: flex; gap: 10px; }
+    header a { padding: 10px 14px; border: 1px solid #172018; text-transform: uppercase; font-size: 12px; }
+    main { width: min(1200px, calc(100% - 36px)); margin: 0 auto; padding: 56px 0 80px; }
+    .hero { display: grid; grid-template-columns: 1fr 1fr; gap: 44px; align-items: end; }
+    h1 { margin: 0; font-size: clamp(50px, 8vw, 106px); line-height: .86; letter-spacing: -.08em; }
+    h2 { margin: 0 0 22px; font-size: clamp(34px, 5vw, 68px); line-height: .92; letter-spacing: -.065em; }
+    .lead { font-family: "Courier New", Courier, monospace; font-size: 18px; line-height: 1.55; color: #47544a; }
+    .actions { margin-top: 26px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .actions a { padding: 12px 15px; border: 1px solid #172018; text-transform: uppercase; font-size: 12px; }
+    .actions a:first-child { background: #172018; color: #eef1ec; }
+    section { margin-top: 70px; }
+    .metrics { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid #172018; border-left: 1px solid #172018; }
+    .meter { min-height: 160px; padding: 18px; border-right: 1px solid #172018; border-bottom: 1px solid #172018; background: rgba(250, 252, 248, .58); }
+    .meter b { display: block; font-size: 52px; letter-spacing: -.06em; }
+    .meter span { text-transform: uppercase; font-size: 11px; letter-spacing: .12em; color: #667469; }
+    .ledger { border: 1px solid #172018; background: #fafcf8; overflow: auto; }
+    .ledger-head, .row { display: grid; grid-template-columns: .8fr 1fr .8fr 1.6fr; min-width: 800px; }
+    .ledger-head span { padding: 12px 14px; background: #172018; color: #eef1ec; text-transform: uppercase; letter-spacing: .12em; font-size: 11px; }
+    .row { border-top: 1px solid #172018; }
+    .row span { min-height: 74px; padding: 14px; border-right: 1px solid #172018; font-family: "Courier New", Courier, monospace; }
+    .row span:last-child { border-right: 0; }
+    .fail { color: #b03426; font-weight: 800; }
+    .pass { color: #1e6f3d; font-weight: 800; }
+    .split { display: grid; grid-template-columns: .95fr 1.05fr; gap: 30px; align-items: start; }
+    .split video { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border: 1px solid #172018; }
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #172018; }
+    .card { min-height: 180px; padding: 22px; background: #eef1ec; }
+    .card b { display: block; margin-bottom: 14px; text-transform: uppercase; letter-spacing: .12em; font-size: 12px; }
+    .card p { margin: 0; color: #47544a; line-height: 1.45; }
+    .proof { text-align: center; }
+    .proof-label { display: block; margin-bottom: 28px; text-transform: uppercase; letter-spacing: .14em; font-size: 12px; color: #667469; }
+    .logos { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 36px; margin-bottom: 38px; }
+    .logos img { max-height: 38px; max-width: 220px; mix-blend-mode: multiply; }
+    blockquote { margin: 0 auto; max-width: 850px; font-size: clamp(30px, 5vw, 62px); line-height: 1.02; letter-spacing: -.055em; }
+    cite { display: block; margin-top: 18px; font-style: normal; text-transform: uppercase; letter-spacing: .16em; color: #667469; }
+    .cta { padding: 30px; border: 1px solid #172018; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .cta strong { font-size: clamp(30px, 5vw, 58px); letter-spacing: -.06em; }
+    .cta a { background: #172018; color: #eef1ec; padding: 14px 18px; text-transform: uppercase; font-size: 12px; }
+    @media (max-width: 850px) { header, header nav, .cta { align-items: flex-start; flex-direction: column; } .hero, .split, .metrics, .cards { grid-template-columns: 1fr; } }
+  </style>
+  <link rel="stylesheet" href="concept-animation.css">
+</head>
+<body>
+  <header><b>Shotwell lab ledger</b><nav><a href="https://app.shotwell.ai/">Upload videos now</a><a href="https://calendly.com/nour-shotwell/30-minute-meeting-w-team">Talk to us</a></nav></header>
+  <main>
+    <section class="hero">
+      <div><h1>Annotations for robotics data</h1><div class="actions"><a href="https://app.shotwell.ai/">Upload videos now</a><a href="#ledger">View annotations</a></div></div>
+      <p class="lead">Shotwell provides fast, accurate and dense annotations for robotics training data. We segment long videos into discrete steps and detect failures in each step.</p>
+    </section>
+    <section class="metrics">
+      <div class="meter"><b>Fast</b><span>24 hour upload turnaround</span></div>
+      <div class="meter"><b>Accurate</b><span>Robotics-specific labels</span></div>
+      <div class="meter"><b>Dense</b><span>Discrete steps and timestamps</span></div>
+      <div class="meter"><b>48h</b><span>Operator feedback loop</span></div>
+    </section>
+    <section class="split">
+      <div class="concept-seg concept-seg--ledger" data-concept-seg>
+        <div class="seg-video-head">
+          <span class="seg-video-title">Input Robot Episode</span>
+          <button class="seg-play-toggle" type="button" aria-label="Pause animation" aria-pressed="false">
+            <span class="seg-play-toggle-icon" aria-hidden="true"></span>
+          </button>
+        </div>
+        <div class="seg-stage">
+          <video class="seg-video-el" src="../fold-rubric.mp4" muted loop playsinline preload="auto"></video>
+          <div class="seg-yt-overlay" aria-hidden="true"></div>
+        </div>
+        <div class="seg-annotations">
+          <h2 class="seg-annotations-title">Output Shotwell Annotations</h2>
+          <div class="seg-timeline">
+            <div class="seg-scrubber-track" role="slider" tabindex="0" aria-label="Video timeline" aria-valuemin="0" aria-valuemax="19" aria-valuenow="0"></div>
+            <div class="seg-timeline-labels" aria-hidden="true"></div>
+          </div>
+          <ul class="seg-annotations-list" aria-label="Episode annotations"></ul>
+        </div>
+      </div>
+      <div>
+        <h2>Input Robot Episode. Output Shotwell Annotations.</h2>
+        <p class="lead">The same core demo as the current page: a robot episode goes in, and Shotwell returns timestamped actions, pass/fail status, and subtask attributes.</p>
+      </div>
+    </section>
+    <section class="ledger" id="ledger" aria-label="Annotation ledger">
+      <div class="ledger-head"><span>Time</span><span>Action</span><span>Status</span><span>Shotwell annotation</span></div>
+      <div class="row"><span>00:00-00:02</span><span>Pick up</span><span class="pass">PASS</span><span>Precise subtask boundary for policy training.</span></div>
+      <div class="row"><span>00:07-00:10</span><span>Fold right sleeve</span><span class="pass">PASS</span><span>Step completed cleanly.</span></div>
+      <div class="row"><span>00:10-00:15</span><span>Fold left sleeve</span><span class="fail">FAIL</span><span>Failure detection and attribute description per subtask.</span></div>
+    </section>
+    <section class="cards"><article class="card"><b>Precise timestamps</b><p>Subtask boundaries for stronger policy training.</p></article><article class="card"><b>Dataset observability</b><p>Failure detection and attribute descriptions per subtask.</p></article><article class="card"><b>48-hour feedback</b><p>Operator notes returned while runs are still fresh.</p></article></section>
+    <section class="proof"><span class="proof-label">Trusted by</span><div class="logos"><img src="../ultra-logo.png" alt="Ultra"><img src="../weave-logo.png" alt="Weave Robotics"><img src="../frontier-logo.svg" alt="Frontier Machines"><img src="../parametric-logo.png" alt="Parametric"></div><blockquote>"Shotwell helped us improve policy performance by X% and let every QA reviewer support 6x more operators."</blockquote><cite>- Ultra</cite></section>
+    <section class="cta"><strong>Let's talk about your data.</strong><a href="https://app.shotwell.ai/">Upload videos now</a></section>
+  </main>
+  <script src="concept-animation.js"></script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expedition Journal - Shotwell concept</title>
+  <meta name="robots" content="noindex">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: #10150f; color: #efe8d4; font-family: "Courier New", Courier, monospace; }
+    body::before { content: ""; position: fixed; inset: 0; pointer-events: none; background: radial-gradient(circle at 20% 10%, rgba(175, 128, 60, .18), transparent 34%), linear-gradient(rgba(239,232,212,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(239,232,212,.04) 1px, transparent 1px); background-size: auto, 32px 32px, 32px 32px; z-index: -1; }
+    a { color: inherit; text-decoration: none; }
+    img, video { display: block; max-width: 100%; }
+    .shell { width: min(1200px, calc(100% - 36px)); margin: 0 auto; padding: 30px 0 80px; }
+    header { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 18px 0; border-bottom: 1px solid rgba(239, 232, 212, .28); }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; }
+    .brand img { width: 40px; filter: invert(1); }
+    header nav { display: flex; gap: 10px; }
+    header a { border: 1px solid rgba(239, 232, 212, .55); padding: 10px 14px; color: #efe8d4; }
+    .hero { display: grid; grid-template-columns: .9fr 1.1fr; gap: 46px; align-items: center; padding: 70px 0; }
+    .logbook { border: 1px solid rgba(239, 232, 212, .3); padding: 20px; background: rgba(239, 232, 212, .06); }
+    .logbook video { width: 100%; aspect-ratio: 16 / 11; object-fit: cover; filter: sepia(.35) saturate(.7) contrast(1.05); border: 1px solid rgba(239, 232, 212, .24); }
+    .caption { display: flex; justify-content: space-between; gap: 14px; margin-top: 12px; color: #b9aa87; font-size: 12px; text-transform: uppercase; letter-spacing: .12em; }
+    .kicker, .entry b, .route b { color: #d9a34a; text-transform: uppercase; letter-spacing: .18em; font-size: 12px; }
+    h1 { margin: 16px 0 0; font-family: Georgia, serif; font-size: clamp(48px, 7vw, 96px); line-height: .95; font-weight: 400; letter-spacing: -.045em; }
+    h2 { margin: 0 0 22px; font-family: Georgia, serif; font-weight: 400; font-size: clamp(34px, 5vw, 66px); line-height: .96; letter-spacing: -.04em; }
+    .lead { max-width: 680px; font-size: 19px; line-height: 1.6; color: #c8bea6; }
+    .copy .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+    .copy a, .cta a { display: inline-block; background: #d9a34a; color: #10150f; padding: 14px 18px; text-transform: uppercase; font-weight: 800; }
+    .copy a:last-child { background: transparent; color: #efe8d4; border: 1px solid rgba(239, 232, 212, .55); }
+    section { margin-top: 64px; }
+    .entries, .route { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: rgba(239, 232, 212, .26); }
+    .entry, .route article { background: #10150f; min-height: 180px; padding: 22px; }
+    .entry p, .route p { margin: 0; line-height: 1.5; color: #c8bea6; }
+    .journal { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: start; }
+    .page { border: 1px solid rgba(239, 232, 212, .24); padding: 24px; background: rgba(239, 232, 212, .05); }
+    .page ul { margin: 0; padding-left: 18px; color: #c8bea6; line-height: 1.7; }
+    .proof { text-align: center; }
+    .proof-label { display: block; margin-bottom: 28px; text-transform: uppercase; letter-spacing: .18em; font-size: 12px; color: #d9a34a; }
+    .logos { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 36px; margin-bottom: 36px; }
+    .logos img { max-height: 38px; max-width: 220px; filter: grayscale(1) invert(1); opacity: .82; }
+    blockquote { margin: 0 auto; max-width: 880px; font-family: Georgia, serif; font-size: clamp(30px, 5vw, 60px); line-height: 1.03; letter-spacing: -.035em; }
+    cite { display: block; margin-top: 18px; font-style: normal; text-transform: uppercase; letter-spacing: .16em; color: #b9aa87; }
+    .cta { padding: 34px; border: 1px solid rgba(239, 232, 212, .28); display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+    .cta strong { font-family: Georgia, serif; font-size: clamp(32px, 5vw, 60px); font-weight: 400; }
+    @media (max-width: 850px) { header, header nav, .cta { align-items: flex-start; flex-direction: column; } .hero, .entries, .route, .journal { grid-template-columns: 1fr; } }
+  </style>
+  <link rel="stylesheet" href="concept-animation.css">
+</head>
+<body>
+  <main class="shell">
+    <header><div class="brand"><img src="../shotwell-logo.png" alt="">Shotwell expedition journal</div><nav><a href="https://app.shotwell.ai/">Upload videos now</a><a href="https://calendly.com/nour-shotwell/30-minute-meeting-w-team">Talk to us</a></nav></header>
+    <section class="hero">
+      <div class="logbook concept-seg concept-seg--journal" data-concept-seg>
+        <div class="seg-video-head">
+          <span class="seg-video-title">Input Robot Episode</span>
+          <button class="seg-play-toggle" type="button" aria-label="Pause animation" aria-pressed="false">
+            <span class="seg-play-toggle-icon" aria-hidden="true"></span>
+          </button>
+        </div>
+        <div class="seg-stage">
+          <video class="seg-video-el" src="../fold-rubric.mp4" muted loop playsinline preload="auto"></video>
+          <div class="seg-yt-overlay" aria-hidden="true"></div>
+        </div>
+        <div class="seg-annotations">
+          <h2 class="seg-annotations-title">Output Shotwell Annotations</h2>
+          <div class="seg-timeline">
+            <div class="seg-scrubber-track" role="slider" tabindex="0" aria-label="Video timeline" aria-valuemin="0" aria-valuemax="19" aria-valuenow="0"></div>
+            <div class="seg-timeline-labels" aria-hidden="true"></div>
+          </div>
+          <ul class="seg-annotations-list" aria-label="Episode annotations"></ul>
+        </div>
+      </div>
+      <div class="copy">
+        <p class="kicker">Robotics data annotation</p>
+        <h1>Annotations for robotics data</h1>
+        <p class="lead">Shotwell provides fast, accurate and dense annotations for robotics training data. We segment long videos into discrete steps and detect failures in each step.</p>
+        <div class="actions"><a href="https://app.shotwell.ai/">Upload videos now</a><a href="https://calendly.com/nour-shotwell/30-minute-meeting-w-team">Talk to us</a></div>
+      </div>
+    </section>
+    <section class="entries">
+      <article class="entry"><b>Precise timestamps</b><p>Subtask boundaries for stronger policy training.</p></article>
+      <article class="entry"><b>Dataset observability</b><p>Failure detection and attribute descriptions per subtask.</p></article>
+      <article class="entry"><b>48-hour feedback</b><p>Operator notes returned while runs are still fresh.</p></article>
+    </section>
+    <section class="journal">
+      <div><h2>Shotwell turns robot episodes into training-ready annotations.</h2><p class="lead">This darker branch keeps the current site content but frames the demo as a field record: raw footage comes in, dense Shotwell annotations come back.</p></div>
+      <div class="page"><p class="kicker">What comes back</p><ul><li>Long videos segmented into discrete steps.</li><li>Pass and fail labels for each meaningful action.</li><li>Failure detection and attribute descriptions per subtask.</li><li>Operator feedback returned while runs are still fresh.</li></ul></div>
+    </section>
+    <section class="route"><article><b>Teleop</b><p>Gain observability into collected teleop data.</p></article><article><b>UMI and ego-view</b><p>Annotate UMI and ego-view demonstrations with robotics-specific steps.</p></article><article><b>Deployed robots</b><p>Detect failures in real robot runs and return actionable notes.</p></article></section>
+    <section class="proof"><span class="proof-label">Trusted by</span><div class="logos"><img src="../ultra-logo.png" alt="Ultra"><img src="../weave-logo.png" alt="Weave Robotics"><img src="../frontier-logo.svg" alt="Frontier Machines"><img src="../parametric-logo.png" alt="Parametric"></div><blockquote>"Shotwell helped us improve policy performance by X% and let every QA reviewer support 6x more operators."</blockquote><cite>- Ultra</cite></section>
+    <section class="cta"><strong>Let's talk about your data.</strong><a href="https://app.shotwell.ai/">Upload videos now</a></section>
+  </main>
+  <script src="concept-animation.js"></script>
+</body>
+</html>

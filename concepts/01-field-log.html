@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Field Log - Shotwell concept</title>
+  <meta name="robots" content="noindex">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: #f7f0df; color: #24211d; font-family: "Courier New", Courier, monospace; }
+    body::before { content: ""; position: fixed; inset: 0; pointer-events: none; background: repeating-linear-gradient(#f7f0df 0 31px, #ded2bb 32px), linear-gradient(90deg, transparent 0 86px, rgba(172, 63, 42, .35) 87px 88px, transparent 89px); opacity: .9; z-index: -1; }
+    a { color: inherit; text-decoration: none; }
+    img, video { display: block; max-width: 100%; }
+    header { height: 78px; display: flex; align-items: center; gap: 12px; padding: 0 34px 0 104px; border-bottom: 1px solid rgba(36, 33, 29, .35); }
+    header img { width: 42px; }
+    header b { text-transform: uppercase; letter-spacing: .12em; }
+    header nav { margin-left: auto; display: flex; gap: 10px; }
+    header a { border: 1px solid #24211d; padding: 10px 14px; background: rgba(247, 240, 223, .72); }
+    main { width: min(1180px, calc(100% - 36px)); margin: 0 auto; padding: 64px 0 80px; }
+    .spread { display: grid; grid-template-columns: 280px 1fr; gap: 56px; align-items: start; }
+    aside { padding-right: 28px; border-right: 1px solid rgba(36, 33, 29, .45); color: #5a5147; }
+    aside .stamp { display: inline-block; margin-top: 28px; padding: 10px 12px; border: 2px solid #9e3727; color: #9e3727; transform: rotate(-3deg); font-weight: 700; text-transform: uppercase; }
+    .kicker { margin: 0 0 18px; text-transform: uppercase; letter-spacing: .18em; font-size: 12px; color: #9e3727; }
+    h1 { max-width: 880px; margin: 0; font-family: Georgia, serif; font-size: clamp(46px, 7vw, 92px); line-height: .96; font-weight: 400; letter-spacing: -.045em; }
+    h2 { margin: 0 0 22px; font-family: Georgia, serif; font-size: clamp(34px, 4vw, 58px); line-height: 1; font-weight: 400; letter-spacing: -.03em; }
+    .lead { max-width: 700px; margin: 28px 0 0; font-size: 20px; line-height: 1.55; color: #3b352f; }
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 30px; }
+    .actions a { padding: 13px 16px; border: 1px solid #24211d; background: #24211d; color: #f7f0df; text-transform: uppercase; }
+    .actions a:last-child { background: transparent; color: #24211d; }
+    section { margin-top: 76px; }
+    .episode { display: grid; grid-template-columns: 1.05fr .95fr; gap: 30px; align-items: start; }
+    .video-card, .note, .proof, .contact { border: 1px solid rgba(36, 33, 29, .5); background: rgba(247, 240, 223, .76); }
+    .video-card { padding: 18px; }
+    .video-card video { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border: 1px solid rgba(36, 33, 29, .3); }
+    .caption { display: flex; justify-content: space-between; margin-top: 12px; color: #6b5d4d; font-size: 12px; text-transform: uppercase; letter-spacing: .12em; }
+    .notes { display: grid; gap: 14px; }
+    .note { min-height: 132px; padding: 18px; }
+    .note b, .outcome b { display: block; color: #9e3727; text-transform: uppercase; letter-spacing: .1em; font-size: 12px; }
+    .note strong { display: block; margin: 16px 0 8px; font-size: 22px; font-weight: 400; }
+    .note p, .outcome p, .contact p { margin: 0; line-height: 1.5; color: #5a5147; }
+    .outcomes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .outcome { padding: 20px; border-left: 1px solid rgba(36, 33, 29, .45); }
+    .logos { display: flex; align-items: center; justify-content: space-between; gap: 34px; flex-wrap: wrap; margin-bottom: 44px; }
+    .logos img { max-height: 38px; max-width: 220px; mix-blend-mode: multiply; }
+    .proof { padding: clamp(28px, 5vw, 54px); text-align: center; }
+    blockquote { margin: 0 auto; max-width: 850px; font-family: Georgia, serif; font-size: clamp(30px, 5vw, 62px); line-height: 1.02; letter-spacing: -.035em; }
+    cite { display: block; margin-top: 18px; font-style: normal; text-transform: uppercase; letter-spacing: .16em; color: #6b5d4d; }
+    .contact { padding: 34px; display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+    .contact strong { font-family: Georgia, serif; font-size: clamp(32px, 5vw, 60px); font-weight: 400; letter-spacing: -.03em; }
+    .contact a { border: 1px solid #24211d; padding: 13px 16px; background: #24211d; color: #f7f0df; text-transform: uppercase; }
+    @media (max-width: 850px) { header { height: auto; padding: 18px 24px; align-items: flex-start; flex-direction: column; } header nav { margin-left: 0; } .spread, .episode, .outcomes { grid-template-columns: 1fr; } aside { border-right: 0; border-bottom: 1px solid rgba(36, 33, 29, .35); padding: 0 0 24px; } .contact { align-items: flex-start; flex-direction: column; } }
+  </style>
+  <link rel="stylesheet" href="concept-animation.css">
+</head>
+<body>
+  <header>
+    <img src="../shotwell-logo.png" alt="">
+    <b>Shotwell field log</b>
+    <nav><a href="https://app.shotwell.ai/">Upload Videos Now</a><a href="https://calendly.com/nour-shotwell/30-minute-meeting-w-team">Talk to Us</a></nav>
+  </header>
+  <main>
+    <section class="spread">
+      <aside>
+        <p>Shotwell turns robot training videos into dense annotations: precise step boundaries, failure detection, and operator-readable notes.</p>
+        <p class="stamp">Annotations for robotics data</p>
+      </aside>
+      <article>
+        <p class="kicker">Robotics data annotation</p>
+        <h1>Annotations for robotics data</h1>
+        <p class="lead">Shotwell provides fast, accurate and dense annotations for robotics training data. We segment long videos into discrete steps and detect failures in each step.</p>
+        <div class="actions"><a href="https://app.shotwell.ai/">Upload videos now<br><small>24 hour turnaround</small></a><a href="https://calendly.com/nour-shotwell/30-minute-meeting-w-team">Talk to us</a></div>
+      </article>
+    </section>
+    <section class="episode" id="workflow">
+      <div class="video-card concept-seg concept-seg--field" data-concept-seg>
+        <div class="seg-video-head">
+          <span class="seg-video-title">Input Robot Episode</span>
+          <button class="seg-play-toggle" type="button" aria-label="Pause animation" aria-pressed="false">
+            <span class="seg-play-toggle-icon" aria-hidden="true"></span>
+          </button>
+        </div>
+        <div class="seg-stage">
+          <video class="seg-video-el" src="../fold-rubric.mp4" muted loop playsinline preload="auto"></video>
+          <div class="seg-yt-overlay" aria-hidden="true"></div>
+        </div>
+        <div class="seg-annotations">
+          <h2 class="seg-annotations-title">Output Shotwell Annotations</h2>
+          <div class="seg-timeline">
+            <div class="seg-scrubber-track" role="slider" tabindex="0" aria-label="Video timeline" aria-valuemin="0" aria-valuemax="19" aria-valuenow="0"></div>
+            <div class="seg-timeline-labels" aria-hidden="true"></div>
+          </div>
+          <ul class="seg-annotations-list" aria-label="Episode annotations"></ul>
+        </div>
+      </div>
+      <div>
+        <h2>Output Shotwell Annotations</h2>
+        <div class="notes">
+          <div class="note"><b>Timestamp</b><strong>0:00-0:02</strong><p>Pick up. PASS. Subtask boundary returned as a clean training interval.</p></div>
+          <div class="note"><b>Failure detection</b><strong>0:10-0:15</strong><p>Fold left sleeve. FAIL. Failure and attribute descriptions are attached to the step.</p></div>
+          <div class="note"><b>Feedback</b><strong>48-hour return</strong><p>Operator notes are returned while the run is still fresh.</p></div>
+        </div>
+      </div>
+    </section>
+    <section>
+      <h2>What teams get from Shotwell.</h2>
+      <div class="outcomes">
+        <div class="outcome"><b>Precise timestamps</b><p>Subtask boundaries for stronger policy training.</p></div>
+        <div class="outcome"><b>Dataset observability</b><p>Failure detection and attribute descriptions per subtask.</p></div>
+        <div class="outcome"><b>48-hour feedback</b><p>Operator notes returned while runs are still fresh.</p></div>
+      </div>
+    </section>
+    <section class="proof">
+      <p class="kicker">Trusted by</p>
+      <div class="logos"><img src="../ultra-logo.png" alt="Ultra"><img src="../weave-logo.png" alt="Weave Robotics"><img src="../frontier-logo.svg" alt="Frontier Machines"><img src="../parametric-logo.png" alt="Parametric"></div>
+      <blockquote>"Shotwell helped us improve policy performance by X% and let every QA reviewer support 6x more operators."</blockquote>
+      <cite>- Ultra</cite>
+    </section>
+    <section class="contact">
+      <div><strong>Let's talk about your data.</strong><p>Upload robot episodes or reach us at hello@shotwell.ai.</p></div>
+      <a href="https://app.shotwell.ai/">Upload videos now</a>
+    </section>
+  </main>
+  <script src="concept-animation.js"></script>
+</body>
+</html>
