@@ -57,12 +57,36 @@ function cleanFileName(value: unknown) {
   return value.trim().slice(0, 512);
 }
 
-function parseUploadRequest(body: unknown): { prompt: string; files: NewUploadFileInput[] } {
+function parseSourceUrl(value: unknown) {
+  if (typeof value !== "string") {
+    return undefined;
+  }
+
+  const sourceUrl = value.trim().slice(0, 2_048);
+  if (!sourceUrl) {
+    return undefined;
+  }
+
+  let parsedUrl: URL;
+  try {
+    parsedUrl = new URL(sourceUrl);
+  } catch {
+    throw new Error("Enter a valid URL.");
+  }
+
+  if (!["http:", "https:", "s3:", "gs:"].includes(parsedUrl.protocol)) {
+    throw new Error("Enter a valid URL.");
+  }
+
+  return parsedUrl.toString();
+}
+
+function parseUploadRequest(body: unknown): { prompt: string; files: NewUploadFileInput[]; sourceUrl?: string } {
   if (!body || typeof body !== "object") {
     throw new Error("Invalid upload request.");
   }
 
-  const input = body as { prompt?: unknown; files?: unknown };
+  const input = body as { prompt?: unknown; files?: unknown; sourceUrl?: unknown };
   const filesInput = Array.isArray(input.files) ? input.files : [];
   const files = filesInput.map((file) => {
     const item = file && typeof file === "object"
@@ -80,9 +104,14 @@ function parseUploadRequest(body: unknown): { prompt: string; files: NewUploadFi
       sizeBytes: typeof item.size === "number" && Number.isFinite(item.size) ? item.size : undefined
     };
   });
+  const sourceUrl = parseSourceUrl(input.sourceUrl);
 
-  if (files.length === 0) {
-    throw new Error("Choose at least one file.");
+  if (files.length === 0 && !sourceUrl) {
+    throw new Error("Choose files or provide a link.");
+  }
+
+  if (files.length > 0 && sourceUrl) {
+    throw new Error("Choose files or provide a link, not both.");
   }
 
   if (files.length > 100) {
@@ -91,7 +120,8 @@ function parseUploadRequest(body: unknown): { prompt: string; files: NewUploadFi
 
   return {
     prompt: typeof input.prompt === "string" ? input.prompt.trim().slice(0, 20_000) : "",
-    files
+    files,
+    sourceUrl
   };
 }
 
@@ -114,12 +144,13 @@ function setUploadMessage(element, message, isError) {
   element.classList.toggle("neutral", !isError);
 }
 
-async function requestUploadSession(prompt, files) {
+async function requestUploadSession(prompt, files, sourceUrl) {
   const response = await fetch("/api/uploads", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       prompt,
+      sourceUrl,
       files: files.map((file) => ({
         name: file.name,
         type: file.type || "application/octet-stream",
@@ -159,6 +190,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!form) return;
 
   const fileInput = form.querySelector("[data-upload-files]");
+  const sourceUrlInput = form.querySelector("[data-upload-source-url]");
   const promptInput = form.querySelector("[data-upload-prompt]");
   const submit = form.querySelector("[data-upload-submit]");
   const message = form.querySelector("[data-upload-message]");
@@ -166,9 +198,15 @@ document.addEventListener("DOMContentLoaded", () => {
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const files = Array.from(fileInput.files || []);
+    const sourceUrl = (sourceUrlInput ? sourceUrlInput.value : "").trim();
 
-    if (files.length === 0) {
-      setUploadMessage(message, "Choose at least one file to upload.", true);
+    if (files.length === 0 && !sourceUrl) {
+      setUploadMessage(message, "Choose files or provide a link.", true);
+      return;
+    }
+
+    if (files.length > 0 && sourceUrl) {
+      setUploadMessage(message, "Choose files or provide a link, not both.", true);
       return;
     }
 
@@ -176,14 +214,17 @@ document.addEventListener("DOMContentLoaded", () => {
     setUploadMessage(message, "Preparing upload...", false);
 
     try {
-      const payload = await requestUploadSession(promptInput.value || "", files);
+      const payload = await requestUploadSession(promptInput.value || "", files, sourceUrl);
       for (let index = 0; index < files.length; index += 1) {
         setUploadMessage(message, "Uploading " + (index + 1) + " of " + files.length + "...", false);
         await uploadFileToGcs(payload.files[index], files[index]);
       }
 
-      await markUploadComplete(payload.upload.id);
-      setUploadMessage(message, "Upload received. Refreshing...", false);
+      if (files.length > 0) {
+        await markUploadComplete(payload.upload.id);
+      }
+
+      setUploadMessage(message, sourceUrl ? "Link received. Refreshing..." : "Upload received. Refreshing...", false);
       window.location.reload();
     } catch (error) {
       setUploadMessage(message, error instanceof Error ? error.message : "Upload failed.", true);
@@ -222,12 +263,14 @@ appRouter.post("/api/uploads", async (req, res, next) => {
     const input = parseUploadRequest(req.body);
     const uploadId = createUploadId();
     const origin = new URL(config.appBaseUrl).origin;
-    const sessions = await createGcsUploadSessions({
-      userId: user.id,
-      uploadId,
-      files: input.files,
-      origin
-    });
+    const sessions = input.files.length > 0
+      ? await createGcsUploadSessions({
+        userId: user.id,
+        uploadId,
+        files: input.files,
+        origin
+      })
+      : [];
     const uploadPrefix = [
       config.uploads.uploadPrefix,
       user.id,
@@ -238,6 +281,7 @@ appRouter.post("/api/uploads", async (req, res, next) => {
       id: uploadId,
       userId: user.id,
       prompt: input.prompt,
+      sourceUrl: input.sourceUrl,
       uploadPrefix,
       files: sessions.map((file) => ({
         id: file.id,
@@ -261,7 +305,13 @@ appRouter.post("/api/uploads", async (req, res, next) => {
       }))
     });
   } catch (error) {
-    if (error instanceof Error && ["Choose at least one file.", "Every file needs a name.", "Upload at most 100 files at a time."].includes(error.message)) {
+    if (error instanceof Error && [
+      "Choose files or provide a link.",
+      "Choose files or provide a link, not both.",
+      "Enter a valid URL.",
+      "Every file needs a name.",
+      "Upload at most 100 files at a time."
+    ].includes(error.message)) {
       res.status(400).json({ error: error.message });
       return;
     }

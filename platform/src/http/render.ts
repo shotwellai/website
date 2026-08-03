@@ -603,6 +603,10 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       text-transform: none;
     }
 
+    .upload-choice-divider {
+      margin: 2px 0;
+    }
+
     .upload-panel textarea {
       min-height: 300px;
     }
@@ -1126,6 +1130,10 @@ function uploadTitle(upload: UploadRecord) {
   const firstFile = upload.files[0]?.originalName ?? "Untitled upload";
   const otherCount = Math.max(0, upload.files.length - 1);
 
+  if (upload.files.length === 0 && upload.sourceUrl) {
+    return upload.sourceUrl;
+  }
+
   if (otherCount === 0) {
     return firstFile;
   }
@@ -1217,9 +1225,15 @@ Also keep track of "Retry" and "Fail" attributes for each step. "Retry" means mu
           </div>
           <form data-upload-form>
             <label>
-              Robot Episodes
+              Robot Episode Files
               <span class="field-description">Upload one or more files for each robot episode, including MCAP files, raw videos, logs, images, or any supporting artifacts.</span>
               <input type="file" name="videos" multiple data-upload-files>
+            </label>
+            <div class="divider upload-choice-divider">or</div>
+            <label>
+              Episode URL
+              <span class="field-description">Enter URL to episodes, e.g. HuggingFace LeRobot dataset, S3 bucket link, etc.</span>
+              <input type="text" name="sourceUrl" placeholder="https://huggingface.co/datasets/... or s3://bucket/path" data-upload-source-url>
             </label>
             <label>
               Prompt

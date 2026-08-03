@@ -13,6 +13,7 @@ type UploadRow = {
   id: string;
   user_id: string;
   prompt: string;
+  source_url: string | null;
   status: UploadStatus;
   upload_prefix: string;
   result_object_name: string | null;
@@ -51,6 +52,7 @@ function mapUpload(row: UploadRow, files: UploadFileRecord[]): UploadRecord {
     id: row.id,
     userId: row.user_id,
     prompt: row.prompt,
+    sourceUrl: row.source_url ?? undefined,
     status: row.status,
     uploadPrefix: row.upload_prefix,
     resultObjectName: row.result_object_name ?? undefined,
@@ -78,12 +80,13 @@ export class PostgresUploadStore implements UploadStore {
       await client.query("begin");
 
       const uploadResult = await client.query<UploadRow>(
-        `insert into shotwell_uploads (id, user_id, prompt, upload_prefix)
-        values ($1, $2, $3, $4)
+        `insert into shotwell_uploads (id, user_id, prompt, source_url, upload_prefix)
+        values ($1, $2, $3, $4, $5)
         returning
           id,
           user_id,
           prompt,
+          source_url,
           status,
           upload_prefix,
           result_object_name,
@@ -93,7 +96,7 @@ export class PostgresUploadStore implements UploadStore {
           completed_at,
           created_at,
           updated_at`,
-        [input.id, input.userId, input.prompt, input.uploadPrefix]
+        [input.id, input.userId, input.prompt, input.sourceUrl ?? null, input.uploadPrefix]
       );
 
       const fileRows: UploadFileRecord[] = [];
@@ -129,6 +132,7 @@ export class PostgresUploadStore implements UploadStore {
         id,
         user_id,
         prompt,
+        source_url,
         status,
         upload_prefix,
         result_object_name,
@@ -154,6 +158,7 @@ export class PostgresUploadStore implements UploadStore {
         id,
         user_id,
         prompt,
+        source_url,
         status,
         upload_prefix,
         result_object_name,

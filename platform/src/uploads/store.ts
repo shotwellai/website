@@ -19,6 +19,7 @@ export type UploadRecord = {
   id: string;
   userId: string;
   prompt: string;
+  sourceUrl?: string;
   status: UploadStatus;
   uploadPrefix: string;
   resultObjectName?: string;
@@ -43,6 +44,7 @@ export type CreateUploadInput = {
   id: string;
   userId: string;
   prompt: string;
+  sourceUrl?: string;
   uploadPrefix: string;
   files: CreateUploadFileInput[];
 };
@@ -66,6 +68,7 @@ export class MemoryUploadStore implements UploadStore {
       id: input.id,
       userId: input.userId,
       prompt: input.prompt,
+      sourceUrl: input.sourceUrl,
       status: "pending",
       uploadPrefix: input.uploadPrefix,
       createdAt,
