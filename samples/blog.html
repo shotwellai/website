@@ -156,6 +156,12 @@ img.src='assets/frame-ultra.jpg';
 init(); syncMark();
 addEventListener('themechange',function(){render();syncMark();});
 var to; addEventListener('resize',function(){clearTimeout(to);to=setTimeout(render,150);});
+/* local preview: point the app CTAs at the locally running platform */
+if(location.hostname==='localhost'||location.hostname==='127.0.0.1'){
+  document.querySelectorAll('a[href^="https://app.shotwell.ai"]').forEach(function(a){
+    a.href='http://localhost:3456/';
+  });
+}
 </script>
 </body>
 </html>
