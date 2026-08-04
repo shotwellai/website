@@ -75,11 +75,13 @@
     .contact-underline { position: absolute; left: -2%; bottom: -.28em; width: 104%; height: .42em; color: #9b3328; }
     @media (max-width: 900px) {
       .case { width: 100%; min-height: 100vh; margin: 0; border: 0; box-shadow: none; }
-      header, header nav { align-items: flex-start; flex-direction: column; }
-      header { padding: 16px 18px; }
-      header nav, .hero-actions { width: 100%; }
-      header a, .hero-actions a { width: 100%; }
+      header { justify-content: center; padding: 16px 18px; }
+      header nav { display: none; }
+      .brand { width: auto; min-height: 0; border: 0; padding: 0; }
+      .hero-actions { width: 100%; }
+      .hero-actions a { width: 100%; }
       .hero { grid-template-columns: 1fr; gap: 32px; padding: 34px 20px; }
+      .hero-copy { order: -1; }
       section { padding: 38px 20px; }
       h1 { font-size: clamp(42px, 14vw, 58px); }
       .trusted-outcomes { grid-template-columns: 1fr; }
