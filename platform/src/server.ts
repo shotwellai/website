@@ -25,7 +25,8 @@ app.use(
         objectSrc: ["'none'"],
         connectSrc: ["'self'", "https://storage.googleapis.com"],
         scriptSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
         upgradeInsecureRequests: config.isProduction ? [] : null
       }
     }

@@ -18,6 +18,7 @@ type SendAdminNotificationInput = {
   subject: string;
   text: string;
   html: string;
+  replyTo?: string;
 };
 
 type ResendResponse = {
@@ -104,6 +105,7 @@ export async function sendAdminNotification(input: SendAdminNotificationInput) {
     to: config.email.adminNotificationTo,
     subject: input.subject,
     text: input.text,
-    html: input.html
+    html: input.html,
+    replyTo: input.replyTo
   });
 }

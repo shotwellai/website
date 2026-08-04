@@ -3,7 +3,7 @@ import { Router, type Request, type Response } from "express";
 import { readSessionCookie, setSessionCookie } from "../auth/cookies.js";
 import { authStore, type User } from "../auth/store.js";
 import { config } from "../config.js";
-import { notifyUploadSubmitted } from "../email/notifications.js";
+import { notifyContactSubmitted, notifyUploadSubmitted } from "../email/notifications.js";
 import { appPage, messagePage } from "../http/render.js";
 import { createGcsUploadSessions, createResultReadStream, type NewUploadFileInput } from "../uploads/gcs.js";
 import { createUploadId, uploadStore } from "../uploads/store.js";
@@ -294,6 +294,91 @@ appRouter.get("/", async (req, res, next) => {
 
 appRouter.get("/app.js", (_req, res) => {
   res.type("application/javascript").send(appScript());
+});
+
+// ── public contact endpoint ──
+// The marketing site's "Talk to us" form posts here; submissions are
+// forwarded to the founders through the admin-notification pipeline.
+
+const contactAllowedOrigins = new Set(
+  [
+    config.publicSiteUrl.origin,
+    "https://shotwell.ai",
+    "https://www.shotwell.ai",
+    ...(config.isProduction ? [] : ["http://localhost:8099", "http://127.0.0.1:8099"])
+  ]
+);
+
+function setContactCors(req: Request, res: Response) {
+  const origin = req.headers.origin;
+  if (origin && contactAllowedOrigins.has(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Vary", "Origin");
+    res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    res.setHeader("Access-Control-Max-Age", "86400");
+  }
+}
+
+const contactHits = new Map<string, number[]>();
+const contactRateLimit = { windowMs: 60 * 60 * 1000, max: 5 };
+
+function contactRateLimited(ip: string) {
+  const now = Date.now();
+  const hits = (contactHits.get(ip) ?? []).filter((t) => now - t < contactRateLimit.windowMs);
+  if (hits.length >= contactRateLimit.max) {
+    contactHits.set(ip, hits);
+    return true;
+  }
+  hits.push(now);
+  contactHits.set(ip, hits);
+  return false;
+}
+
+function cleanContactField(value: unknown, maxLength: number) {
+  return typeof value === "string" ? value.trim().slice(0, maxLength) : "";
+}
+
+appRouter.options("/api/contact", (req, res) => {
+  setContactCors(req, res);
+  res.sendStatus(204);
+});
+
+appRouter.post("/api/contact", async (req, res, next) => {
+  try {
+    setContactCors(req, res);
+
+    const body = (req.body ?? {}) as Record<string, unknown>;
+
+    // honeypot: real visitors never fill this
+    if (cleanContactField(body.website, 100)) {
+      res.json({ ok: true });
+      return;
+    }
+
+    if (contactRateLimited(req.ip ?? "unknown")) {
+      res.status(429).json({ error: "Too many requests. Email hello@shotwell.ai instead." });
+      return;
+    }
+
+    const submission = {
+      name: cleanContactField(body.name, 200),
+      company: cleanContactField(body.company, 200),
+      email: cleanContactField(body.email, 320),
+      message: cleanContactField(body.message, 5_000)
+    };
+
+    if (!submission.name || !submission.company || !submission.message
+      || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(submission.email)) {
+      res.status(400).json({ error: "Fill in your name, company, email, and message." });
+      return;
+    }
+
+    await notifyContactSubmitted(submission);
+    res.json({ ok: true });
+  } catch (error) {
+    next(error);
+  }
 });
 
 appRouter.post("/api/uploads", async (req, res, next) => {
