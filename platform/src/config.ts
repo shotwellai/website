@@ -26,6 +26,7 @@ const envSchema = z.object({
   EMAIL_FROM: z.string().optional(),
   EMAIL_REPLY_TO: z.string().optional(),
   RESEND_API_KEY: z.string().optional(),
+  ADMIN_NOTIFICATION_EMAIL: z.string().email().default("ali.abid@shotwell.ai"),
   GCS_UPLOAD_BUCKET: z.string().optional(),
   GCS_UPLOAD_PREFIX: z.string().default("uploads"),
   GCS_RESULTS_PREFIX: z.string().default("results"),
@@ -65,7 +66,8 @@ export const config = {
   email: {
     from: parsedEnv.EMAIL_FROM,
     replyTo: parsedEnv.EMAIL_REPLY_TO,
-    resendApiKey: parsedEnv.RESEND_API_KEY
+    resendApiKey: parsedEnv.RESEND_API_KEY,
+    adminNotificationTo: parsedEnv.ADMIN_NOTIFICATION_EMAIL
   },
   uploads: {
     bucketName: parsedEnv.GCS_UPLOAD_BUCKET,

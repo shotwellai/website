@@ -6,6 +6,20 @@ type SendLoginLinkInput = {
   token: string;
 };
 
+type SendEmailInput = {
+  to: string | string[];
+  subject: string;
+  text: string;
+  html: string;
+  replyTo?: string;
+};
+
+type SendAdminNotificationInput = {
+  subject: string;
+  text: string;
+  html: string;
+};
+
 type ResendResponse = {
   id?: string;
   name?: string;
@@ -22,12 +36,11 @@ export function emailLoginUrl(token: string) {
   return url.toString();
 }
 
-export async function sendLoginLink(input: SendLoginLinkInput) {
+async function sendEmail(input: SendEmailInput) {
   if (!config.email.from || !config.email.resendApiKey) {
     throw new Error("Email delivery is not configured.");
   }
 
-  const loginUrl = emailLoginUrl(input.token);
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -36,17 +49,37 @@ export async function sendLoginLink(input: SendLoginLinkInput) {
     },
     body: JSON.stringify({
       from: config.email.from,
-      to: input.email,
-      reply_to: config.email.replyTo || undefined,
-      subject: "Sign in to Shotwell",
-      text: [
-        "Sign in to Shotwell with this link:",
-        "",
-        loginUrl,
-        "",
-        "This link expires in 15 minutes. If you did not request it, you can ignore this email."
-      ].join("\n"),
-      html: `<!doctype html>
+      to: input.to,
+      reply_to: input.replyTo ?? config.email.replyTo ?? undefined,
+      subject: input.subject,
+      text: input.text,
+      html: input.html
+    })
+  });
+
+  const body = (await response.json().catch(() => ({}))) as ResendResponse;
+
+  if (!response.ok) {
+    throw new Error(body.message ?? body.name ?? "Email provider rejected the message.");
+  }
+
+  return body.id;
+}
+
+export async function sendLoginLink(input: SendLoginLinkInput) {
+  const loginUrl = emailLoginUrl(input.token);
+
+  return sendEmail({
+    to: input.email,
+    subject: "Sign in to Shotwell",
+    text: [
+      "Sign in to Shotwell with this link:",
+      "",
+      loginUrl,
+      "",
+      "This link expires in 15 minutes. If you did not request it, you can ignore this email."
+    ].join("\n"),
+    html: `<!doctype html>
 <html lang="en">
 <body style="margin:0;padding:24px;background:#f4f6f8;color:#171717;font-family:Arial,sans-serif;">
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #d9dee7;border-radius:8px;">
@@ -63,14 +96,14 @@ export async function sendLoginLink(input: SendLoginLinkInput) {
   </table>
 </body>
 </html>`
-    })
   });
+}
 
-  const body = (await response.json().catch(() => ({}))) as ResendResponse;
-
-  if (!response.ok) {
-    throw new Error(body.message ?? body.name ?? "Email provider rejected the message.");
-  }
-
-  return body.id;
+export async function sendAdminNotification(input: SendAdminNotificationInput) {
+  return sendEmail({
+    to: config.email.adminNotificationTo,
+    subject: input.subject,
+    text: input.text,
+    html: input.html
+  });
 }

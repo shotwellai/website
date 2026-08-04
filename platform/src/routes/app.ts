@@ -3,6 +3,7 @@ import { Router, type Request, type Response } from "express";
 import { readSessionCookie, setSessionCookie } from "../auth/cookies.js";
 import { authStore, type User } from "../auth/store.js";
 import { config } from "../config.js";
+import { notifyUploadSubmitted } from "../email/notifications.js";
 import { appPage, messagePage } from "../http/render.js";
 import { createGcsUploadSessions, createResultReadStream, type NewUploadFileInput } from "../uploads/gcs.js";
 import { createUploadId, uploadStore } from "../uploads/store.js";
@@ -334,6 +335,10 @@ appRouter.post("/api/uploads", async (req, res, next) => {
       }))
     });
 
+    if (upload.sourceUrl) {
+      await notifyUploadSubmitted(user, upload);
+    }
+
     res.json({
       upload: {
         id: upload.id,
@@ -369,7 +374,16 @@ appRouter.post("/api/uploads/:uploadId/uploaded", async (req, res, next) => {
       return;
     }
 
+    const existingUpload = await uploadStore.getUserUpload(user.id, req.params.uploadId);
+    const shouldNotify = Boolean(existingUpload && existingUpload.files.length > 0 && !existingUpload.filesUploadedAt);
+
     await uploadStore.markFilesUploaded(user.id, req.params.uploadId);
+
+    if (shouldNotify) {
+      const upload = await uploadStore.getUserUpload(user.id, req.params.uploadId);
+      await notifyUploadSubmitted(user, upload ?? existingUpload!);
+    }
+
     res.json({ ok: true });
   } catch (error) {
     next(error);

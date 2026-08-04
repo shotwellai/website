@@ -42,6 +42,7 @@ Optional:
 - `EMAIL_FROM`, the sender used for magic-link login email.
 - `EMAIL_REPLY_TO`, optional reply-to address for login email.
 - `RESEND_API_KEY`, required to enable production email login.
+- `ADMIN_NOTIFICATION_EMAIL`, optional recipient for signup and upload alerts. Defaults to `ali.abid@shotwell.ai`.
 - `ALLOW_DEV_EMAIL_LOGIN`, for local placeholder email login only.
 
 ## Current Auth Shape

@@ -9,6 +9,7 @@ import {
 } from "../auth/google.js";
 import { authStore, type User } from "../auth/store.js";
 import { config } from "../config.js";
+import { notifyNewSignup } from "../email/notifications.js";
 import { emailDeliveryConfigured, sendLoginLink } from "../email/sender.js";
 import { defaultReturnTo, normalizeReturnTo, withCode } from "../http/hosts.js";
 import { loginPage, messagePage, privacyPolicyPage } from "../http/render.js";
@@ -102,11 +103,15 @@ authRouter.post("/login/email", emailLimiter, async (req, res, next) => {
       return;
     }
 
-    const user = await authStore.upsertUser({
+    const { user, created } = await authStore.upsertUser({
       email,
       provider: "email",
       name: email.split("@")[0]
     });
+
+    if (created) {
+      await notifyNewSignup(user);
+    }
 
     await finishLogin(user, returnTo, res);
   } catch (error) {
@@ -127,11 +132,15 @@ authRouter.get("/auth/email/complete", async (req, res, next) => {
       return;
     }
 
-    const user = await authStore.upsertUser({
+    const { user, created } = await authStore.upsertUser({
       email: loginToken.email,
       provider: "email",
       name: loginToken.email.split("@")[0]
     });
+
+    if (created) {
+      await notifyNewSignup(user);
+    }
 
     await finishLogin(user, loginToken.returnTo, res);
   } catch (error) {
@@ -184,13 +193,17 @@ authRouter.get("/auth/google/callback", async (req, res, next) => {
       return;
     }
 
-    const user = await authStore.upsertUser({
+    const { user, created } = await authStore.upsertUser({
       email: profile.email,
       name: profile.name,
       avatarUrl: profile.avatarUrl,
       provider: "google",
       providerSubject: profile.subject
     });
+
+    if (created) {
+      await notifyNewSignup(user);
+    }
 
     await finishLogin(user, oauthState.returnTo, res);
   } catch (error) {

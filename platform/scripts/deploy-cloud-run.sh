@@ -15,8 +15,8 @@ gcloud run deploy "${SERVICE}" \
   --project "${PROJECT}" \
   --region "${REGION}" \
   --allow-unauthenticated \
-  --update-env-vars "NODE_ENV=production,AUTH_STORE=postgres,PUBLIC_SITE_URL=https://shotwell.ai,AUTH_BASE_URL=https://auth.shotwell.ai,APP_BASE_URL=https://app.shotwell.ai,EMAIL_FROM=Shotwell <auth@shotwell.ai>,ALLOW_DEV_EMAIL_LOGIN=false,GCS_UPLOAD_BUCKET=shotwell-platform-uploads-755576089506,GCS_UPLOAD_PREFIX=uploads,GCS_RESULTS_PREFIX=results" \
-  --update-secrets "SESSION_SECRET=shotwell-platform-session-secret:latest,DATABASE_URL=shotwell-platform-database-url:latest,GOOGLE_CLIENT_ID=shotwell-platform-google-client-id:latest,GOOGLE_CLIENT_SECRET=shotwell-platform-google-client-secret:latest"
+  --update-env-vars "NODE_ENV=production,AUTH_STORE=postgres,PUBLIC_SITE_URL=https://shotwell.ai,AUTH_BASE_URL=https://auth.shotwell.ai,APP_BASE_URL=https://app.shotwell.ai,EMAIL_FROM=Shotwell <auth@shotwell.ai>,ADMIN_NOTIFICATION_EMAIL=ali.abid@shotwell.ai,ALLOW_DEV_EMAIL_LOGIN=false,GCS_UPLOAD_BUCKET=shotwell-platform-uploads-755576089506,GCS_UPLOAD_PREFIX=uploads,GCS_RESULTS_PREFIX=results" \
+  --update-secrets "SESSION_SECRET=shotwell-platform-session-secret:latest,DATABASE_URL=shotwell-platform-database-url:latest,GOOGLE_CLIENT_ID=shotwell-platform-google-client-id:latest,GOOGLE_CLIENT_SECRET=shotwell-platform-google-client-secret:latest,RESEND_API_KEY=shotwell-platform-resend-api-key:latest"
 
 cat <<EOF
 

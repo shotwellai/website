@@ -10,6 +10,7 @@ import type {
   OAuthState,
   SessionKind,
   UpsertUserInput,
+  UpsertUserResult,
   User
 } from "./store.js";
 
@@ -26,6 +27,10 @@ type UserRow = {
   provider_subject: string | null;
   created_at: Date;
   updated_at: Date;
+};
+
+type UpsertUserRow = UserRow & {
+  created: boolean;
 };
 
 type SessionRow = {
@@ -114,9 +119,9 @@ export class PostgresAuthStore implements AuthStore {
     this.pool = new Pool(poolConfig(databaseUrl));
   }
 
-  async upsertUser(input: UpsertUserInput): Promise<User> {
+  async upsertUser(input: UpsertUserInput): Promise<UpsertUserResult> {
     const email = input.email.trim().toLowerCase();
-    const result = await this.pool.query<UserRow>(
+    const result = await this.pool.query<UpsertUserRow>(
       `insert into shotwell_auth_users (
         id,
         email,
@@ -131,7 +136,7 @@ export class PostgresAuthStore implements AuthStore {
         provider = excluded.provider,
         provider_subject = coalesce(excluded.provider_subject, shotwell_auth_users.provider_subject),
         updated_at = now()
-      returning id, email, name, avatar_url, provider, provider_subject, created_at, updated_at`,
+      returning id, email, name, avatar_url, provider, provider_subject, created_at, updated_at, (xmax = 0) as created`,
       [
         randomUUID(),
         email,
@@ -142,7 +147,10 @@ export class PostgresAuthStore implements AuthStore {
       ]
     );
 
-    return mapUser(result.rows[0]);
+    return {
+      user: mapUser(result.rows[0]),
+      created: result.rows[0].created
+    };
   }
 
   async createSession(userId: string, kind: SessionKind): Promise<AuthSession> {

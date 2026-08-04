@@ -53,13 +53,18 @@ export type UpsertUserInput = {
   providerSubject?: string;
 };
 
+export type UpsertUserResult = {
+  user: User;
+  created: boolean;
+};
+
 const token = () => randomBytes(32).toString("base64url");
 const now = () => new Date();
 const minutesFromNow = (minutes: number) => new Date(Date.now() + minutes * 60_000);
 const daysFromNow = (days: number) => new Date(Date.now() + days * 24 * 60 * 60_000);
 
 export interface AuthStore {
-  upsertUser(input: UpsertUserInput): Promise<User>;
+  upsertUser(input: UpsertUserInput): Promise<UpsertUserResult>;
   createSession(userId: string, kind: SessionKind): Promise<AuthSession>;
   getSession(sessionId: string | undefined, kind: SessionKind): Promise<AuthSession | null>;
   deleteSession(sessionId: string | undefined): Promise<void>;
@@ -80,7 +85,7 @@ export class MemoryAuthStore implements AuthStore {
   private readonly emailLoginTokens = new Map<string, EmailLoginToken>();
   private readonly handoffs = new Map<string, Handoff>();
 
-  async upsertUser(input: UpsertUserInput): Promise<User> {
+  async upsertUser(input: UpsertUserInput): Promise<UpsertUserResult> {
     const email = input.email.trim().toLowerCase();
     const existingId = this.userIdByEmail.get(email);
 
@@ -100,7 +105,10 @@ export class MemoryAuthStore implements AuthStore {
       };
 
       this.usersById.set(updated.id, updated);
-      return updated;
+      return {
+        user: updated,
+        created: false
+      };
     }
 
     const user: User = {
@@ -116,7 +124,10 @@ export class MemoryAuthStore implements AuthStore {
 
     this.usersById.set(user.id, user);
     this.userIdByEmail.set(user.email, user.id);
-    return user;
+    return {
+      user,
+      created: true
+    };
   }
 
   async createSession(userId: string, kind: SessionKind): Promise<AuthSession> {
