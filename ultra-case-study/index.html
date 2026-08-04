@@ -64,6 +64,15 @@
     .case-study-demo .seg-label:not([data-state="active"]) { visibility: hidden; opacity: 0; }
     .case-study-demo .seg-annotations-list { gap: 4px 8px; }
     .case-study-demo .seg-annotation { margin: 0; }
+    .case-ctas { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-top: 34px; padding-top: 24px; border-top: 1px solid #3d3428; }
+    .case-ctas a { display: inline-flex; min-height: 52px; align-items: center; justify-content: center; border: 1px solid #201c17; padding: 10px 16px; text-transform: uppercase; font-size: 12px; font-weight: 800; letter-spacing: .04em; }
+    .upload-cta { position: relative; min-width: 210px; background: #201c17; color: #efe5ce; overflow: visible; }
+    .upload-stamp { position: absolute; top: -10px; right: -4px; padding: 3px 8px; border: 1px solid #9b3328; background: #efe5ce; color: #9b3328; box-shadow: 1px 1px 0 rgba(32, 28, 23, .18); transform: none; transform-origin: center; font-size: 9px; font-weight: 800; letter-spacing: .08em; line-height: 1; white-space: nowrap; }
+    .demo-cta { flex-direction: column; align-items: center; min-width: 124px; background: #efe5ce; color: #201c17; gap: 3px; text-align: center; }
+    .demo-cta strong { font-size: 12px; line-height: 1; }
+    .demo-cta span { color: #6d5e4b; font-size: 10px; font-weight: 800; letter-spacing: .08em; line-height: 1; }
+    .talk-cta { background: transparent; color: #201c17; gap: 12px; }
+    .talk-cta span { font-size: 18px; line-height: 1; transform: translateY(-1px); }
     @media (max-width: 720px) {
       .page { width: 100%; max-width: none; min-height: 100vh; margin: 0; padding: 28px 20px 56px; border: 0; }
       article { font-size: 17px; }
@@ -221,6 +230,11 @@ return episode_id, start_time, end_time, operator_id</pre>
       </figure>
       <p>Shotwell also delivered materially faster turnaround than competing annotation solutions. Ultra had tried two approaches prior to Shotwell. They had teleoperators perform task annotation as they performed actions, but those annotations were lower quality, around 80% accurate, and far less granular than what Shotwell provided. They also tried hiring labeling companies that were more expensive, lower fidelity in annotation, and unable to provide single day turnaround times because they relied entirely on offshore manual labor.</p>
       <p>When it comes to training robot policies, data quality is everything, and Shotwell guarantees it.</p>
+      <div class="case-ctas" aria-label="Next steps">
+        <a class="upload-cta" href="https://app.shotwell.ai/"><span>Upload Videos</span><span class="upload-stamp">RESULTS IN 24HR</span></a>
+        <a class="demo-cta" href="https://demo.shotwell.ai/" target="_blank" rel="noopener"><strong>VIEW DEMO</strong><span>415 HRS</span></a>
+        <a class="talk-cta" href="https://calendly.com/nour-shotwell/30-minute-meeting-w-team" target="_blank" rel="noopener">Talk to us <span aria-hidden="true">→</span></a>
+      </div>
     </article>
   </main>
   <script src="../concepts/concept-animation.js"></script>

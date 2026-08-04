@@ -6,7 +6,7 @@
   --concept-line: rgba(36, 33, 29, 0.45);
   --concept-muted: rgba(36, 33, 29, 0.62);
   --concept-accent: #9e3727;
-  --concept-good: #24211d;
+  --concept-good: #2f9e68;
   --concept-bad: #b03426;
   --concept-video-filter: none;
   color: var(--concept-text);
@@ -354,7 +354,7 @@
   --concept-line: rgba(36, 33, 29, 0.5);
   --concept-muted: #6b5d4d;
   --concept-accent: #9e3727;
-  --concept-good: #24211d;
+  --concept-good: #2f9e68;
 }
 
 .concept-seg--dossier {
@@ -363,7 +363,7 @@
   --concept-panel: rgba(255, 249, 232, 0.45);
   --concept-line: #3d3428;
   --concept-muted: #6d5e4b;
-  --concept-good: #201c17;
+  --concept-good: #2f9e68;
 }
 
 .concept-seg--ledger {
