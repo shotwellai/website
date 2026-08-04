@@ -1687,13 +1687,17 @@ function adminUploadTitle(upload: AdminUploadSummary) {
 
 function adminFileContentType(file: AdminUploadSummary["files"][number]) {
   const contentType = file.contentType.trim().toLowerCase();
+  const name = file.originalName.toLowerCase();
+  if (name.endsWith(".mov") && (contentType === "video/quicktime" || contentType === "application/octet-stream")) {
+    return "video/mp4";
+  }
+
   if (contentType && contentType !== "application/octet-stream") {
     return contentType;
   }
 
-  const name = file.originalName.toLowerCase();
   if (name.endsWith(".mp4") || name.endsWith(".m4v")) return "video/mp4";
-  if (name.endsWith(".mov")) return "video/quicktime";
+  if (name.endsWith(".mov")) return "video/mp4";
   if (name.endsWith(".webm")) return "video/webm";
   if (name.endsWith(".mp3")) return "audio/mpeg";
   if (name.endsWith(".wav")) return "audio/wav";
