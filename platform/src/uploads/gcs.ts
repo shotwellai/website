@@ -113,3 +113,7 @@ export function resultObjectName(uploadId: string, fileName: string) {
 export function createResultReadStream(objectName: string) {
   return storage.bucket(requireBucketName()).file(objectName).createReadStream();
 }
+
+export function createUploadReadStream(objectName: string, range?: { start: number; end: number }) {
+  return storage.bucket(requireBucketName()).file(objectName).createReadStream(range);
+}

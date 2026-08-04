@@ -955,10 +955,28 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       border-bottom: 0;
     }
 
+    .admin-table tbody tr {
+      transition: background 0.16s var(--ease-out);
+    }
+
+    .admin-table tbody tr:hover,
+    .admin-table tbody tr.is-selected {
+      background: rgba(155, 51, 40, 0.08);
+    }
+
     .admin-table .numeric {
       text-align: right;
       font-variant-numeric: tabular-nums;
       white-space: nowrap;
+    }
+
+    .admin-cell-link {
+      min-height: 42px;
+      display: block;
+      margin: -12px -14px;
+      padding: 12px 14px;
+      color: inherit;
+      text-decoration: none;
     }
 
     .admin-primary {
@@ -1056,6 +1074,11 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       padding: 10px;
     }
 
+    .admin-file-list li {
+      display: grid;
+      gap: 9px;
+    }
+
     .admin-file-name,
     .admin-source {
       overflow-wrap: anywhere;
@@ -1084,6 +1107,47 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       font-size: 0.68rem;
       line-height: 1.35;
       overflow-wrap: anywhere;
+    }
+
+    .admin-media-preview {
+      display: block;
+      width: 100%;
+      max-height: 320px;
+      border: 1px solid var(--color-line);
+      background: #15120f;
+    }
+
+    img.admin-media-preview {
+      height: auto;
+      object-fit: contain;
+      background: var(--color-panel-soft);
+    }
+
+    audio.admin-media-preview {
+      max-height: none;
+      padding: 8px;
+      background: var(--color-panel-soft);
+    }
+
+    .admin-file-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .admin-filter-note {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid var(--color-line);
+      background: var(--color-panel-soft);
+      padding: 12px;
+    }
+
+    .admin-filter-note p {
+      color: var(--color-text);
+      font-size: 0.9rem;
     }
 
     .progress {
@@ -1554,26 +1618,36 @@ function renderAdminMetric(label: string, value: string | number) {
   </article>`;
 }
 
-function renderAdminUsers(users: AdminUserSummary[]) {
+function adminUserUploadsHref(userId: string) {
+  return `/admin/users/${encodeURIComponent(userId)}#uploads`;
+}
+
+function renderLinkedAdminCell(user: AdminUserSummary, html: string, className = "") {
+  const href = adminUserUploadsHref(user.id);
+  const tdClass = className ? ` class="${className}"` : "";
+  return `<td${tdClass}><a class="admin-cell-link" href="${escapeHtml(href)}">${html}</a></td>`;
+}
+
+function renderAdminUsers(users: AdminUserSummary[], selectedUserId?: string) {
   const rows = users.map((user) => {
     const uploadDetail = user.urlUploadCount > 0
       ? `${formatCount(user.uploadCount)} (${formatCount(user.urlUploadCount)} links)`
       : formatCount(user.uploadCount);
+    const selectedClass = user.id === selectedUserId ? ` class="is-selected"` : "";
 
-    return `<tr>
-      <td>
+    return `<tr${selectedClass}>
+      ${renderLinkedAdminCell(user, `
         <div class="admin-primary">
           <strong>${escapeHtml(user.email)}</strong>
           <span>${escapeHtml(user.name ?? "No name")}</span>
-        </div>
-      </td>
-      <td>${escapeHtml(user.provider)}</td>
-      <td>${formatDate(user.createdAt)}</td>
-      <td>${formatDate(user.lastSessionAt)}</td>
-      <td class="numeric">${formatCount(user.sessionCount)}</td>
-      <td class="numeric">${escapeHtml(uploadDetail)}</td>
-      <td class="numeric">${formatCount(user.fileCount)}</td>
-      <td>${formatDate(user.lastUploadAt)}</td>
+        </div>`)}
+      ${renderLinkedAdminCell(user, escapeHtml(user.provider))}
+      ${renderLinkedAdminCell(user, formatDate(user.createdAt))}
+      ${renderLinkedAdminCell(user, formatDate(user.lastSessionAt))}
+      ${renderLinkedAdminCell(user, formatCount(user.sessionCount), "numeric")}
+      ${renderLinkedAdminCell(user, escapeHtml(uploadDetail), "numeric")}
+      ${renderLinkedAdminCell(user, formatCount(user.fileCount), "numeric")}
+      ${renderLinkedAdminCell(user, formatDate(user.lastUploadAt))}
     </tr>`;
   }).join("");
 
@@ -1611,6 +1685,53 @@ function adminUploadTitle(upload: AdminUploadSummary) {
   return `${firstFile} & ${otherCount} ${otherCount === 1 ? "other" : "others"}`;
 }
 
+function adminFileContentType(file: AdminUploadSummary["files"][number]) {
+  const contentType = file.contentType.trim().toLowerCase();
+  if (contentType && contentType !== "application/octet-stream") {
+    return contentType;
+  }
+
+  const name = file.originalName.toLowerCase();
+  if (name.endsWith(".mp4") || name.endsWith(".m4v")) return "video/mp4";
+  if (name.endsWith(".mov")) return "video/quicktime";
+  if (name.endsWith(".webm")) return "video/webm";
+  if (name.endsWith(".mp3")) return "audio/mpeg";
+  if (name.endsWith(".wav")) return "audio/wav";
+  if (name.endsWith(".m4a")) return "audio/mp4";
+  if (name.endsWith(".png")) return "image/png";
+  if (name.endsWith(".jpg") || name.endsWith(".jpeg")) return "image/jpeg";
+  if (name.endsWith(".gif")) return "image/gif";
+  if (name.endsWith(".webp")) return "image/webp";
+  return contentType || "application/octet-stream";
+}
+
+function adminFileHref(file: AdminUploadSummary["files"][number]) {
+  return `/admin/uploads/${encodeURIComponent(file.uploadId)}/files/${encodeURIComponent(file.id)}`;
+}
+
+function renderAdminFilePreview(file: AdminUploadSummary["files"][number]) {
+  const href = adminFileHref(file);
+  const contentType = adminFileContentType(file);
+  const escapedHref = escapeHtml(href);
+  const escapedName = escapeHtml(file.originalName);
+
+  if (contentType.startsWith("video/")) {
+    return `<video class="admin-media-preview" controls preload="metadata">
+      <source src="${escapedHref}" type="${escapeHtml(contentType)}">
+    </video>`;
+  }
+
+  if (contentType.startsWith("image/")) {
+    return `<img class="admin-media-preview" src="${escapedHref}" alt="${escapedName}" loading="lazy">`;
+  }
+
+  if (contentType.startsWith("audio/")) {
+    return `<audio class="admin-media-preview" controls preload="metadata" src="${escapedHref}"></audio>`;
+  }
+
+  return "";
+}
+
 function renderAdminUploadFiles(upload: AdminUploadSummary) {
   if (upload.files.length === 0) {
     return upload.sourceUrl
@@ -1619,9 +1740,13 @@ function renderAdminUploadFiles(upload: AdminUploadSummary) {
   }
 
   const files = upload.files.map((file) => `<li>
+    ${renderAdminFilePreview(file)}
     <div class="admin-file-name">${escapeHtml(file.originalName)}</div>
     <div class="admin-file-meta">${escapeHtml(file.contentType)} - ${formatBytes(file.sizeBytes)}</div>
     <code class="admin-object-path">${escapeHtml(file.objectName)}</code>
+    <div class="admin-file-actions">
+      <a class="button secondary compact" href="${escapeHtml(adminFileHref(file))}" target="_blank" rel="noopener">Open file</a>
+    </div>
   </li>`).join("");
 
   return `<ul class="admin-file-list">${files}</ul>`;
@@ -1672,6 +1797,22 @@ function renderAdminUploads(uploads: AdminUploadSummary[]) {
 
 export function adminPage(user: User, dashboard: AdminDashboard) {
   const publicSiteUrl = config.publicSiteUrl.toString();
+  const selectedUser = dashboard.selectedUser;
+  const selectedUserLabel = selectedUser
+    ? selectedUser.name
+      ? `${selectedUser.name} <${selectedUser.email}>`
+      : selectedUser.email
+    : "";
+  const filterNote = selectedUser
+    ? `<div class="admin-filter-note">
+        <p>Showing uploads from <strong>${escapeHtml(selectedUserLabel)}</strong>.</p>
+        <a class="button secondary compact" href="/admin#uploads">View all uploads</a>
+      </div>`
+    : "";
+  const uploadHeading = selectedUser ? "Uploads for account" : "Uploads";
+  const uploadCountText = selectedUser
+    ? `${formatCount(dashboard.uploads.length)} upload batches from this account`
+    : `Latest ${formatCount(dashboard.uploads.length)} upload batches`;
   const navHtml = renderAccountNav(
     user,
     `<a class="button secondary" href="/">App</a>
@@ -1700,14 +1841,15 @@ export function adminPage(user: User, dashboard: AdminDashboard) {
           <h2>Accounts</h2>
           <p>${formatCount(dashboard.users.length)} total account records</p>
         </div>
-        ${renderAdminUsers(dashboard.users)}
+        ${renderAdminUsers(dashboard.users, selectedUser?.id)}
       </section>
 
-      <section class="admin-section">
+      <section class="admin-section" id="uploads">
         <div class="admin-section-header">
-          <h2>Uploads</h2>
-          <p>Latest ${formatCount(dashboard.uploads.length)} upload batches</p>
+          <h2>${escapeHtml(uploadHeading)}</h2>
+          <p>${escapeHtml(uploadCountText)}</p>
         </div>
+        ${filterNote}
         ${renderAdminUploads(dashboard.uploads)}
       </section>
     </main>`,

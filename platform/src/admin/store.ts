@@ -64,10 +64,12 @@ export type AdminDashboard = {
   stats: AdminStats;
   users: AdminUserSummary[];
   uploads: AdminUploadSummary[];
+  selectedUser?: AdminUserSummary;
 };
 
 export interface AdminStore {
-  getDashboard(): Promise<AdminDashboard>;
+  getDashboard(input?: { userId?: string }): Promise<AdminDashboard>;
+  getUploadFile(uploadId: string, fileId: string): Promise<AdminUploadFileSummary | null>;
 }
 
 type StatsRow = {
@@ -202,14 +204,17 @@ export class PostgresAdminStore implements AdminStore {
     this.pool = new Pool(poolConfig(databaseUrl));
   }
 
-  async getDashboard(): Promise<AdminDashboard> {
+  async getDashboard(input: { userId?: string } = {}): Promise<AdminDashboard> {
     const [stats, users, uploads] = await Promise.all([
       this.getStats(),
       this.getUsers(),
-      this.getUploads()
+      this.getUploads(input.userId)
     ]);
+    const selectedUser = input.userId
+      ? users.find((user) => user.id === input.userId)
+      : undefined;
 
-    return { stats, users, uploads };
+    return { stats, users, uploads, selectedUser };
   }
 
   private async getStats(): Promise<AdminStats> {
@@ -259,7 +264,20 @@ export class PostgresAdminStore implements AdminStore {
     return result.rows.map(mapUserSummary);
   }
 
-  private async getUploads(): Promise<AdminUploadSummary[]> {
+  async getUploadFile(uploadId: string, fileId: string): Promise<AdminUploadFileSummary | null> {
+    const result = await this.pool.query<UploadFileSummaryRow>(
+      `select id, upload_id, original_name, object_name, content_type, size_bytes, created_at
+      from shotwell_upload_files
+      where upload_id = $1 and id = $2`,
+      [uploadId, fileId]
+    );
+
+    return result.rows[0] ? mapUploadFileSummary(result.rows[0]) : null;
+  }
+
+  private async getUploads(userId?: string): Promise<AdminUploadSummary[]> {
+    const whereClause = userId ? "where up.user_id = $1" : "";
+    const params = userId ? [userId] : [];
     const uploadResult = await this.pool.query<UploadSummaryRow>(
       `select
         up.id,
@@ -281,6 +299,7 @@ export class PostgresAdminStore implements AdminStore {
       from shotwell_uploads up
       join shotwell_auth_users u on u.id = up.user_id
       left join shotwell_upload_files f on f.upload_id = up.id
+      ${whereClause}
       group by
         up.id,
         up.user_id,
@@ -297,7 +316,8 @@ export class PostgresAdminStore implements AdminStore {
         up.created_at,
         up.updated_at
       order by up.created_at desc
-      limit 200`
+      limit 200`,
+      params
     );
 
     if (uploadResult.rows.length === 0) {
@@ -339,6 +359,10 @@ class EmptyAdminStore implements AdminStore {
       users: [],
       uploads: []
     };
+  }
+
+  async getUploadFile(): Promise<AdminUploadFileSummary | null> {
+    return null;
   }
 }
 

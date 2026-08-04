@@ -1,12 +1,12 @@
 import { Router, type Request, type Response } from "express";
 
-import { adminStore } from "../admin/store.js";
+import { adminStore, type AdminUploadFileSummary } from "../admin/store.js";
 import { readSessionCookie, setSessionCookie } from "../auth/cookies.js";
 import { authStore, type User } from "../auth/store.js";
 import { config } from "../config.js";
 import { notifyUploadSubmitted } from "../email/notifications.js";
 import { adminPage, appPage, messagePage } from "../http/render.js";
-import { createGcsUploadSessions, createResultReadStream, type NewUploadFileInput } from "../uploads/gcs.js";
+import { createGcsUploadSessions, createResultReadStream, createUploadReadStream, type NewUploadFileInput } from "../uploads/gcs.js";
 import { createUploadId, uploadStore } from "../uploads/store.js";
 
 export const appRouter = Router();
@@ -54,6 +54,89 @@ async function getApiUser(req: Request, res: Response): Promise<User | null> {
 function isShotwellAdmin(user: User) {
   const [, domain = ""] = user.email.trim().toLowerCase().split("@");
   return domain === "shotwell.ai";
+}
+
+async function getAdminUser(req: Request, res: Response): Promise<User | null> {
+  const user = await getAppUser(req, res);
+  if (!user) {
+    return null;
+  }
+
+  if (!isShotwellAdmin(user)) {
+    res
+      .status(403)
+      .type("html")
+      .send(messagePage("Admin access required", "Sign in with a shotwell.ai email address to view this page.", "/", "Back to app"));
+    return null;
+  }
+
+  return user;
+}
+
+function isUuid(value: string | undefined) {
+  return Boolean(value && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value));
+}
+
+function contentTypeForUploadFile(file: AdminUploadFileSummary) {
+  const contentType = file.contentType.trim().toLowerCase();
+  if (contentType && contentType !== "application/octet-stream") {
+    return contentType;
+  }
+
+  const name = file.originalName.toLowerCase();
+  if (name.endsWith(".mp4")) return "video/mp4";
+  if (name.endsWith(".mov")) return "video/quicktime";
+  if (name.endsWith(".webm")) return "video/webm";
+  if (name.endsWith(".m4v")) return "video/mp4";
+  if (name.endsWith(".mp3")) return "audio/mpeg";
+  if (name.endsWith(".wav")) return "audio/wav";
+  if (name.endsWith(".m4a")) return "audio/mp4";
+  if (name.endsWith(".png")) return "image/png";
+  if (name.endsWith(".jpg") || name.endsWith(".jpeg")) return "image/jpeg";
+  if (name.endsWith(".gif")) return "image/gif";
+  if (name.endsWith(".webp")) return "image/webp";
+  return file.contentType || "application/octet-stream";
+}
+
+function parseRangeHeader(header: string | undefined, size: number) {
+  if (!header || size <= 0) {
+    return undefined;
+  }
+
+  const match = /^bytes=(\d*)-(\d*)$/.exec(header);
+  if (!match) {
+    return null;
+  }
+
+  const [, rawStart, rawEnd] = match;
+  let start: number;
+  let end: number;
+
+  if (!rawStart && rawEnd) {
+    const suffixLength = Number(rawEnd);
+    if (!Number.isInteger(suffixLength) || suffixLength <= 0) {
+      return null;
+    }
+
+    start = Math.max(0, size - suffixLength);
+    end = size - 1;
+  } else {
+    start = Number(rawStart);
+    end = rawEnd ? Number(rawEnd) : size - 1;
+  }
+
+  if (!Number.isInteger(start) || !Number.isInteger(end) || start < 0 || end < start || start >= size) {
+    return null;
+  }
+
+  return {
+    start,
+    end: Math.min(end, size - 1)
+  };
+}
+
+function safeDownloadName(fileName: string) {
+  return (fileName.trim() || "shotwell-upload").replace(/[\r\n"]/g, "");
 }
 
 function cleanFileName(value: unknown) {
@@ -304,21 +387,95 @@ appRouter.get("/app.js", (_req, res) => {
 
 appRouter.get("/admin", async (req, res, next) => {
   try {
-    const user = await getAppUser(req, res);
+    const user = await getAdminUser(req, res);
     if (!user) {
-      return;
-    }
-
-    if (!isShotwellAdmin(user)) {
-      res
-        .status(403)
-        .type("html")
-        .send(messagePage("Admin access required", "Sign in with a shotwell.ai email address to view this page.", "/", "Back to app"));
       return;
     }
 
     const dashboard = await adminStore.getDashboard();
     res.type("html").send(adminPage(user, dashboard));
+  } catch (error) {
+    next(error);
+  }
+});
+
+appRouter.get("/admin/users/:userId", async (req, res, next) => {
+  try {
+    const user = await getAdminUser(req, res);
+    if (!user) {
+      return;
+    }
+
+    if (!isUuid(req.params.userId)) {
+      res
+        .status(404)
+        .type("html")
+        .send(messagePage("User not found", "That account could not be found.", "/admin", "Back to admin"));
+      return;
+    }
+
+    const dashboard = await adminStore.getDashboard({ userId: req.params.userId });
+    if (!dashboard.selectedUser) {
+      res
+        .status(404)
+        .type("html")
+        .send(messagePage("User not found", "That account could not be found.", "/admin", "Back to admin"));
+      return;
+    }
+
+    res.type("html").send(adminPage(user, dashboard));
+  } catch (error) {
+    next(error);
+  }
+});
+
+appRouter.get("/admin/uploads/:uploadId/files/:fileId", async (req, res, next) => {
+  try {
+    const user = await getAdminUser(req, res);
+    if (!user) {
+      return;
+    }
+
+    if (!isUuid(req.params.uploadId) || !isUuid(req.params.fileId)) {
+      res.status(404).type("html").send(messagePage("File not found", "That upload file could not be found.", "/admin", "Back to admin"));
+      return;
+    }
+
+    const file = await adminStore.getUploadFile(req.params.uploadId, req.params.fileId);
+    if (!file) {
+      res.status(404).type("html").send(messagePage("File not found", "That upload file could not be found.", "/admin", "Back to admin"));
+      return;
+    }
+
+    const contentType = contentTypeForUploadFile(file);
+    const fileName = safeDownloadName(file.originalName);
+    const size = Math.max(0, Math.trunc(file.sizeBytes));
+    const range = parseRangeHeader(req.headers.range, size);
+
+    res.setHeader("Accept-Ranges", "bytes");
+    res.setHeader("Content-Type", contentType);
+    res.setHeader("Content-Disposition", `inline; filename="${fileName}"`);
+
+    if (range === null) {
+      res.status(416);
+      if (size > 0) {
+        res.setHeader("Content-Range", `bytes */${size}`);
+      }
+      res.end();
+      return;
+    }
+
+    if (range) {
+      res.status(206);
+      res.setHeader("Content-Range", `bytes ${range.start}-${range.end}/${size}`);
+      res.setHeader("Content-Length", String(range.end - range.start + 1));
+    } else if (size > 0) {
+      res.setHeader("Content-Length", String(size));
+    }
+
+    const stream = createUploadReadStream(file.objectName, range ?? undefined);
+    stream.on("error", next);
+    stream.pipe(res);
   } catch (error) {
     next(error);
   }
