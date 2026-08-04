@@ -970,10 +970,11 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 
     @media (max-width: 680px) {
       .shell {
-        width: min(100% - 24px, 1220px);
-        min-height: calc(100vh - 36px);
-        margin: 18px auto 48px;
-        box-shadow: 6px 8px 0 rgba(32, 28, 23, 0.18);
+        width: 100%;
+        min-height: 100vh;
+        margin: 0;
+        border: 0;
+        box-shadow: none;
       }
 
       .topbar {
@@ -1024,7 +1025,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 
       main {
         width: 100%;
-        padding: 26px 18px 40px;
+        padding: 26px 16px 40px;
       }
 
       .auth-main,
