@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Samples — design language</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Outfit:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<style>
+  .page{padding:72px 0 100px}
+  h1{font-family:var(--display);font-weight:300;font-size:clamp(2rem,4vw,2.9rem);
+    letter-spacing:-.015em;line-height:1.08;max-width:18ch}
+  .lede{margin-top:20px;max-width:54ch;color:var(--dim);font-weight:300}
+  .list{margin-top:52px;border-top:1px solid var(--wire)}
+  .item{display:grid;grid-template-columns:112px 1fr;gap:32px;padding:28px 0;
+    border-bottom:1px solid var(--wire);text-decoration:none;align-items:baseline}
+  .item:hover h2{color:var(--ember)}
+  .item .n{font-family:var(--mono);font-size:.6875rem;letter-spacing:.14em;color:var(--faint)}
+  .item h2{font-family:var(--display);font-weight:300;font-size:1.55rem;
+    letter-spacing:-.01em;transition:color .2s var(--ease)}
+  .item p{margin-top:8px;color:var(--dim);font-weight:300;font-size:.9375rem;max-width:58ch}
+  .item .refs{margin-top:10px;font-family:var(--mono);font-size:.6875rem;
+    color:var(--faint);letter-spacing:.05em}
+  .new{display:inline-block;margin-left:9px;font-family:var(--mono);font-size:.5625rem;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--ground);
+    background:var(--ember);padding:2px 6px;vertical-align:middle}
+
+  .note{margin-top:52px;padding:26px 28px;border:1px solid var(--wire)}
+  .note h3{font-family:var(--mono);font-size:.625rem;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--dim);font-weight:400;margin-bottom:14px}
+  .note p{color:var(--dim);font-weight:300;font-size:.9375rem;max-width:66ch}
+  .note p + p{margin-top:11px}
+  .note b{color:var(--fg);font-weight:400}
+  @media (max-width:720px){.item{grid-template-columns:1fr;gap:8px}}
+</style>
+</head>
+<body>
+
+<nav class="samplebar">
+  <span class="sb-label">Samples</span>
+  <a href="index.html" aria-current="page">Index</a>
+  <a href="demo.html">Demo</a>
+  <a href="blog.html">Blog</a>
+  <a href="hero-a.html">Hero A</a>
+  <a href="hero-b.html">Hero B</a>
+  <a href="hero-c.html">Hero C</a>
+  <a href="press.html">Press</a>
+  <a href="fields.html">Fields</a>
+  <a href="palettes.html">Colour</a>
+  <span class="sb-spacer"></span>
+  <button id="themeToggle">Light</button>
+</nav>
+
+<main class="page wrap">
+  <h1>Design language, six ways.</h1>
+  <p class="lede">Sample pages built from the vision board. Nothing is wired to the
+    live site. Use the <b>Light</b> button, top right, to flip every page — it inverts
+    the halftone polarity as well as the palette.</p>
+
+  <div class="list">
+    <a class="item" href="hero-a.html">
+      <span class="n">01 A</span>
+      <div>
+        <h2>Hero — full bleed<span class="new">redone</span></h2>
+        <p>The frame fills the viewport. Type sits on a solid inset panel rather than
+          floating on the dot field, which is what made the first attempt unreadable.</p>
+        <p class="refs">refs — Announcing Real World Models · ASCII archer</p>
+      </div>
+    </a>
+
+    <a class="item" href="hero-b.html">
+      <span class="n">01 B</span>
+      <div>
+        <h2>Hero — plate<span class="new">new</span></h2>
+        <p>The frame becomes a measured object: bordered plate, corner registration
+          marks, a dimension line, caption strip. Headline and stats live below it on
+          clean ground.</p>
+        <p class="refs">refs — Saiko Sushi rulers · logo construction sheet</p>
+      </div>
+    </a>
+
+    <a class="item" href="hero-c.html">
+      <span class="n">01 C</span>
+      <div>
+        <h2>Hero — editorial split<span class="new">new</span></h2>
+        <p>Frame one side, argument the other, ticks down the seam. The review log is
+          in the hero rather than buried in a features section.</p>
+        <p class="refs">refs — Widerframe deck · Detail · sage-green pair</p>
+      </div>
+    </a>
+
+    <a class="item" href="press.html">
+      <span class="n">02</span>
+      <div>
+        <h2>Press template</h2>
+        <p>Reusable for funding, partnerships, and launches. Serif headline, two-column
+          body, one halftone object bleeding off the card, a single chromatic bar.</p>
+        <p class="refs">refs — Bedrock Energy Series A</p>
+      </div>
+    </a>
+
+    <a class="item" href="fields.html">
+      <span class="n">03</span>
+      <div>
+        <h2>Saturated fields</h2>
+        <p>Amber, neutral, moss. On coloured grounds the halftone subject is a darker
+          tone of the field itself, never a third colour.</p>
+        <p class="refs">refs — yellow halftone sphere · Popcorn · terminal log</p>
+      </div>
+    </a>
+  </div>
+
+  <div class="note">
+    <h3>What changed</h3>
+    <p><b>The hero was unreadable because the tone mapping was wrong, not the idea.</b>
+      Your footage averages about 90/255 luma — genuinely dark — so a raw brightness-to-dot-size
+      mapping produced mostly tiny dots. The renderer now stretches levels (0.04–0.85)
+      and lifts midtones (gamma 0.62) before sizing dots, and the pitch dropped from 10px
+      to 6–7px. The second fix was structural: no type sits on the dot field in any of
+      the three variants.</p>
+    <p><b>Light mode is a full inversion, not a tint.</b> On a light ground the polarity
+      flips — dark pixels become the big dots. The saturated fields keep their colour in
+      both themes, since holding a chromatic ground is the whole point of them.</p>
+  </div>
+</main>
+
+<script type="module">
+import { init } from './assets/theme.js';
+init();
+</script>
+</body>
+</html>

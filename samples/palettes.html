@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sample — Colour directions</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Outfit:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<style>
+  .intro{padding:64px 0 44px}
+  .intro h1{font-family:var(--display);font-weight:300;font-size:clamp(1.9rem,3.8vw,2.7rem);
+    letter-spacing:-.015em;line-height:1.1;max-width:20ch}
+  .intro p{margin-top:18px;max-width:62ch;color:var(--dim);font-weight:300}
+  .intro b{color:var(--fg);font-weight:400}
+
+  /* measured evidence strip */
+  .evidence{margin-top:30px;display:flex;flex-wrap:wrap;gap:0;border:1px solid var(--wire)}
+  .evidence div{flex:1 1 90px;height:56px;position:relative}
+  .evidence span{position:absolute;left:7px;bottom:6px;font-family:var(--mono);
+    font-size:.5625rem;letter-spacing:.06em;color:rgba(255,255,255,.8)}
+  .ev-cap{margin-top:9px;font-family:var(--mono);font-size:.625rem;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--faint)}
+
+  /* each direction gets its own scope */
+  .dir{--g:#000;--s:#111;--f:#fff;--d:rgba(255,255,255,.55);--w:rgba(255,255,255,.18);
+       --a:#fff;--a2:none;
+       background:var(--g);color:var(--f);padding:52px 0 58px;
+       border-top:1px solid var(--wire)}
+  .dir .head{display:flex;justify-content:space-between;align-items:baseline;
+    gap:24px;flex-wrap:wrap;margin-bottom:8px}
+  .dir h2{font-family:var(--display);font-weight:300;font-size:1.7rem;letter-spacing:-.01em}
+  .dir h2 .src{display:block;margin-top:6px;font-family:var(--mono);font-size:.5625rem;
+    letter-spacing:.2em;text-transform:uppercase;color:var(--a)}
+  .dir .why{font-family:var(--mono);font-size:.6875rem;letter-spacing:.08em;color:var(--d);
+    max-width:46ch;text-align:right}
+  .dir .lede{color:var(--d);font-weight:300;font-size:.9375rem;max-width:58ch;margin-bottom:30px}
+
+  .demo{display:grid;grid-template-columns:1.35fr 1fr;gap:34px;align-items:start}
+  .plate{position:relative;border:1px solid var(--w);background:var(--s);overflow:hidden}
+  .plate canvas{width:100%;display:block}
+  .plate svg{position:absolute;inset:0;pointer-events:none}
+  .cap{margin-top:9px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    font-family:var(--mono);font-size:.5625rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--d)}
+  .cap b{font-weight:400;color:var(--a)}
+
+  .side h3{font-family:var(--display);font-weight:300;font-size:1.55rem;line-height:1.1;
+    letter-spacing:-.01em;max-width:14ch}
+  .side p{margin-top:12px;color:var(--d);font-weight:300;font-size:.875rem;max-width:36ch}
+  .chk{margin-top:22px;border-top:1px solid var(--w);font-family:var(--mono);font-size:.6875rem}
+  .chk div{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--w);color:var(--d)}
+  .chk .ok::before{content:"✓";width:11px;flex:none;color:var(--a2,var(--a))}
+  .chk .no::before{content:"✕";width:11px;flex:none;color:var(--a)}
+  .chk .no{color:var(--f)}
+  .chk em{font-style:normal;margin-left:auto;opacity:.6}
+  .btn{display:inline-block;margin-top:22px;font-family:var(--mono);font-size:.6875rem;
+    letter-spacing:.14em;text-transform:uppercase;padding:10px 18px;
+    background:var(--a);color:var(--g);text-decoration:none}
+
+  .sw{margin-top:26px;display:flex;flex-wrap:wrap;gap:0;border:1px solid var(--w)}
+  .sw i{flex:1 1 70px;height:42px;position:relative;font-style:normal}
+  .sw i::after{content:attr(data-h);position:absolute;left:6px;bottom:5px;
+    font-family:var(--mono);font-size:.5rem;letter-spacing:.04em;color:var(--f);opacity:.7}
+
+  @media (max-width:860px){.demo{grid-template-columns:1fr}.dir .why{text-align:left}}
+</style>
+</head>
+<body>
+
+<nav class="samplebar">
+  <span class="sb-label">Samples</span>
+  <a href="index.html">Index</a>
+  <a href="demo.html">Demo</a>
+  <a href="blog.html">Blog</a>
+  <a href="hero-a.html">Hero A</a>
+  <a href="hero-b.html">Hero B</a>
+  <a href="hero-c.html">Hero C</a>
+  <a href="press.html">Press</a>
+  <a href="fields.html">Fields</a>
+  <a href="palettes.html" aria-current="page">Colour</a>
+</nav>
+
+<header class="intro wrap">
+  <h1>Where these colours came from.</h1>
+  <p>You asked whether the four below came from the board. They did not — I took them
+    from your footage and from computer-vision convention. So I went back and clustered
+    the board itself: 170,908 chromatic pixels, page-white and near-black excluded.
+    <b>Yellow-gold is 44% of the chromatic content and orange is 3.6%.</b> Orange was
+    never on your board. It came from the logo flame, and I carried it across without
+    checking.</p>
+
+  <div class="evidence">
+    <div style="background:#EFB702"><span style="color:#22222A">#EFB702 32%</span></div>
+    <div style="background:#0F5FC8"><span>#0F5FC8 12%</span></div>
+    <div style="background:#73ADC2"><span style="color:#22222A">#73ADC2 12%</span></div>
+    <div style="background:#6F561C"><span>#6F561C 9%</span></div>
+    <div style="background:#C87223"><span>#C87223 7%</span></div>
+    <div style="background:#4FBE5F"><span style="color:#22222A">#4FBE5F 7%</span></div>
+    <div style="background:#AF3261"><span>#AF3261 7%</span></div>
+    <div style="background:#213B64"><span>#213B64 6%</span></div>
+    <div style="background:#ED7BD3"><span style="color:#22222A">#ED7BD3 5%</span></div>
+    <div style="background:#D2C874"><span style="color:#22222A">#D2C874 4%</span></div>
+  </div>
+  <p class="ev-cap">clustered from the vision board · yellow 44% · blue 14% · cyan 14% · magenta 11% · green 9% · orange 4%</p>
+
+  <p style="margin-top:26px">Direction 01 is built from that measurement. The rest are
+    kept for contrast, each labelled with where it actually comes from. Separately: your
+    footage is 95% wood at hue 26–30°, so any warm accent competes with the imagery.
+    Gold at h46 clears it on saturation and brightness rather than hue — a narrower
+    escape than blue's.</p>
+</header>
+
+<main id="dirs"></main>
+
+<script type="module">
+import { halftone } from './assets/halftone.js';
+
+/* Each direction states where it comes from. A palette with no lineage is
+   how you end up back at cream-and-terracotta. */
+var DIRS = [
+  {
+    id:'board', name:'Board', src:'from the vision board',
+    why:'The two dominant hues on your own board: gold 32%, blue 12%.',
+    lede:'Gold is the loudest colour you collected \u2014 the halftone sphere, the blob, '+
+         'the design-system swatch. Blue is the counterweight and sits furthest from the '+
+         'wood in your footage. Green and magenta stay in reserve as pass/fail signals '+
+         'rather than brand colour.',
+    g:'#0C0C0E', s:'#151517', f:'#F2F0EA', d:'rgba(242,240,234,.56)',
+    w:'rgba(242,240,234,.18)', a:'#EFB702', a2:'#3D82E8',
+    dot:'#F2F0EA',
+    sw:['#0C0C0E','#151517','#EFB702','#3D82E8','#4FBE5F','#AF3261','#F2F0EA']
+  },
+  {
+    id:'instrument', name:'Instrument', src:'from your footage',
+    why:'Neutrals lifted straight from your footage. Accent is the gripper status LED.',
+    lede:'The cool greys are literally sampled from your frames — #0E1514, #3D5561, #B1C1C8. '+
+         'The signal colour is the green indicator on the robot wrist, which appears in every '+
+         'episode and reads as machine state rather than brand decoration.',
+    g:'#0E1514', s:'#141D1E', f:'#DFF4F8', d:'rgba(223,244,248,.56)',
+    w:'rgba(223,244,248,.20)', a:'#5BE39B', a2:'#5BE39B',
+    dot:'#DFF4F8',
+    sw:['#0E1514','#141D1E','#3D5561','#B1C1C8','#DFF4F8','#5BE39B']
+  },
+  {
+    id:'segmentation', name:'Segmentation', src:'computer-vision convention',
+    why:'The canonical instance-mask palette. Two accents that read as labels, not branding.',
+    lede:'Cyan and magenta are what segmentation overlays have looked like since COCO and '+
+         'Cityscapes. Using them as the accent pair says "this frame is labelled" to anyone '+
+         'in the field, and they are cold enough to sit clear of the wood.',
+    g:'#0A0D12', s:'#111620', f:'#E8EDF2', d:'rgba(232,237,242,.55)',
+    w:'rgba(232,237,242,.18)', a:'#00C8DC', a2:'#E5006E',
+    dot:'#E8EDF2',
+    sw:['#0A0D12','#111620','#00C8DC','#E5006E','#8AA0B4','#E8EDF2']
+  },
+  {
+    id:'blueprint', name:'Blueprint', src:'technical-drawing lineage',
+    why:'Technical drawing lineage. One saturated blue against cold graphite.',
+    lede:'The measured-frame idea already borrows from draughting. Ultramarine on graphite '+
+         'commits to it. Furthest from any warm ground, and the one that makes the halftone '+
+         'read most like a printed plate.',
+    g:'#0B0E17', s:'#121728', f:'#E4E8F2', d:'rgba(228,232,242,.55)',
+    w:'rgba(228,232,242,.18)', a:'#4B6BFF', a2:'#4B6BFF',
+    dot:'#E4E8F2',
+    sw:['#0B0E17','#121728','#2B3A6B','#4B6BFF','#9BA6C4','#E4E8F2']
+  },
+  {
+    id:'darkroom', name:'Darkroom', src:'photographic lineage',
+    why:'Warm without being orange. Safelight red on a cold-developed grey.',
+    lede:'If you want warmth in the palette rather than only in the imagery, this is the '+
+         'version that gets there without landing on terracotta. Red sits far enough from '+
+         'the wood hue to stay legible on top of it.',
+    g:'#101012', s:'#17171A', f:'#EDE9E4', d:'rgba(237,233,228,.55)',
+    w:'rgba(237,233,228,.18)', a:'#D8342B', a2:'#D8342B',
+    dot:'#EDE9E4',
+    sw:['#101012','#17171A','#3A3A40','#8A8A92','#EDE9E4','#D8342B']
+  }
+];
+
+var POINTS=[{x:.700,y:.115},{x:.760,y:.330},{x:.735,y:.585},
+            {x:.365,y:.400},{x:.560,y:.300},{x:.640,y:.700},{x:.330,y:.640}];
+var LINKS=[[0,1],[1,2],[2,5],[3,4],[4,5],[5,6],[6,3]];
+var NS='http://www.w3.org/2000/svg', RATIO=1916/1074;
+
+var root=document.getElementById('dirs');
+DIRS.forEach(function(D,i){
+  var sec=document.createElement('section');
+  sec.className='dir';
+  sec.style.cssText='--g:'+D.g+';--s:'+D.s+';--f:'+D.f+';--d:'+D.d+';--w:'+D.w+
+                    ';--a:'+D.a+';--a2:'+(D.a2||D.a);
+  sec.innerHTML=
+    '<div class="wrap">'+
+      '<div class="head"><h2>'+String(i+1).padStart(2,'0')+' — '+D.name+'<span class="src">'+D.src+'</span></h2>'+
+      '<p class="why">'+D.why+'</p></div>'+
+      '<p class="lede">'+D.lede+'</p>'+
+      '<div class="demo">'+
+        '<div><div class="plate"><canvas id="cv-'+D.id+'"></canvas>'+
+          '<svg id="sv-'+D.id+'" aria-hidden="true"></svg></div>'+
+          '<div class="cap"><span>episode 0412 · fold_tshirt</span>'+
+          '<span>frame <b>00720</b> / 01716</span><span>agreement <b>0.94</b></span></div></div>'+
+        '<div class="side"><h3>Every frame, measured.</h3>'+
+          '<p>Masks, keypoints, and trajectories — scored against our own rubric before delivery.</p>'+
+          '<div class="chk">'+
+            '<div class="ok">Mask continuity<em>1,716</em></div>'+
+            '<div class="ok">Visibility flags<em>7 tracks</em></div>'+
+            '<div class="no">Drift 604–661<em>returned</em></div>'+
+          '</div>'+
+          '<a class="btn" href="#">See a sample episode</a>'+
+        '</div>'+
+      '</div>'+
+      '<div class="sw">'+D.sw.map(function(h){
+          return '<i style="background:'+h+'" data-h="'+h+'"></i>';}).join('')+'</div>'+
+    '</div>';
+  root.appendChild(sec);
+});
+
+var img=new Image();
+function paintAll(){
+  DIRS.forEach(function(D){
+    var c=document.getElementById('cv-'+D.id);
+    var w=c.parentElement.getBoundingClientRect().width, h=w/RATIO;
+    var dpr=Math.min(window.devicePixelRatio||1,2);
+    c.style.width=w+'px'; c.style.height=h+'px';
+    c.width=Math.round(w*dpr); c.height=Math.round(h*dpr);
+    halftone(c,img,{step:6*dpr,dot:D.dot,invert:true,lo:.04,hi:.85,gamma:.62});
+
+    var sv=document.getElementById('sv-'+D.id);
+    sv.setAttribute('viewBox','0 0 '+w+' '+h);
+    sv.setAttribute('width',w); sv.setAttribute('height',h);
+    sv.innerHTML='';
+    LINKS.forEach(function(p){
+      var a=POINTS[p[0]],b=POINTS[p[1]],l=document.createElementNS(NS,'line');
+      l.setAttribute('x1',a.x*w);l.setAttribute('y1',a.y*h);
+      l.setAttribute('x2',b.x*w);l.setAttribute('y2',b.y*h);
+      l.setAttribute('stroke',D.w);l.setAttribute('stroke-width','1');sv.appendChild(l);
+    });
+    POINTS.forEach(function(p){
+      var cx=p.x*w,cy=p.y*h;
+      var r=document.createElementNS(NS,'circle');
+      r.setAttribute('cx',cx);r.setAttribute('cy',cy);r.setAttribute('r',8);
+      r.setAttribute('fill','none');r.setAttribute('stroke',D.a);
+      r.setAttribute('stroke-opacity','.7');r.setAttribute('stroke-width','1.2');sv.appendChild(r);
+      var d=document.createElementNS(NS,'circle');
+      d.setAttribute('cx',cx);d.setAttribute('cy',cy);d.setAttribute('r',2.4);
+      d.setAttribute('fill',D.a);sv.appendChild(d);
+    });
+  });
+}
+img.onload=paintAll;
+img.src='assets/frame-fold.jpg';
+var to; addEventListener('resize',function(){clearTimeout(to);to=setTimeout(paintAll,150);});
+</script>
+</body>
+</html>

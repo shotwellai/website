@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sample — Saturated fields</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Outfit:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<style>
+  .field{padding:104px 0}
+  .field .inner{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+  .field h2{font-family:var(--display);font-weight:300;
+    font-size:clamp(1.9rem,3.6vw,2.9rem);line-height:1.08;letter-spacing:-.015em;max-width:15ch}
+  .field p{margin-top:20px;max-width:40ch;font-weight:300;font-size:1rem}
+  .field .tag{display:block;margin-bottom:18px}
+  .art canvas{width:100%;height:auto}
+
+  /* Saturated fields hold their colour in both themes — that's the point of
+     them. Only the neutral section inverts. */
+  .f-amber{background:var(--amber);color:#4A3406}
+  .f-amber .tag{color:rgba(74,52,6,.62)} .f-amber .tag b{color:#7A2E0B}
+  .f-amber p{color:rgba(74,52,6,.82)}
+
+  .f-moss{background:var(--moss);color:#22301F}
+  .f-moss .tag{color:rgba(34,48,31,.6)} .f-moss .tag b{color:#3D5A33}
+  .f-moss p{color:rgba(34,48,31,.8)}
+
+  .f-neutral{background:var(--ground);color:var(--fg)}
+  .f-neutral p{color:var(--dim)}
+
+  .log{font-family:var(--mono);font-size:.75rem;line-height:1.95;
+    border:1px solid var(--wire);overflow:hidden;background:var(--surface)}
+  .log-head{padding:9px 14px;border-bottom:1px solid var(--wire);color:var(--faint);
+    letter-spacing:.14em;font-size:.625rem;text-transform:uppercase}
+  .log-body{padding:14px 14px 16px}
+  .log-body div{display:flex;gap:12px;color:var(--dim)}
+  .log-body .ok::before{content:"✓";color:var(--pass);width:12px;flex:none}
+  .log-body .no::before{content:"✕";color:var(--ember);width:12px;flex:none}
+  .log-body .run::before{content:"›";color:var(--faint);width:12px;flex:none}
+  .log-body .no{color:var(--fg)}
+  .log-body em{font-style:normal;margin-left:auto;color:var(--faint)}
+  .bar{margin-top:14px;height:3px;background:var(--wire);position:relative}
+  .bar span{position:absolute;inset:0 34% 0 0;background:var(--ember)}
+
+  @media (max-width:860px){
+    .field{padding:64px 0}
+    .field .inner{grid-template-columns:1fr;gap:36px}
+  }
+</style>
+</head>
+<body>
+
+<nav class="samplebar">
+  <span class="sb-label">Samples</span>
+  <a href="index.html">Index</a>
+  <a href="demo.html">Demo</a>
+  <a href="blog.html">Blog</a>
+  <a href="hero-a.html">Hero A</a>
+  <a href="hero-b.html">Hero B</a>
+  <a href="hero-c.html">Hero C</a>
+  <a href="press.html">Press</a>
+  <a href="fields.html" aria-current="page">Fields</a>
+  <a href="palettes.html">Colour</a>
+  <span class="sb-spacer"></span>
+  <button id="themeToggle">Light</button>
+</nav>
+
+<section class="field f-amber">
+  <div class="wrap inner">
+    <div>
+      <span class="tag">[ Coverage · <b>1,284 episodes</b> ]</span>
+      <h2>Dense labels on every frame, not every tenth.</h2>
+      <p>Masks, keypoints, and contact events at full frame rate. Sparse annotation
+        teaches a policy the gaps as well as the task.</p>
+    </div>
+    <div class="art"><canvas id="a1"></canvas></div>
+  </div>
+</section>
+
+<section class="field f-neutral">
+  <div class="wrap inner">
+    <div class="art">
+      <div class="log">
+        <div class="log-head">episode 0412 · fold_tshirt · review</div>
+        <div class="log-body">
+          <div class="ok">Parsed episode manifest<em>0.4s</em></div>
+          <div class="ok">Indexed 1,716 frames<em>2.1s</em></div>
+          <div class="ok">Mask continuity across cuts<em>6.8s</em></div>
+          <div class="no">Keypoint drift, frames 604–661<em>flagged</em></div>
+          <div class="run">Re-scoring segment with second annotator…</div>
+          <div class="bar"><span></span></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <span class="tag">[ Review · <b>4 checks failed</b> ]</span>
+      <h2>We fail our own work before you do.</h2>
+      <p>Every episode runs the rubric on delivery. You get the score, the checks
+        that ran, and the frames we sent back.</p>
+    </div>
+  </div>
+</section>
+
+<section class="field f-moss">
+  <div class="wrap inner">
+    <div>
+      <span class="tag">[ Agreement · <b>0.94 mean IoU</b> ]</span>
+      <h2>Two annotators, one number you can audit.</h2>
+      <p>Disagreement is measured, not averaged away. Where humans differ, the
+        frame is escalated rather than quietly resolved.</p>
+    </div>
+    <div class="art"><canvas id="a2"></canvas></div>
+  </div>
+</section>
+
+<script type="module">
+import { halftone } from './assets/halftone.js';
+import { init } from './assets/theme.js';
+
+var loaded={};
+function paint(id, src, dot){
+  var img=loaded[src];
+  if(!img){
+    img=new Image();
+    img.onload=function(){loaded[src]=img;paint(id,src,dot);};
+    img.src=src; return;
+  }
+  var c=document.getElementById(id);
+  var dpr=Math.min(window.devicePixelRatio||1,2);
+  var w=c.parentElement.getBoundingClientRect().width;
+  var h=w*(img.height/img.width);
+  c.style.width=w+'px'; c.style.height=h+'px';
+  c.width=Math.round(w*dpr); c.height=Math.round(h*dpr);
+  /* On a saturated ground the subject is a darker tone of the field itself,
+     never a third colour — so polarity is fixed here, not theme-driven. */
+  halftone(c,img,{step:7*dpr,dot:dot,invert:false,lo:.04,hi:.85,gamma:.8});
+}
+function all(){
+  paint('a1','assets/frame-fold.jpg','#7A5A10');
+  paint('a2','assets/frame-rubric.jpg','#3D5A33');
+}
+all(); init();
+addEventListener('themechange',all);
+var to; addEventListener('resize',function(){clearTimeout(to);to=setTimeout(all,150);});
+</script>
+</body>
+</html>
