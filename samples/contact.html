@@ -101,7 +101,7 @@
     <a href="https://demo.shotwell.ai/">Demo</a>
     <a href="blog.html">Blog</a>
     <a class="ghostcta" href="contact.html" aria-current="page">Talk to us</a>
-    <a class="cta" href="#">Upload videos now <small>· 24 hr turnaround</small></a>
+    <a class="cta" href="https://app.shotwell.ai/">Upload videos now <small>· 24 hr turnaround</small></a>
   </div>
 </div>
 
@@ -164,7 +164,10 @@ document.getElementById('f').addEventListener('submit',async function(e){
   var btn=document.querySelector('#f button');
   btn.disabled=true; btn.textContent='Sending…';
   try{
-    var res=await fetch('https://app.shotwell.ai/api/contact',{
+    var endpoint=location.hostname==='localhost'||location.hostname==='127.0.0.1'
+      ? 'http://localhost:3456/api/contact'
+      : 'https://app.shotwell.ai/api/contact';
+    var res=await fetch(endpoint,{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify(payload)});
     if(!res.ok) throw new Error(res.status);
