@@ -98,7 +98,7 @@
         </figcaption>
         <svg class="workflow-svg" viewBox="0 0 760 188" role="img" aria-labelledby="manual-workflow-title manual-workflow-desc">
           <title id="manual-workflow-title">Before Shotwell manual review workflow</title>
-          <desc id="manual-workflow-desc">Raw teleoperation videos moved through manual review, operator feedback, and training set decisions, with manual review acting as a bottleneck.</desc>
+          <desc id="manual-workflow-desc">Teleoperator data collection moved through manual review, data filtering, and model training, with feedback from manual review going back to teleoperators.</desc>
           <defs>
             <marker id="arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
               <path d="M 0 0 L 10 5 L 0 10 z" fill="#3d3428"></path>
@@ -107,8 +107,9 @@
           <rect x="1" y="1" width="758" height="186" fill="#efe5ce" stroke="#3d3428" stroke-width="2"></rect>
           <g>
             <rect x="24" y="56" width="146" height="76" fill="#ddc596" stroke="#3d3428" stroke-width="2"></rect>
-            <text x="97" y="87" text-anchor="middle" font-size="15" font-weight="800">Raw teleop</text>
-            <text x="97" y="109" text-anchor="middle" font-size="15" font-weight="800">video</text>
+            <text x="97" y="78" text-anchor="middle" font-size="14" font-weight="800">Teleoperator</text>
+            <text x="97" y="98" text-anchor="middle" font-size="14" font-weight="800">Data</text>
+            <text x="97" y="118" text-anchor="middle" font-size="14" font-weight="800">Collection</text>
           </g>
           <g>
             <rect x="218" y="44" width="150" height="100" fill="#efe5ce" stroke="#9b3328" stroke-width="3"></rect>
@@ -118,19 +119,19 @@
           </g>
           <g>
             <rect x="418" y="56" width="146" height="76" fill="#ddc596" stroke="#3d3428" stroke-width="2"></rect>
-            <text x="491" y="87" text-anchor="middle" font-size="15" font-weight="800">Operator</text>
-            <text x="491" y="109" text-anchor="middle" font-size="15" font-weight="800">feedback</text>
+            <text x="491" y="87" text-anchor="middle" font-size="15" font-weight="800">Filter</text>
+            <text x="491" y="109" text-anchor="middle" font-size="15" font-weight="800">Data</text>
           </g>
           <g>
             <rect x="610" y="56" width="126" height="76" fill="#ddc596" stroke="#3d3428" stroke-width="2"></rect>
-            <text x="673" y="82" text-anchor="middle" font-size="14" font-weight="800">Training set</text>
-            <text x="673" y="104" text-anchor="middle" font-size="14" font-weight="800">decisions</text>
+            <text x="673" y="87" text-anchor="middle" font-size="14" font-weight="800">Train</text>
+            <text x="673" y="109" text-anchor="middle" font-size="14" font-weight="800">Model</text>
           </g>
           <path d="M 170 94 H 205" fill="none" stroke="#3d3428" stroke-width="2" marker-end="url(#arrowhead)"></path>
           <path d="M 368 94 H 405" fill="none" stroke="#3d3428" stroke-width="2" marker-end="url(#arrowhead)"></path>
           <path d="M 564 94 H 597" fill="none" stroke="#3d3428" stroke-width="2" marker-end="url(#arrowhead)"></path>
-          <path d="M 673 132 C 650 164, 536 168, 493 132" fill="none" stroke="#9b3328" stroke-width="2" stroke-dasharray="6 6" marker-end="url(#arrowhead)"></path>
-          <text class="workflow-accent" x="584" y="171" text-anchor="middle" font-size="11" font-weight="800" letter-spacing="1.2">FEEDBACK LOOP</text>
+          <path d="M 293 144 C 255 174, 135 174, 97 132" fill="none" stroke="#9b3328" stroke-width="2" stroke-dasharray="6 6" marker-end="url(#arrowhead)"></path>
+          <text class="workflow-accent" x="194" y="171" text-anchor="middle" font-size="11" font-weight="800" letter-spacing="1.2">FEEDBACK</text>
         </svg>
       </figure>
       <p class="note">Without dense labels, these questions required manual review. With Shotwell, they became database queries.</p>
