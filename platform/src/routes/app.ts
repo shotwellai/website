@@ -10,6 +10,7 @@ import { createGcsUploadSessions, createResultReadStream, createUploadReadStream
 import { createUploadId, uploadStore } from "../uploads/store.js";
 
 export const appRouter = Router();
+const maxMediaChunkBytes = 8 * 1024 * 1024;
 
 function loginUrl() {
   const url = new URL("/login", config.authBaseUrl);
@@ -122,7 +123,7 @@ function parseRangeHeader(header: string | undefined, size: number) {
     end = size - 1;
   } else {
     start = Number(rawStart);
-    end = rawEnd ? Number(rawEnd) : size - 1;
+    end = rawEnd ? Number(rawEnd) : Math.min(size - 1, start + maxMediaChunkBytes - 1);
   }
 
   if (!Number.isInteger(start) || !Number.isInteger(end) || start < 0 || end < start || start >= size) {
@@ -136,7 +137,21 @@ function parseRangeHeader(header: string | undefined, size: number) {
 }
 
 function safeDownloadName(fileName: string) {
-  return (fileName.trim() || "shotwell-upload").replace(/[\r\n"]/g, "");
+  const asciiName = (fileName.trim() || "shotwell-upload")
+    .replace(/[\r\n"]/g, "")
+    .replace(/[^\x20-\x7E]+/g, "_")
+    .replace(/[\\"]/g, "_");
+
+  return asciiName || "shotwell-upload";
+}
+
+function contentDispositionInline(fileName: string) {
+  const asciiName = safeDownloadName(fileName);
+  const encodedName = encodeURIComponent(fileName.trim() || "shotwell-upload")
+    .replace(/['()]/g, (char) => `%${char.charCodeAt(0).toString(16).toUpperCase()}`)
+    .replace(/\*/g, "%2A");
+
+  return `inline; filename="${asciiName}"; filename*=UTF-8''${encodedName}`;
 }
 
 function cleanFileName(value: unknown) {
@@ -448,13 +463,12 @@ appRouter.get("/admin/uploads/:uploadId/files/:fileId", async (req, res, next) =
     }
 
     const contentType = contentTypeForUploadFile(file);
-    const fileName = safeDownloadName(file.originalName);
     const size = Math.max(0, Math.trunc(file.sizeBytes));
     const range = parseRangeHeader(req.headers.range, size);
 
     res.setHeader("Accept-Ranges", "bytes");
     res.setHeader("Content-Type", contentType);
-    res.setHeader("Content-Disposition", `inline; filename="${fileName}"`);
+    res.setHeader("Content-Disposition", contentDispositionInline(file.originalName));
 
     if (range === null) {
       res.status(416);
