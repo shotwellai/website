@@ -103,6 +103,21 @@ function contentTypeForUploadFile(file: AdminUploadFileSummary) {
   return file.contentType || "application/octet-stream";
 }
 
+function isStreamableMedia(contentType: string) {
+  return contentType.startsWith("video/") || contentType.startsWith("audio/");
+}
+
+function defaultMediaRange(size: number) {
+  if (size <= 0) {
+    return undefined;
+  }
+
+  return {
+    start: 0,
+    end: Math.min(size - 1, maxMediaChunkBytes - 1)
+  };
+}
+
 function parseRangeHeader(header: string | undefined, size: number) {
   if (!header || size <= 0) {
     return undefined;
@@ -468,13 +483,13 @@ appRouter.get("/admin/uploads/:uploadId/files/:fileId", async (req, res, next) =
 
     const contentType = contentTypeForUploadFile(file);
     const size = Math.max(0, Math.trunc(file.sizeBytes));
-    const range = parseRangeHeader(req.headers.range, size);
+    const parsedRange = parseRangeHeader(req.headers.range, size);
 
     res.setHeader("Accept-Ranges", "bytes");
     res.setHeader("Content-Type", contentType);
     res.setHeader("Content-Disposition", contentDispositionInline(file.originalName));
 
-    if (range === null) {
+    if (parsedRange === null) {
       res.status(416);
       if (size > 0) {
         res.setHeader("Content-Range", `bytes */${size}`);
@@ -483,6 +498,7 @@ appRouter.get("/admin/uploads/:uploadId/files/:fileId", async (req, res, next) =
       return;
     }
 
+    const range = parsedRange ?? (isStreamableMedia(contentType) ? defaultMediaRange(size) : undefined);
     if (range) {
       res.status(206);
       res.setHeader("Content-Range", `bytes ${range.start}-${range.end}/${size}`);
