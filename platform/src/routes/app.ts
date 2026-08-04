@@ -1,10 +1,11 @@
 import { Router, type Request, type Response } from "express";
 
+import { adminStore } from "../admin/store.js";
 import { readSessionCookie, setSessionCookie } from "../auth/cookies.js";
 import { authStore, type User } from "../auth/store.js";
 import { config } from "../config.js";
 import { notifyUploadSubmitted } from "../email/notifications.js";
-import { appPage, messagePage } from "../http/render.js";
+import { adminPage, appPage, messagePage } from "../http/render.js";
 import { createGcsUploadSessions, createResultReadStream, type NewUploadFileInput } from "../uploads/gcs.js";
 import { createUploadId, uploadStore } from "../uploads/store.js";
 
@@ -48,6 +49,11 @@ async function getApiUser(req: Request, res: Response): Promise<User | null> {
   }
 
   return user;
+}
+
+function isShotwellAdmin(user: User) {
+  const [, domain = ""] = user.email.trim().toLowerCase().split("@");
+  return domain === "shotwell.ai";
 }
 
 function cleanFileName(value: unknown) {
@@ -294,6 +300,28 @@ appRouter.get("/", async (req, res, next) => {
 
 appRouter.get("/app.js", (_req, res) => {
   res.type("application/javascript").send(appScript());
+});
+
+appRouter.get("/admin", async (req, res, next) => {
+  try {
+    const user = await getAppUser(req, res);
+    if (!user) {
+      return;
+    }
+
+    if (!isShotwellAdmin(user)) {
+      res
+        .status(403)
+        .type("html")
+        .send(messagePage("Admin access required", "Sign in with a shotwell.ai email address to view this page.", "/", "Back to app"));
+      return;
+    }
+
+    const dashboard = await adminStore.getDashboard();
+    res.type("html").send(adminPage(user, dashboard));
+  } catch (error) {
+    next(error);
+  }
 });
 
 appRouter.post("/api/uploads", async (req, res, next) => {
