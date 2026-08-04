@@ -51,7 +51,7 @@
     .query-result { border-top: 1px solid #3d3428; padding: 10px 16px; background: #201c17; color: #efe5ce; font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
     .success-visual { --chart-gap: clamp(12px, 8vw, 104px); --chart-pad: clamp(12px, 7vw, 88px); width: 100%; margin: 10px 0 34px; padding: clamp(22px, 5vw, 36px) 0 20px; border: 1px solid #3d3428; background: #ddc596; overflow: hidden; }
     .success-bars { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: end; gap: var(--chart-gap); height: 220px; padding: 0 var(--chart-pad); border-bottom: 1px solid rgba(61, 52, 40, .65); }
-    .success-bar { align-self: end; justify-self: center; display: flex; align-items: flex-start; justify-content: center; width: min(78%, 190px); min-height: 70px; padding-top: 12px; border: 1px solid #3d3428; background: #efe5ce; color: #201c17; font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    .success-bar { align-self: end; justify-self: center; display: flex; align-items: flex-start; justify-content: center; width: min(78%, 190px); min-height: 70px; padding-top: 12px; background: #efe5ce; color: #201c17; font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
     .success-bar-after { background: #201c17; color: #efe5ce; }
     .success-axis-labels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--chart-gap); padding: 10px var(--chart-pad) 0; text-align: center; }
     .success-axis-label { color: #201c17; font-size: 12px; font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; }
@@ -207,8 +207,8 @@ return episode_id, start_time, end_time, operator_id</pre>
       <p>With higher quality annotations, Ultra was able to improve their policy success rate and task adherence by X%.</p>
       <figure class="success-visual" role="img" aria-label="Small bar chart comparing success rate before Shotwell and after Shotwell">
         <div class="success-bars">
-          <div class="success-bar" style="height: 54%;">Before</div>
-          <div class="success-bar success-bar-after" style="height: 84%;">+X%</div>
+          <div class="success-bar" style="height: 54%;">X%</div>
+          <div class="success-bar success-bar-after" style="height: 84%;">Y%</div>
         </div>
         <div class="success-axis-labels" aria-hidden="true">
           <div class="success-axis-label">Before Shotwell</div>
