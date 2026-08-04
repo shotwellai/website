@@ -49,13 +49,16 @@
     .query-bar::after { content: "searchable annotations"; color: #9b3328; font-family: Arial, Helvetica, sans-serif; font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
     .query-window pre { margin: 0; padding: 16px; white-space: pre-wrap; color: #201c17; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: clamp(13px, 2vw, 15px); line-height: 1.55; }
     .query-result { border-top: 1px solid #3d3428; padding: 10px 16px; background: #201c17; color: #efe5ce; font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
-    .success-visual { display: grid; grid-template-columns: 150px 1fr; align-items: end; gap: 18px; max-width: 520px; margin: 8px 0 30px; padding: 16px; border: 1px solid #3d3428; background: #ddc596; }
-    .success-visual-label { margin: 0; align-self: center; color: #6d5e4b; text-transform: uppercase; letter-spacing: .14em; font-size: 11px; font-weight: 800; line-height: 1.45; }
-    .success-bars { display: grid; grid-template-columns: repeat(2, minmax(82px, 1fr)); align-items: end; gap: 18px; height: 170px; padding: 18px 12px 0; border-left: 1px solid rgba(61, 52, 40, .45); border-bottom: 1px solid rgba(61, 52, 40, .45); }
-    .success-bar-wrap { display: grid; grid-template-rows: 1fr auto; height: 100%; gap: 8px; text-align: center; }
-    .success-bar { align-self: end; display: flex; align-items: flex-start; justify-content: center; min-height: 52px; padding-top: 8px; border: 1px solid #3d3428; background: #efe5ce; color: #201c17; font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+    .success-visual { width: 100%; margin: 10px 0 34px; padding: clamp(18px, 4vw, 28px); border: 1px solid #3d3428; background: #ddc596; }
+    .success-visual-label { display: flex; align-items: baseline; justify-content: space-between; gap: 18px; margin: 0 0 20px; color: #201c17; }
+    .success-visual-label span { color: #9b3328; text-transform: uppercase; letter-spacing: .14em; font-size: 11px; font-weight: 800; }
+    .success-visual-label strong { font-size: 14px; line-height: 1.25; text-align: right; }
+    .success-bars { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: end; gap: clamp(24px, 8vw, 86px); height: 230px; padding: 20px clamp(16px, 7vw, 72px) 0; border-left: 1px solid rgba(61, 52, 40, .5); border-bottom: 1px solid rgba(61, 52, 40, .5); background: repeating-linear-gradient(to top, transparent 0, transparent 54px, rgba(61, 52, 40, .16) 55px, transparent 56px); }
+    .success-bar-wrap { display: grid; grid-template-rows: 1fr auto; height: 100%; gap: 12px; text-align: center; }
+    .success-bar { align-self: end; justify-self: center; display: flex; align-items: flex-start; justify-content: center; width: min(100%, 190px); min-height: 70px; padding-top: 12px; border: 1px solid #3d3428; background: #efe5ce; color: #201c17; font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
     .success-bar-after { background: #201c17; color: #efe5ce; }
-    .success-bar-caption { color: #201c17; font-size: 12px; font-weight: 800; line-height: 1.2; }
+    .success-bar-caption { display: grid; gap: 2px; color: #201c17; font-size: 12px; font-weight: 800; line-height: 1.2; }
+    .success-bar-caption span { color: #6d5e4b; font-size: 11px; font-weight: 700; }
     .case-study-demo { margin: 34px 0; padding: 16px; border: 1px solid #3d3428; background: #ddc596; }
     .case-study-demo .seg-stage { background: #000; }
     .case-study-demo .seg-label:not([data-state="active"]) { visibility: hidden; opacity: 0; }
@@ -71,8 +74,12 @@
       .case-visual figcaption { display: grid; gap: 4px; }
       .case-visual figcaption strong { text-align: left; }
       .query-bar { display: grid; gap: 4px; }
-      .success-visual { grid-template-columns: 1fr; max-width: none; }
-      .success-bars { height: 150px; }
+      .success-visual-label { display: grid; gap: 4px; }
+      .success-visual-label strong { text-align: left; }
+      .success-bars { height: 168px; gap: 10px; padding: 14px 8px 0; }
+      .success-bar { width: min(100%, 112px); min-height: 54px; padding-top: 9px; font-size: 10px; }
+      .success-bar-caption { font-size: 10px; }
+      .success-bar-caption span { font-size: 9px; }
     }
   </style>
   <link rel="stylesheet" href="../concepts/concept-animation.css">
@@ -205,15 +212,18 @@ return episode_id, start_time, end_time, operator_id</pre>
       <p>One engineer who previously struggled to manage feedback and quality review for around 10 operators can now support 60+ operators using Shotwell's annotation and review pipeline. That unlocks a major scaling advantage: Ultra can grow teleoperation data collection without growing engineering overhead at the same rate.</p>
       <p>With higher quality annotations, Ultra was able to improve their policy success rate and task adherence by X%.</p>
       <figure class="success-visual" role="img" aria-label="Small bar chart comparing success rate before Shotwell and after Shotwell">
-        <figcaption class="success-visual-label">Policy success rate</figcaption>
+        <figcaption class="success-visual-label">
+          <span>Policy success rate</span>
+          <strong>Before vs. after Shotwell annotations</strong>
+        </figcaption>
         <div class="success-bars">
           <div class="success-bar-wrap">
             <div class="success-bar" style="height: 54%;">Before</div>
-            <div class="success-bar-caption">Before Shotwell</div>
+            <div class="success-bar-caption">Before Shotwell <span>baseline</span></div>
           </div>
           <div class="success-bar-wrap">
             <div class="success-bar success-bar-after" style="height: 84%;">+X%</div>
-            <div class="success-bar-caption">After Shotwell</div>
+            <div class="success-bar-caption">After Shotwell <span>higher adherence</span></div>
           </div>
         </div>
       </figure>
