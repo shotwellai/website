@@ -37,6 +37,18 @@
     strong { color: #201c17; }
     .intro { font-size: 19px; line-height: 1.6; color: #4a4034; }
     .note { margin: 30px 0; padding-left: 18px; border-left: 2px solid #9b3328; color: #201c17; font-size: 20px; line-height: 1.45; }
+    .case-visual { margin: 32px 0; padding: 16px; border: 1px solid #3d3428; background: #ddc596; color: #201c17; overflow: hidden; }
+    .case-visual figcaption { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
+    .case-visual figcaption span { color: #9b3328; text-transform: uppercase; letter-spacing: .14em; font-size: 11px; font-weight: 800; }
+    .case-visual figcaption strong { font-size: 15px; line-height: 1.25; text-align: right; }
+    .workflow-svg { width: 100%; height: auto; display: block; }
+    .workflow-svg text { fill: #201c17; font-family: Arial, Helvetica, sans-serif; }
+    .workflow-svg .workflow-accent { fill: #9b3328; }
+    .query-window { border: 1px solid #3d3428; background: #efe5ce; }
+    .query-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid #3d3428; padding: 8px 10px; color: #6d5e4b; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; }
+    .query-bar::after { content: "searchable annotations"; color: #9b3328; font-family: Arial, Helvetica, sans-serif; font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    .query-window pre { margin: 0; padding: 16px; white-space: pre-wrap; color: #201c17; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: clamp(13px, 2vw, 15px); line-height: 1.55; }
+    .query-result { border-top: 1px solid #3d3428; padding: 10px 16px; background: #201c17; color: #efe5ce; font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
     .case-study-demo { margin: 34px 0; padding: 16px; border: 1px solid #3d3428; background: #ddc596; }
     .case-study-demo .seg-stage { background: #000; }
     .case-study-demo .seg-label:not([data-state="active"]) { visibility: hidden; opacity: 0; }
@@ -48,6 +60,10 @@
       .intro { font-size: 18px; }
       h1 { font-size: clamp(34px, 9vw, 40px); line-height: 1.04; letter-spacing: -.035em; overflow-wrap: break-word; }
       h1 span { display: block; }
+      .case-visual { margin: 28px 0; padding: 12px; }
+      .case-visual figcaption { display: grid; gap: 4px; }
+      .case-visual figcaption strong { text-align: left; }
+      .query-bar { display: grid; gap: 4px; }
     }
   </style>
   <link rel="stylesheet" href="../concepts/concept-animation.css">
@@ -75,7 +91,64 @@
         <li>Are new operators following the SOP consistently? Are old operators showing regressions?</li>
         <li>Which parts of the task are responsible for most failures?</li>
       </ul>
+      <figure class="case-visual">
+        <figcaption>
+          <span>Before Shotwell</span>
+          <strong>Manual review became the scaling bottleneck</strong>
+        </figcaption>
+        <svg class="workflow-svg" viewBox="0 0 760 188" role="img" aria-labelledby="manual-workflow-title manual-workflow-desc">
+          <title id="manual-workflow-title">Before Shotwell manual review workflow</title>
+          <desc id="manual-workflow-desc">Raw teleoperation videos moved through manual review, operator feedback, and training set decisions, with manual review acting as a bottleneck.</desc>
+          <defs>
+            <marker id="arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#3d3428"></path>
+            </marker>
+          </defs>
+          <rect x="1" y="1" width="758" height="186" fill="#efe5ce" stroke="#3d3428" stroke-width="2"></rect>
+          <g>
+            <rect x="24" y="56" width="146" height="76" fill="#ddc596" stroke="#3d3428" stroke-width="2"></rect>
+            <text x="97" y="87" text-anchor="middle" font-size="15" font-weight="800">Raw teleop</text>
+            <text x="97" y="109" text-anchor="middle" font-size="15" font-weight="800">video</text>
+          </g>
+          <g>
+            <rect x="218" y="44" width="150" height="100" fill="#efe5ce" stroke="#9b3328" stroke-width="3"></rect>
+            <text x="293" y="78" text-anchor="middle" font-size="15" font-weight="800">Manual</text>
+            <text x="293" y="100" text-anchor="middle" font-size="15" font-weight="800">review</text>
+            <text class="workflow-accent" x="293" y="123" text-anchor="middle" font-size="11" font-weight="800" letter-spacing="1.6">BOTTLENECK</text>
+          </g>
+          <g>
+            <rect x="418" y="56" width="146" height="76" fill="#ddc596" stroke="#3d3428" stroke-width="2"></rect>
+            <text x="491" y="87" text-anchor="middle" font-size="15" font-weight="800">Operator</text>
+            <text x="491" y="109" text-anchor="middle" font-size="15" font-weight="800">feedback</text>
+          </g>
+          <g>
+            <rect x="610" y="56" width="126" height="76" fill="#ddc596" stroke="#3d3428" stroke-width="2"></rect>
+            <text x="673" y="82" text-anchor="middle" font-size="14" font-weight="800">Training set</text>
+            <text x="673" y="104" text-anchor="middle" font-size="14" font-weight="800">decisions</text>
+          </g>
+          <path d="M 170 94 H 205" fill="none" stroke="#3d3428" stroke-width="2" marker-end="url(#arrowhead)"></path>
+          <path d="M 368 94 H 405" fill="none" stroke="#3d3428" stroke-width="2" marker-end="url(#arrowhead)"></path>
+          <path d="M 564 94 H 597" fill="none" stroke="#3d3428" stroke-width="2" marker-end="url(#arrowhead)"></path>
+          <path d="M 673 132 C 650 164, 536 168, 493 132" fill="none" stroke="#9b3328" stroke-width="2" stroke-dasharray="6 6" marker-end="url(#arrowhead)"></path>
+          <text class="workflow-accent" x="584" y="171" text-anchor="middle" font-size="11" font-weight="800" letter-spacing="1.2">FEEDBACK LOOP</text>
+        </svg>
+      </figure>
       <p class="note">Without dense labels, these questions required manual review. With Shotwell, they became database queries.</p>
+      <figure class="case-visual">
+        <figcaption>
+          <span>With Shotwell</span>
+          <strong>Review questions become searchable data</strong>
+        </figcaption>
+        <div class="query-window" role="img" aria-label="Example query over Shotwell annotations">
+          <div class="query-bar">dataset.query</div>
+          <pre>where subtask = "Set Yellow"
+  and result = "fail"
+  and attribute includes "retry"
+
+return episode_id, start_time, end_time, operator_id</pre>
+          <div class="query-result">Returns failed subtasks, exact timestamps, and episode context</div>
+        </div>
+      </figure>
 
       <h2>The Solution</h2>
       <p>Shotwell provided Ultra with dense event and subtask annotations across its teleoperation data. Instead of treating each episode as a single opaque video, Shotwell decomposed episodes into meaningful subtasks with attributes and failure mode detection per subtask.</p>
