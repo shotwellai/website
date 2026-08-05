@@ -51,11 +51,28 @@ function publicAsset(path: string) {
   return new URL(path, config.publicSiteUrl).toString();
 }
 
-export function page(title: string, body: string, options: { navHtml?: string } = {}) {
+export function page(title: string, body: string, options: { navHtml?: string; bare?: boolean } = {}) {
   const publicSiteUrl = config.publicSiteUrl.toString();
   const logoUrl = publicAsset("brand/assets/SVG/shotwell-mark-white.svg");
   const logoLightUrl = publicAsset("brand/assets/SVG/shotwell-mark-black.svg");
   const navHtml = options.navHtml ?? `<a class="button secondary" href="${escapeHtml(publicSiteUrl)}">Main Site</a>`;
+
+  const pageBody = options.bare
+    ? body
+    : `<div class="shell">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a class="brand" href="${escapeHtml(publicSiteUrl)}">
+          <img class="brand-mark" src="${escapeHtml(logoUrl)}"
+            data-mark-dark="${escapeHtml(logoUrl)}"
+            data-mark-light="${escapeHtml(logoLightUrl)}" alt="Shotwell logo">
+          <span>Shotwell<span class="brand-dot">.</span></span>
+        </a>
+	        <nav><button class="button secondary compact" id="themeToggle" type="button">Light</button>${navHtml}</nav>
+	      </div>
+	    </header>
+    ${body}
+  </div>`;
 
   return `<!doctype html>
 <html lang="en">
@@ -1289,24 +1306,16 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 
     .result-main {
       display: grid;
-      gap: 22px;
-    }
-
-    .result-heading {
-      display: grid;
-      gap: 10px;
-    }
-
-    .result-heading p {
-      max-width: 56rem;
-      color: var(--color-text-light);
-      font-size: 1rem;
+      width: 100%;
+      min-height: 100vh;
+      padding: 16px;
+      gap: 0;
     }
 
     .result-layout {
       display: grid;
-      grid-template-columns: minmax(190px, 0.24fr) minmax(0, 1fr);
-      gap: 18px;
+      grid-template-columns: minmax(190px, 260px) minmax(0, 1fr);
+      gap: 16px;
       align-items: start;
     }
 
@@ -1316,7 +1325,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 
     .result-sidebar {
       position: sticky;
-      top: calc(var(--nav-height) + 18px);
+      top: 16px;
       display: grid;
       gap: 8px;
       border: 1px solid var(--color-line);
@@ -1356,25 +1365,16 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 
     .result-viewer {
       display: grid;
-      gap: 16px;
+      gap: 0;
     }
 
     .result-panel {
       display: grid;
-      gap: 18px;
+      gap: 0;
     }
 
     .result-panel[hidden] {
       display: none;
-    }
-
-    .result-panel h2 {
-      font-family: var(--font-body);
-      font-size: 1.35rem;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      line-height: 1.1;
-      overflow-wrap: anywhere;
     }
 
     .result-missing-media {
@@ -1429,71 +1429,23 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 
     .result-demo-bar {
       display: flex;
-      align-items: stretch;
-      min-height: 58px;
+      justify-content: flex-end;
+      align-items: center;
+      min-height: 52px;
       border-right: 1px solid var(--color-line);
       border-left: 1px solid var(--color-line);
       border-bottom: 1px solid var(--color-line);
-      font-family: var(--font-mono);
-    }
-
-    .result-demo-cell {
-      min-width: 0;
-      padding: 10px 16px 11px;
-      border-right: 1px solid var(--color-line);
-    }
-
-    .result-demo-cell:last-child {
-      border-right: 0;
-    }
-
-    .result-demo-cell.result-demo-cell-grow {
-      flex: 1 1 auto;
-    }
-
-    .result-demo-cell i {
-      display: block;
-      margin-bottom: 5px;
-      color: var(--color-muted);
-      font-style: normal;
-      font-size: 0.5rem;
-      letter-spacing: 0.22em;
-      line-height: 1;
-      text-transform: uppercase;
-    }
-
-    .result-demo-cell b {
-      display: block;
-      overflow: hidden;
-      color: var(--color-text);
-      font-size: 0.68rem;
-      font-weight: 400;
-      letter-spacing: 0.04em;
-      line-height: 1.35;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      padding: 8px 20px;
+      background: color-mix(in srgb, var(--color-panel) 72%, transparent);
     }
 
     .result-strip {
       display: flex;
-      align-items: flex-start;
-      gap: 18px;
       border-right: 1px solid var(--color-line);
       border-left: 1px solid var(--color-line);
       border-bottom: 1px solid var(--color-line);
-      padding: 18px 14px 16px;
+      padding: 28px 14px 16px;
       background: color-mix(in srgb, var(--color-panel) 66%, transparent);
-    }
-
-    .result-strip-label {
-      flex: 0 0 auto;
-      margin-top: 8px;
-      color: var(--color-muted);
-      font-family: var(--font-mono);
-      font-size: 0.56rem;
-      letter-spacing: 0.18em;
-      line-height: 1;
-      text-transform: uppercase;
     }
 
     .result-timeline-wrap {
@@ -1657,7 +1609,6 @@ export function page(title: string, body: string, options: { navHtml?: string } 
     .result-play-toggle {
       flex: 0 0 auto;
       min-height: 0;
-      margin-top: 2px;
       padding: 5px 12px;
       border: 1px solid var(--color-line);
       background: var(--color-cta);
@@ -1674,8 +1625,8 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       display: none;
     }
 
-    .result-demo[data-static="true"] .result-clock {
-      visibility: hidden;
+    .result-demo[data-static="true"] .result-demo-bar {
+      display: none;
     }
 
     .message-main {
@@ -1862,28 +1813,13 @@ export function page(title: string, body: string, options: { navHtml?: string } 
         font-size: 2.35rem;
       }
 
-      .result-demo-bar {
-        flex-wrap: wrap;
-      }
-
-      .result-demo-cell {
-        flex: 1 1 48%;
-        border-bottom: 1px solid var(--color-line);
-      }
-
-      .result-demo-cell:last-child {
-        border-bottom: 0;
-      }
-
       .result-strip {
-        display: grid;
-        grid-template-columns: 1fr auto auto;
-        gap: 12px;
+        display: block;
+        padding: 24px 10px 14px;
       }
 
-      .result-strip-label,
-      .result-timeline-wrap {
-        grid-column: 1 / -1;
+      .result-main {
+        padding: 10px;
       }
 
       .result-cards {
@@ -1924,20 +1860,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
     </filter>
     <rect width="100%" height="100%" filter="url(#grain)"></rect>
   </svg>
-  <div class="shell">
-    <header class="topbar">
-      <div class="topbar-inner">
-        <a class="brand" href="${escapeHtml(publicSiteUrl)}">
-          <img class="brand-mark" src="${escapeHtml(logoUrl)}"
-            data-mark-dark="${escapeHtml(logoUrl)}"
-            data-mark-light="${escapeHtml(logoLightUrl)}" alt="Shotwell logo">
-          <span>Shotwell<span class="brand-dot">.</span></span>
-        </a>
-	        <nav><button class="button secondary compact" id="themeToggle" type="button">Light</button>${navHtml}</nav>
-	      </div>
-	    </header>
-    ${body}
-  </div>
+  ${pageBody}
 </body>
 </html>`;
 }
@@ -2195,25 +2118,18 @@ function renderResultDemo(upload: ResultPageUpload, episode: ResultEpisode, opti
   const file = findEpisodeFile(upload, episode);
   const contentType = file ? resultFileContentType(file) : "";
   const isStaticMedia = !contentType.startsWith("video/");
-  const duration = Math.max(0, ...episode.annotations.map((annotation) => annotation.end_time));
-  const annotationSummary = `${formatCount(episode.annotations.length)} ${episode.annotations.length === 1 ? "label" : "labels"}`;
 
   return `<div class="result-demo" data-result-demo${isStaticMedia ? ` data-static="true"` : ""} data-actions="${resultActionsAttr(episode.annotations)}">
     ${renderResultMedia(upload, episode, options)}
     <div class="result-demo-bar">
-      <div class="result-demo-cell result-demo-cell-grow"><i>episode</i><b>${escapeHtml(episode.filename)}</b></div>
-      <div class="result-demo-cell"><i>annotations</i><b>${escapeHtml(annotationSummary)}</b></div>
-      <div class="result-demo-cell"><i>duration</i><b>${escapeHtml(secondsLabel(duration))}</b></div>
+      <button class="result-play-toggle" type="button" data-result-play-toggle>Play</button>
     </div>
     <div class="result-strip">
-      <span class="result-strip-label">Subtasks</span>
       <div class="result-timeline-wrap">
         <div class="result-track" data-result-track tabindex="0" role="slider" aria-label="Annotation timeline" aria-valuemin="0"></div>
         <div class="result-tip" data-result-tip hidden><span data-result-tip-name></span></div>
         <ul class="result-cards" data-result-cards></ul>
       </div>
-      <span class="result-clock" data-result-clock>0:00</span>
-      <button class="result-play-toggle" type="button" data-result-play-toggle>Play</button>
     </div>
   </div>`;
 }
@@ -2223,7 +2139,6 @@ function renderResultEpisode(upload: ResultPageUpload, episode: ResultEpisode, i
   const hidden = index === 0 ? "" : " hidden";
 
   return `<section class="result-panel" id="${id}" data-result-panel="${id}"${hidden}>
-    <h2>${escapeHtml(episode.filename)}</h2>
     ${renderResultDemo(upload, episode, options)}
   </section>`;
 }
@@ -2536,16 +2451,7 @@ export function adminPage(user: User, dashboard: AdminDashboard) {
 }
 
 export function resultPage(user: User, upload: ResultPageUpload, result: UploadResult, options: ResultPageOptions = {}) {
-  const publicSiteUrl = config.publicSiteUrl.toString();
-  const backHref = options.backHref ?? "/";
-  const backLabel = options.backLabel ?? "App";
-  const jsonHref = options.jsonHref ?? `/uploads/${encodeURIComponent(upload.id)}/results`;
-  const navHtml = renderAccountNav(
-    user,
-    `<a class="button secondary" href="${escapeHtml(backHref)}">${escapeHtml(backLabel)}</a>
-        <a class="button secondary" href="${escapeHtml(jsonHref)}">Download JSON</a>
-        <a class="button secondary" href="${escapeHtml(publicSiteUrl)}">Main Site</a>`
-  );
+  void user;
   const hasSidebar = result.episodes.length > 1;
   const sidebar = hasSidebar
     ? `<aside class="result-sidebar">
@@ -2562,19 +2468,13 @@ export function resultPage(user: User, upload: ResultPageUpload, result: UploadR
   return page(
     "Shotwell Result",
     `<main class="result-main">
-      <section class="result-heading">
-        <span class="eyebrow">${escapeHtml(options.eyebrow ?? "Result")}</span>
-        <h1>Shotwell annotations.</h1>
-        <p>${escapeHtml(uploadTitle(upload))}</p>
-      </section>
-
       <section class="result-layout${hasSidebar ? "" : " single"}" data-result-viewer>
         ${sidebar}
         <div class="result-viewer">${panels}</div>
       </section>
     </main>
     <script src="/app.js" defer></script>`,
-    { navHtml }
+    { bare: true }
   );
 }
 
