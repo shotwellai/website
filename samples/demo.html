@@ -29,14 +29,17 @@
   .cta{background:var(--acc);color:var(--on-acc);padding:9px 17px;font-size:.8125rem;
     font-weight:500;text-decoration:none}
 
-  /* ── lede above the video ── */
-  .lede{padding:84px 40px 64px;text-align:center}
-  h1{font-family:var(--display);font-weight:300;font-size:clamp(3.2rem,6.5vw,5.2rem);
-    line-height:1.04;letter-spacing:-.018em}
+  /* ── editorial split: the footage is one panel, the argument the other ── */
+  .split{display:grid;grid-template-columns:1.18fr .82fr;
+    min-height:clamp(500px,66vh,640px);border-bottom:1px solid var(--wire)}
+  h1{font-family:var(--display);font-weight:300;font-size:clamp(2.2rem,4.2vw,3.6rem);
+    line-height:1.05;letter-spacing:-.015em;max-width:14ch}
   h1 em{font-style:italic;color:var(--dim)}
-  .lede p{margin:22px auto 0;max-width:56ch;color:var(--dim);font-weight:500;
-    font-size:1.25rem}
-  .lede-cta{margin-top:34px;display:flex;justify-content:center;align-items:center;gap:14px}
+  .said{display:flex;flex-direction:column;justify-content:center;
+    padding:56px 60px}
+  .said p{margin:22px 0 0;max-width:42ch;color:var(--dim);font-weight:500;
+    font-size:1.0625rem}
+  .lede-cta{margin-top:36px;display:flex;align-items:center;gap:14px}
   .lede-cta .go{background:var(--acc);color:var(--on-acc);padding:13px 26px;
     font-size:.9375rem;font-weight:500;text-decoration:none}
   .lede-cta .go:hover{filter:brightness(1.06)}
@@ -44,9 +47,8 @@
     font-size:.9375rem;font-weight:500;color:var(--fg);text-decoration:none}
   .lede-cta .talk:hover{border-color:var(--acc)}
 
-  /* ── hero band: the real footage, dots as static at the seams ── */
-  .hero{position:relative;height:clamp(380px,54vh,540px);overflow:hidden;
-    margin:0 88px;border:1px solid var(--wire)}
+  /* ── hero panel: the real footage, dots as static at the seams ── */
+  .hero{position:relative;overflow:hidden;border-right:1px solid var(--wire)}
   .hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
   .hero>canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 
@@ -223,9 +225,10 @@
   @media (max-width:900px){
     .brandbar{padding:12px 16px;flex-wrap:wrap}
     .navlinks{gap:14px} .navlinks a{font-size:.8125rem} .cta{padding:8px 12px}
-    .lede{padding:44px 22px 36px}
+    .split{grid-template-columns:1fr}
+    .hero{min-height:44vh;border-right:0;border-bottom:1px solid var(--wire)}
+    .said{padding:44px 24px 52px}
     .lede-cta{flex-wrap:wrap}
-    .hero{margin:0 22px}
     .annobar{margin:0 22px;flex-wrap:wrap;min-height:0}
     .annobar .cell{border-right:0;padding:8px 14px}
     .strip{margin:0 22px;padding:14px 0 12px}
@@ -281,20 +284,21 @@
   </div>
 </div>
 
-<header class="lede">
-  <h1>Annotations for <em>robotics data</em></h1>
-  <p>Shotwell provides fast, accurate and dense annotations for robotics training
-    data. We segment long videos into discrete steps and detect failures in each step.</p>
-  <div class="lede-cta">
-    <a class="go" href="https://app.shotwell.ai/">Upload videos now</a>
-    <a class="talk" href="contact.html">Talk to us</a>
+<main class="split">
+  <section class="hero">
+    <video id="v" src="../fold-rubric.mp4" muted playsinline preload="auto"></video>
+    <canvas id="c"></canvas>
+  </section>
+  <div class="said">
+    <h1>Annotations for <em>robotics data</em></h1>
+    <p>Shotwell provides fast, accurate and dense annotations for robotics training
+      data. We segment long videos into discrete steps and detect failures in each step.</p>
+    <div class="lede-cta">
+      <a class="go" href="https://app.shotwell.ai/">Upload videos now</a>
+      <a class="talk" href="contact.html">Talk to us</a>
+    </div>
   </div>
-</header>
-
-<section class="hero">
-  <video id="v" src="../fold-rubric.mp4" muted playsinline preload="auto"></video>
-  <canvas id="c"></canvas>
-</section>
+</main>
 
 <div class="annobar">
   <div class="cell"><i>episode</i><b>0431 · fold_clothing</b></div>
