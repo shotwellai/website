@@ -54,6 +54,17 @@
   .card::before{content:"";position:absolute;top:0;right:76px;width:52px;height:132px;
     background:var(--acc)}
 
+  /* partner lockup above the title, like the share card */
+  .xlogos{display:flex;align-items:center;gap:24px;margin:0 0 30px;flex-wrap:wrap}
+  .xlogos img{display:block}
+  .xlogos .sw{height:40px;width:auto}
+  .xlogos .ul{width:216px;height:auto}
+  .xlogos i{font-style:normal;font-family:var(--display);font-weight:300;
+    font-size:1.7rem;color:var(--dim);line-height:1}
+  .xlogos .ll{display:none}
+  [data-theme="light"] .xlogos .ld{display:none}
+  [data-theme="light"] .xlogos .ll{display:block}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   .kicker{font-family:var(--mono);font-size:.625rem;letter-spacing:.24em;
     text-transform:uppercase;color:var(--dim);margin-bottom:34px;display:block}
 
@@ -175,7 +186,14 @@
 
   <article class="card">
     <span class="kicker">Case study · 2026</span>
-    <h1>Shotwell x Ultra: Turning Robot Teleoperation Data Into Reliable Training Data</h1>
+        <div class="xlogos" aria-label="Shotwell and Ultra">
+      <img class="sw ld" src="/brand/assets/SVG/shotwell-logo-horizontal-white.svg" alt="Shotwell">
+      <img class="sw ll" src="/brand/assets/SVG/shotwell-logo-horizontal-black.svg" alt="Shotwell">
+      <i aria-hidden="true">&times;</i>
+      <img class="ul ld" src="/ultra-logo-white.svg" alt="Ultra">
+      <img class="ul ll" src="/ultra-logo.svg" alt="Ultra">
+    </div>
+    <h1><span class="sr">Shotwell x Ultra: </span>Turning Robot Teleoperation Data Into Reliable Training Data</h1>
 
     <div class="band">
       <canvas id="art"></canvas>
