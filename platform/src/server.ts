@@ -23,8 +23,14 @@ app.use(
         frameAncestors: ["'none'"],
         imgSrc: ["'self'", config.publicSiteUrl.origin, "https:", "data:"],
         objectSrc: ["'none'"],
-        connectSrc: ["'self'", "https://storage.googleapis.com"],
-        scriptSrc: ["'self'"],
+        connectSrc: [
+          "'self'",
+          "https://storage.googleapis.com",
+          "https://*.google-analytics.com",
+          "https://*.analytics.google.com",
+          "https://*.googletagmanager.com"
+        ],
+        scriptSrc: ["'self'", "https://www.googletagmanager.com"],
         styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
         fontSrc: ["'self'", "https://fonts.gstatic.com"],
         upgradeInsecureRequests: config.isProduction ? [] : null
@@ -91,6 +97,14 @@ app.get("/theme.js", (_req, res) => {
     document.querySelectorAll(".brand").forEach(wireLongPress);
   });
 })();
+`);
+});
+
+app.get("/gtag-init.js", (_req, res) => {
+  res.type("application/javascript").send(`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-S6G438TS44');
 `);
 });
 

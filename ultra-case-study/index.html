@@ -2,6 +2,16 @@
 <html lang="en" data-theme="dark" data-palette="board">
 <head>
 <meta charset="UTF-8">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-S6G438TS44"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-S6G438TS44');
+</script>
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shotwell x Ultra: Turning Robot Teleoperation Data Into Reliable Training Data</title>
 <meta name="description" content="How Shotwell helped Ultra turn raw robot teleoperation episodes into searchable, high-signal training data for policy improvement and operator feedback.">
@@ -49,7 +59,7 @@
   .cta small{font-size:.75em;font-weight:400;opacity:.75}
 
   /* ── press-card article ── */
-  .page{padding:28px 0 110px}
+  .page{max-width:1080px;padding:28px 48px 110px}
   .card{position:relative;background:var(--surface);border:1px solid var(--wire);
     padding:64px 64px 56px;overflow:hidden}
   .card::before{content:"";position:absolute;top:0;right:76px;width:52px;height:132px;
@@ -66,12 +76,12 @@
   [data-theme="light"] .xlogos .ld{display:none}
   [data-theme="light"] .xlogos .ll{display:block}
   .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-  .kicker{font-family:var(--mono);font-size:.625rem;letter-spacing:.24em;
+  .kicker{font-family:var(--mono);font-size:.6875rem;letter-spacing:.24em;
     text-transform:uppercase;color:var(--dim);margin-bottom:30px;display:block}
 
-  h1{font-family:var(--display);font-weight:300;font-size:clamp(2.1rem,4.4vw,3.3rem);
+  h1{font-family:var(--display);font-weight:300;font-size:clamp(2.3rem,4.6vw,3.5rem);
     line-height:1.06;letter-spacing:-.015em;max-width:17ch}
-  .dek{margin-top:20px;color:var(--fg);font-weight:300;font-size:1.0625rem;
+  .dek{margin-top:20px;color:var(--fg);font-weight:300;font-size:1.1875rem;
     line-height:1.65;max-width:66ch}
 
   /* header split: the argument left, the machine right */
@@ -91,32 +101,32 @@
     border-right:1px solid var(--wire);padding:5px 10px}
 
   /* body copy, single measure inside the card */
-  .prose h2{font-family:var(--display);font-weight:300;font-size:1.75rem;
+  .prose h2{font-family:var(--display);font-weight:300;font-size:1.9375rem;
     letter-spacing:-.012em;margin:52px 0 4px;max-width:24ch}
   .prose h2::before{content:attr(data-n);display:block;font-family:var(--mono);
-    font-size:.5625rem;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);
+    font-size:.625rem;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);
     margin-bottom:12px}
-  .prose p{margin-top:16px;color:var(--dim);font-weight:300;font-size:.9375rem;
+  .prose p{margin-top:16px;color:var(--dim);font-weight:300;font-size:1.0625rem;
     line-height:1.72;max-width:78ch}
   .prose p b{font-weight:400;color:var(--fg)}
   .prose ul{margin:16px 0 0 2px;list-style:none;max-width:78ch}
-  .prose li{margin-top:9px;color:var(--dim);font-weight:300;font-size:.9375rem;
+  .prose li{margin-top:9px;color:var(--dim);font-weight:300;font-size:1.0625rem;
     padding-left:20px;position:relative}
   .prose li::before{content:"—";position:absolute;left:0;color:var(--faint)}
 
-  h3{font-family:var(--display);font-weight:300;font-size:1.25rem;margin:32px 0 0}
-  h3 i{font-style:normal;font-family:var(--mono);font-size:.625rem;letter-spacing:.18em;
+  h3{font-family:var(--display);font-weight:300;font-size:1.375rem;margin:32px 0 0}
+  h3 i{font-style:normal;font-family:var(--mono);font-size:.6875rem;letter-spacing:.18em;
     color:var(--dim);margin-right:12px;vertical-align:2px}
 
   /* the query card, same component as the demo page */
-  .query{font-family:var(--mono);font-size:.75rem;line-height:2.05;margin:32px 0 8px;
+  .query{font-family:var(--mono);font-size:.8125rem;line-height:2.05;margin:32px 0 8px;
     max-width:78ch;border:1px solid var(--wire);background:var(--ground)}
   .q-head{padding:9px 14px;border-bottom:1px solid var(--wire);color:var(--faint);
-    letter-spacing:.14em;font-size:.5625rem;text-transform:uppercase}
+    letter-spacing:.14em;font-size:.625rem;text-transform:uppercase}
   .q-body{padding:14px 16px 12px}
   .q-body i{font-style:normal;color:var(--faint)}
   .q-body b{font-weight:400;color:var(--acc)}
-  .q-foot{padding:0 16px 14px;color:var(--faint);font-size:.6875rem}
+  .q-foot{padding:0 16px 14px;color:var(--faint);font-size:.75rem}
 
   /* original case-study figures, retokened for the new design */
   .case-visual{margin:32px 0 8px}
