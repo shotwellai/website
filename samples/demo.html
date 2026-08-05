@@ -17,8 +17,7 @@
 
   .brandbar{position:sticky;top:41px;z-index:40;display:flex;align-items:center;
     justify-content:space-between;gap:20px;padding:14px 40px;
-    background:color-mix(in srgb,var(--ground) 90%,transparent);backdrop-filter:blur(10px);
-    border-bottom:1px solid var(--wire)}
+    background:color-mix(in srgb,var(--ground) 90%,transparent);backdrop-filter:blur(10px)}
   .brandbar img{height:24px;width:auto}
   .navlinks{display:flex;gap:26px;align-items:center}
   .navlinks a{font-size:.875rem;color:var(--dim);text-decoration:none}
@@ -36,10 +35,17 @@
   h1 em{font-style:italic;color:var(--dim)}
   .lede p{margin:22px auto 0;max-width:56ch;color:var(--dim);font-weight:500;
     font-size:1.25rem}
+  .lede-cta{margin-top:34px;display:flex;justify-content:center;align-items:center;gap:14px}
+  .lede-cta .go{background:var(--acc);color:var(--on-acc);padding:13px 26px;
+    font-size:.9375rem;font-weight:500;text-decoration:none}
+  .lede-cta .go:hover{filter:brightness(1.06)}
+  .lede-cta .talk{border:1px solid var(--wire-strong);padding:12px 22px;
+    font-size:.9375rem;font-weight:500;color:var(--fg);text-decoration:none}
+  .lede-cta .talk:hover{border-color:var(--acc)}
 
   /* ── hero band: the real footage, dots as static at the seams ── */
   .hero{position:relative;height:clamp(380px,54vh,540px);overflow:hidden;
-    margin:0 44px;border:1px solid var(--wire)}
+    margin:0 88px;border:1px solid var(--wire)}
   .hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
   .hero>canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 
@@ -131,7 +137,8 @@
 
 
   /* contact — the one saturated field on the page, closed by the mark */
-  .field{background:var(--acc);color:var(--on-acc);padding:88px 0 96px}
+  .field{background:var(--acc);color:var(--on-acc);padding:88px 0 40px}
+  .field footer{margin-top:72px;padding:0;color:color-mix(in srgb,var(--on-acc) 62%,transparent)}
   .field .wrap{display:flex;align-items:center;justify-content:space-between;gap:40px}
   .field .f-mark{width:84px;height:auto;flex:none}
   .field h2{font-size:clamp(1.9rem,4vw,3rem);max-width:24ch}
@@ -217,7 +224,8 @@
     .brandbar{padding:12px 16px;flex-wrap:wrap}
     .navlinks{gap:14px} .navlinks a{font-size:.8125rem} .cta{padding:8px 12px}
     .lede{padding:44px 22px 36px}
-    .hero{margin:0 12px}
+    .lede-cta{flex-wrap:wrap}
+    .hero{margin:0 22px}
     .annobar{margin:0 22px;flex-wrap:wrap;min-height:0}
     .annobar .cell{border-right:0;padding:8px 14px}
     .strip{margin:0 22px;padding:14px 0 12px}
@@ -277,6 +285,10 @@
   <h1>Annotations for <em>robotics data</em></h1>
   <p>Shotwell provides fast, accurate and dense annotations for robotics training
     data. We segment long videos into discrete steps and detect failures in each step.</p>
+  <div class="lede-cta">
+    <a class="go" href="https://app.shotwell.ai/">Upload videos now</a>
+    <a class="talk" href="contact.html">Talk to us</a>
+  </div>
 </header>
 
 <section class="hero">
@@ -364,14 +376,13 @@
       <a href="mailto:hello@shotwell.ai">hello@shotwell.ai</a></h2>
     <img class="f-mark" src="../brand/assets/SVG/shotwell-mark-black.svg" alt="Shotwell">
   </div>
+  <div class="wrap">
+    <footer>
+      <span>Shotwell — annotations for robotics data</span>
+      <span>hello@shotwell.ai</span>
+    </footer>
+  </div>
 </section>
-
-<div class="wrap">
-  <footer>
-    <span>Shotwell — annotations for robotics data</span>
-    <span>hello@shotwell.ai</span>
-  </footer>
-</div>
 
 <script type="module">
 import { halftone } from './assets/halftone.js';

@@ -3,16 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sample — Blog index</title>
-<meta name="robots" content="noindex">
+<title>Blog — Shotwell AI</title>
+<meta name="description" content="Case studies and notes from Shotwell on annotations for robotics data.">
+<meta property="og:title" content="Blog — Shotwell AI">
+<meta property="og:description" content="Case studies and notes from Shotwell on annotations for robotics data.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://shotwell.ai/blog/">
+<meta property="og:site_name" content="Shotwell AI">
+<meta property="og:image" content="https://shotwell.ai/og-default.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://shotwell.ai/og-default.png">
+<link rel="canonical" href="https://shotwell.ai/blog/">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Outfit:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="/assets/tokens.css">
 <style>
   [data-palette="board"]{--acc:#EFB702;--on-acc:#0C0C0E}
 
-  .brandbar{position:sticky;top:41px;z-index:40;display:flex;align-items:center;
+  .brandbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;
     justify-content:space-between;gap:20px;padding:14px 40px;
     background:color-mix(in srgb,var(--ground) 90%,transparent);backdrop-filter:blur(10px)}
   .brandbar img{height:24px;width:auto}
@@ -77,34 +92,19 @@
 </head>
 <body>
 
-<nav class="samplebar">
-  <span class="sb-label">Samples</span>
-  <a href="index.html">Index</a>
-  <a href="demo.html">Demo</a>
-  <a href="blog.html" aria-current="page">Blog</a>
-  <a href="hero-a.html">Hero A</a>
-  <a href="hero-b.html">Hero B</a>
-  <a href="hero-c.html">Hero C</a>
-  <a href="press.html">Press</a>
-  <a href="fields.html">Fields</a>
-  <a href="palettes.html">Colour</a>
-  <span class="sb-spacer"></span>
-  <button id="themeToggle">Light</button>
-</nav>
-
 <div class="brandbar">
-  <a href="demo.html" data-theme-longpress><img id="mark" src="../brand/assets/SVG/shotwell-logo-horizontal-white.svg" alt="Shotwell"></a>
+  <a href="/" data-theme-longpress><img id="mark" src="/brand/assets/SVG/shotwell-logo-horizontal-white.svg" alt="Shotwell"></a>
   <div class="navlinks">
     <button class="tbtn" data-theme-toggle type="button" aria-label="Toggle theme">☀</button>
     <a href="https://demo.shotwell.ai/">Demo</a>
-    <a href="blog.html" aria-current="page">Blog</a>
-    <a class="ghostcta" href="contact.html">Talk to us</a>
+    <a href="/blog/" aria-current="page">Blog</a>
+    <a class="ghostcta" href="/contact/">Talk to us</a>
     <a class="cta" href="https://app.shotwell.ai/">Upload videos now <small>· 24 hr turnaround</small></a>
   </div>
 </div>
 
 <main class="page wrap">
-  <a class="card" href="blog-ultra.html">
+  <a class="card" href="/ultra-case-study/">
     <span class="kicker">Case study · 2026</span>
     <h1>Shotwell x Ultra: Turning Robot Teleoperation Data Into Reliable Training Data</h1>
 
@@ -134,8 +134,8 @@
 </main>
 
 <script type="module">
-import { halftone } from './assets/halftone.js';
-import { init, dotStyle, isLight } from './assets/theme.js';
+import { halftone } from '/assets/halftone.js';
+import { init, dotStyle, isLight } from '/assets/theme.js';
 
 var img=new Image(), ready=false, mark=document.getElementById('mark');
 function render(){
@@ -155,7 +155,7 @@ function syncMark(){
     : '../brand/assets/SVG/shotwell-logo-horizontal-white.svg';
 }
 img.onload=function(){ready=true;render();};
-img.src='assets/frame-ultra.jpg';
+img.src='/assets/frame-ultra.jpg';
 init(); syncMark();
 addEventListener('themechange',function(){render();syncMark();});
 var to; addEventListener('resize',function(){clearTimeout(to);to=setTimeout(render,150);});

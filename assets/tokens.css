@@ -1,0 +1,82 @@
+/* Sample design language — derived from the vision board.
+   Halftone is the house image treatment. Dark carries the product,
+   saturated fields carry the story. Light mode is a full inversion,
+   not a tint. */
+
+:root{
+  --ground:#0B0B0F;
+  --surface:#111116;
+  --fg:#F5F2EB;
+  --dim:rgba(245,242,235,.54);
+  --faint:rgba(245,242,235,.32);
+  --wire:rgba(245,242,235,.20);
+  --wire-strong:rgba(245,242,235,.44);
+  --hover:rgba(245,242,235,.07);
+
+  --ember:#C96E2D;
+  --amber:#E8B33A;
+  --moss:#C6D2C0;
+  --pass:#6FA88C;
+  --accent-fail:#E5006E;
+
+  /* halftone dot colour + polarity, read by the page scripts */
+  --dot:#F5F2EB;
+
+  --display:'Fraunces',Georgia,serif;
+  --body:'Outfit',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+
+  --max:1180px;
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+
+[data-theme="light"]{
+  --ground:#F5F2EB;
+  --surface:#EDE9DF;
+  --fg:#22222A;
+  --dim:rgba(34,34,42,.62);
+  --faint:rgba(34,34,42,.42);
+  --wire:rgba(34,34,42,.16);
+  --wire-strong:rgba(34,34,42,.38);
+  --hover:rgba(34,34,42,.05);
+  --dot:#22222A;
+}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--body);background:var(--ground);color:var(--fg);
+  line-height:1.6;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  transition:background-color .25s var(--ease),color .25s var(--ease)}
+img,canvas{display:block;max-width:100%}
+a{color:inherit}
+
+.wrap{max-width:var(--max);margin:0 auto;padding:0 40px}
+
+.tag{font-family:var(--mono);font-size:.6875rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--dim)}
+.tag b{font-weight:400;color:var(--ember)}
+
+/* ── sample-set chrome ── */
+.samplebar{position:fixed;top:0;left:0;right:0;z-index:50;
+  display:flex;gap:2px;align-items:center;
+  background:color-mix(in srgb, var(--ground) 88%, transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--wire);padding:8px 14px}
+.samplebar a,.samplebar button{font-family:var(--mono);font-size:.6875rem;
+  letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--dim);
+  padding:6px 12px;border-radius:6px;background:none;border:0;cursor:pointer}
+.samplebar a:hover,.samplebar button:hover{color:var(--fg);background:var(--hover)}
+.samplebar a[aria-current]{color:var(--ground);background:var(--ember)}
+.samplebar .sb-label{font-family:var(--mono);font-size:.6875rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--faint);margin-right:10px;padding-left:4px}
+.samplebar .sb-spacer{flex:1}
+#themeToggle{border:1px solid var(--wire)}
+body{padding-top:41px}
+
+:focus-visible{outline:2px solid var(--ember);outline-offset:3px}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:720px){
+  .wrap{padding:0 22px}
+  .samplebar .sb-label{display:none}
+}
