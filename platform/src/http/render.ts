@@ -1393,6 +1393,7 @@ export function page(title: string, body: string, options: { navHtml?: string; b
     .result-media-frame {
       position: relative;
       aspect-ratio: 16 / 9;
+      max-height: 540px;
       overflow: hidden;
       border: 1px solid var(--color-line);
       background:
@@ -1444,7 +1445,7 @@ export function page(title: string, body: string, options: { navHtml?: string; b
       border-right: 1px solid var(--color-line);
       border-left: 1px solid var(--color-line);
       border-bottom: 1px solid var(--color-line);
-      padding: 28px 14px 16px;
+      padding: 62px 14px 16px;
       background: color-mix(in srgb, var(--color-panel) 66%, transparent);
     }
 
@@ -1497,7 +1498,6 @@ export function page(title: string, body: string, options: { navHtml?: string; b
       inset: 0;
       transform: scaleX(0);
       transform-origin: left;
-      transition: transform 0.1s linear;
     }
 
     .result-playhead {
@@ -1510,7 +1510,6 @@ export function page(title: string, body: string, options: { navHtml?: string; b
       transform: translateX(-1px);
       z-index: 3;
       pointer-events: none;
-      transition: left 0.1s linear;
     }
 
     .result-playhead::before {
@@ -1526,17 +1525,31 @@ export function page(title: string, body: string, options: { navHtml?: string; b
     }
 
     .result-tip {
+      --result-tip-color: var(--color-line);
       position: absolute;
-      top: 44px;
+      top: -48px;
       left: 70px;
       z-index: 4;
       max-width: min(260px, 80%);
       transform: translateX(-50%);
-      border: 1px solid var(--color-line);
+      border: 1px solid var(--result-tip-color);
       background: var(--color-panel);
       padding: 7px 12px;
       pointer-events: none;
       white-space: nowrap;
+    }
+
+    .result-tip::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -5px;
+      width: 8px;
+      height: 8px;
+      transform: translateX(-50%) rotate(45deg);
+      border-right: 1px solid var(--result-tip-color);
+      border-bottom: 1px solid var(--result-tip-color);
+      background: var(--color-panel);
     }
 
     .result-tip span {
@@ -1553,7 +1566,7 @@ export function page(title: string, body: string, options: { navHtml?: string; b
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 7px 12px;
-      margin: 48px 0 0;
+      margin: 18px 0 0;
       padding: 0;
       list-style: none;
     }

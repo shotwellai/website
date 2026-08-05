@@ -578,6 +578,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let playhead = null;
     let isScrubbing = false;
     let manuallyPaused = true;
+    let frameRequest = 0;
 
     function mediaDuration() {
       if (!video || Number.isNaN(video.duration) || video.duration <= 0) {
@@ -680,7 +681,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const center = ((active.start + active.end) / 2) / duration * trackWidth;
         tip.hidden = false;
         tip.style.left = clamp(center, 70, Math.max(70, trackWidth - 70)) + "px";
-        tip.style.borderColor = active.color;
+        tip.style.setProperty("--result-tip-color", active.color);
         tipName.textContent = active.label;
       } else if (tip) {
         tip.hidden = true;
@@ -728,6 +729,31 @@ document.addEventListener("DOMContentLoaded", () => {
       playToggle.textContent = video && !video.paused && !video.ended ? "Pause" : "Play";
     }
 
+    function isVisibleDemo() {
+      return !demo.closest("[hidden]");
+    }
+
+    function isKeyboardEditingTarget(target) {
+      return target && target.closest && Boolean(target.closest("input, textarea, select, button, a, [contenteditable='true']"));
+    }
+
+    function startFrameLoop() {
+      if (!video || frameRequest) return;
+      const tick = () => {
+        frameRequest = 0;
+        if (!video || video.paused || video.ended || isScrubbing) return;
+        update(video.currentTime || 0);
+        startFrameLoop();
+      };
+      frameRequest = window.requestAnimationFrame(tick);
+    }
+
+    function stopFrameLoop() {
+      if (!frameRequest) return;
+      window.cancelAnimationFrame(frameRequest);
+      frameRequest = 0;
+    }
+
     function playVideo() {
       if (!video || prefersReducedMotion) return;
       manuallyPaused = false;
@@ -739,6 +765,22 @@ document.addEventListener("DOMContentLoaded", () => {
     function pauseVideo() {
       if (!video) return;
       video.pause();
+    }
+
+    function togglePlayback() {
+      if (!video) return;
+      if (video.ended) video.currentTime = 0;
+      if (video.paused) {
+        playVideo();
+      } else {
+        manuallyPaused = true;
+        pauseVideo();
+      }
+    }
+
+    function keyboardSeek(delta) {
+      const current = video ? video.currentTime || 0 : 0;
+      seekTo(current + delta);
     }
 
     build();
@@ -756,38 +798,54 @@ document.addEventListener("DOMContentLoaded", () => {
       if (event.key === "ArrowRight") next = current + step;
       if (event.key === "Home") next = 0;
       if (event.key === "End") next = duration;
+      if (event.key === " ") {
+        event.preventDefault();
+        togglePlayback();
+        return;
+      }
       if (next == null) return;
       event.preventDefault();
       seekTo(next);
     });
 
+    document.addEventListener("keydown", (event) => {
+      if (event.defaultPrevented || !isVisibleDemo() || isKeyboardEditingTarget(event.target)) return;
+      const step = event.shiftKey ? 5 : 1;
+      if (event.key === " ") {
+        event.preventDefault();
+        togglePlayback();
+      } else if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        keyboardSeek(-step);
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault();
+        keyboardSeek(step);
+      }
+    });
+
     if (playToggle && !isStatic) {
-      playToggle.addEventListener("click", () => {
-        if (!video) return;
-        if (video.ended) video.currentTime = 0;
-        if (video.paused) {
-          playVideo();
-        } else {
-          manuallyPaused = true;
-          pauseVideo();
-        }
-      });
+      playToggle.addEventListener("click", togglePlayback);
     }
 
     if (video) {
       video.addEventListener("loadedmetadata", layout);
       video.addEventListener("durationchange", layout);
       video.addEventListener("timeupdate", () => update(video.currentTime || 0));
-      video.addEventListener("play", updatePlayToggle);
-      video.addEventListener("pause", updatePlayToggle);
-      video.addEventListener("ended", updatePlayToggle);
-      video.addEventListener("click", () => {
-        if (video.paused) playVideo();
-        else {
-          manuallyPaused = true;
-          pauseVideo();
-        }
+      video.addEventListener("play", () => {
+        updatePlayToggle();
+        startFrameLoop();
       });
+      video.addEventListener("pause", () => {
+        stopFrameLoop();
+        updatePlayToggle();
+        update(video.currentTime || 0);
+      });
+      video.addEventListener("ended", () => {
+        stopFrameLoop();
+        updatePlayToggle();
+        update(video.currentTime || 0);
+      });
+      video.addEventListener("click", togglePlayback);
 
       if ("IntersectionObserver" in window && !prefersReducedMotion) {
         const observer = new IntersectionObserver((entries) => {
