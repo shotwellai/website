@@ -10,12 +10,19 @@ if [[ -z "${PROJECT}" ]]; then
   exit 1
 fi
 
+# The bucket name stays out of this public repo. Pass it explicitly:
+#   GCS_UPLOAD_BUCKET=<bucket> GCP_PROJECT=<project> bash scripts/deploy-cloud-run.sh
+if [[ -z "${GCS_UPLOAD_BUCKET:-}" ]]; then
+  echo "Missing GCS_UPLOAD_BUCKET. Set it in your environment before deploying." >&2
+  exit 1
+fi
+
 gcloud run deploy "${SERVICE}" \
   --source . \
   --project "${PROJECT}" \
   --region "${REGION}" \
   --allow-unauthenticated \
-  --update-env-vars "NODE_ENV=production,AUTH_STORE=postgres,PUBLIC_SITE_URL=https://shotwell.ai,AUTH_BASE_URL=https://auth.shotwell.ai,APP_BASE_URL=https://app.shotwell.ai,EMAIL_FROM=Shotwell <auth@shotwell.ai>,ADMIN_NOTIFICATION_EMAIL=founders@shotwell.ai,ALLOW_DEV_EMAIL_LOGIN=false,GCS_UPLOAD_BUCKET=shotwell-platform-uploads-755576089506,GCS_UPLOAD_PREFIX=uploads,GCS_RESULTS_PREFIX=results" \
+  --update-env-vars "NODE_ENV=production,AUTH_STORE=postgres,PUBLIC_SITE_URL=https://shotwell.ai,AUTH_BASE_URL=https://auth.shotwell.ai,APP_BASE_URL=https://app.shotwell.ai,EMAIL_FROM=Shotwell <auth@shotwell.ai>,ADMIN_NOTIFICATION_EMAIL=founders@shotwell.ai,ALLOW_DEV_EMAIL_LOGIN=false,GCS_UPLOAD_BUCKET=${GCS_UPLOAD_BUCKET},GCS_UPLOAD_PREFIX=uploads,GCS_RESULTS_PREFIX=results" \
   --update-secrets "SESSION_SECRET=shotwell-platform-session-secret:latest,DATABASE_URL=shotwell-platform-database-url:latest,GOOGLE_CLIENT_ID=shotwell-platform-google-client-id:latest,GOOGLE_CLIENT_SECRET=shotwell-platform-google-client-secret:latest,RESEND_API_KEY=shotwell-platform-resend-api-key:latest"
 
 cat <<EOF
