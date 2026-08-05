@@ -1,6 +1,7 @@
 import type { User } from "../auth/store.js";
 import type { AdminDashboard, AdminUploadSummary, AdminUserSummary } from "../admin/store.js";
 import { config } from "../config.js";
+import type { ResultAnnotation, ResultEpisode, UploadResult } from "../uploads/results.js";
 import type { UploadRecord } from "../uploads/store.js";
 
 export function escapeHtml(value: string) {
@@ -1255,6 +1256,210 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       font-weight: 300;
     }
 
+    .result-main {
+      display: grid;
+      gap: 22px;
+    }
+
+    .result-heading {
+      display: grid;
+      gap: 10px;
+    }
+
+    .result-heading p {
+      max-width: 56rem;
+      color: var(--color-text-light);
+      font-size: 1rem;
+    }
+
+    .result-layout {
+      display: grid;
+      grid-template-columns: minmax(190px, 0.24fr) minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .result-layout.single {
+      grid-template-columns: 1fr;
+    }
+
+    .result-sidebar {
+      position: sticky;
+      top: calc(var(--nav-height) + 18px);
+      display: grid;
+      gap: 8px;
+      border: 1px solid var(--color-line);
+      background: var(--color-panel-soft);
+      padding: 12px;
+    }
+
+    .result-sidebar h2 {
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    .result-nav-item {
+      min-height: 0;
+      width: 100%;
+      justify-content: flex-start;
+      border-color: transparent;
+      padding: 10px;
+      background: transparent;
+      color: var(--color-text);
+      font-size: 0.78rem;
+      line-height: 1.25;
+      text-align: left;
+      text-transform: none;
+      overflow-wrap: anywhere;
+    }
+
+    .result-nav-item[aria-current="true"] {
+      border-color: var(--color-line);
+      background: var(--color-cta);
+      color: var(--color-cta-text);
+    }
+
+    .result-viewer {
+      display: grid;
+      gap: 16px;
+    }
+
+    .result-panel {
+      display: grid;
+      gap: 18px;
+    }
+
+    .result-panel[hidden] {
+      display: none;
+    }
+
+    .result-panel h2 {
+      font-family: var(--font-body);
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      overflow-wrap: anywhere;
+    }
+
+    .result-media-frame {
+      border: 1px solid var(--color-line);
+      background: #15120f;
+    }
+
+    .result-media-frame video,
+    .result-media-frame img {
+      display: block;
+      width: 100%;
+      max-height: min(66vh, 680px);
+      object-fit: contain;
+      background: #15120f;
+    }
+
+    .result-missing-media {
+      display: grid;
+      gap: 8px;
+      border: 1px solid var(--color-line);
+      background: var(--color-panel-soft);
+      padding: 16px;
+    }
+
+    .annotation-timeline {
+      position: relative;
+      min-height: 104px;
+      border: 1px solid var(--color-line);
+      background: var(--color-panel-soft);
+      padding: 46px 12px 28px;
+    }
+
+    .result-annotations {
+      display: grid;
+      gap: 12px;
+    }
+
+    .annotation-track {
+      position: relative;
+      height: 18px;
+      border: 1px solid var(--color-line);
+      background: var(--color-panel);
+    }
+
+    .annotation-segment {
+      position: absolute;
+      top: -1px;
+      bottom: -1px;
+      left: var(--start);
+      width: var(--width);
+      min-width: 2px;
+      border: 1px solid var(--color-line);
+      background: var(--color-accent-soft);
+    }
+
+    .annotation-segment:nth-child(even) {
+      background: var(--color-bg-alt);
+    }
+
+    .annotation-chip {
+      position: absolute;
+      left: var(--center);
+      top: 11px;
+      max-width: 180px;
+      transform: translateX(-50%);
+      border: 1px solid var(--color-line);
+      background: var(--color-panel);
+      padding: 5px 7px;
+      color: var(--color-text);
+      font-size: 0.66rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      line-height: 1.15;
+      text-align: center;
+      text-transform: uppercase;
+      overflow-wrap: anywhere;
+    }
+
+    .annotation-time-axis {
+      position: absolute;
+      right: 12px;
+      bottom: 6px;
+      color: var(--color-muted);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 0.72rem;
+    }
+
+    .annotation-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .annotation-list li {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      border: 1px solid var(--color-line);
+      background: var(--color-panel-soft);
+      padding: 10px 12px;
+    }
+
+    .annotation-list strong {
+      overflow-wrap: anywhere;
+    }
+
+    .annotation-list span {
+      color: var(--color-muted);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 0.78rem;
+      white-space: nowrap;
+    }
+
     .message-main {
       min-height: calc(100vh - var(--nav-height));
       display: grid;
@@ -1327,6 +1532,14 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 
 	      .admin-upload-grid {
 	        grid-template-columns: 1fr;
+	      }
+
+	      .result-layout {
+	        grid-template-columns: 1fr;
+	      }
+
+	      .result-sidebar {
+	        position: static;
 	      }
 
 	      .account-box {
@@ -1445,6 +1658,10 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 	        grid-template-columns: 1fr;
 	        display: grid;
 	        align-items: start;
+	      }
+
+	      .annotation-list li {
+	        grid-template-columns: 1fr;
 	      }
 
 	      .account-box {
@@ -1596,7 +1813,8 @@ function promptPreview(prompt: string) {
 
 function renderUploadRow(upload: UploadRecord) {
   const resultButton = upload.status === "completed" && upload.resultObjectName
-    ? `<a class="button compact" href="/uploads/${escapeHtml(upload.id)}/results">Download Results</a>`
+    ? `<a class="button compact" href="/uploads/${escapeHtml(upload.id)}/result">View Result</a>
+      <a class="button secondary compact" href="/uploads/${escapeHtml(upload.id)}/results">Download JSON</a>`
     : `<span class="status-pill">Pending</span>`;
   const prompt = promptPreview(upload.prompt);
   const editPrompt = upload.status === "pending"
@@ -1627,6 +1845,141 @@ function renderUploadRow(upload: UploadRecord) {
     <div class="job-actions">${resultButton}</div>
     ${editPrompt}
   </article>`;
+}
+
+function resultFileContentType(file: { originalName: string; contentType: string }) {
+  const contentType = file.contentType.trim().toLowerCase();
+  const name = file.originalName.toLowerCase();
+  if (name.endsWith(".mov") && (contentType === "video/quicktime" || contentType === "application/octet-stream")) {
+    return "video/mp4";
+  }
+
+  if (contentType && contentType !== "application/octet-stream") {
+    return contentType;
+  }
+
+  if (name.endsWith(".mp4") || name.endsWith(".m4v") || name.endsWith(".mov")) return "video/mp4";
+  if (name.endsWith(".webm")) return "video/webm";
+  if (name.endsWith(".png")) return "image/png";
+  if (name.endsWith(".jpg") || name.endsWith(".jpeg")) return "image/jpeg";
+  if (name.endsWith(".gif")) return "image/gif";
+  if (name.endsWith(".webp")) return "image/webp";
+  return contentType || "application/octet-stream";
+}
+
+function resultEpisodeId(index: number) {
+  return `episode-${index + 1}`;
+}
+
+function filenameBasename(value: string) {
+  return value.split(/[\\/]/).pop() ?? value;
+}
+
+function findEpisodeFile(upload: UploadRecord, episode: ResultEpisode) {
+  const filename = filenameBasename(episode.filename).toLowerCase();
+  return upload.files.find((file) => file.originalName === episode.filename)
+    ?? upload.files.find((file) => file.originalName.toLowerCase() === filename);
+}
+
+function secondsLabel(seconds: number) {
+  const safeSeconds = Math.max(0, seconds);
+  const minutes = Math.floor(safeSeconds / 60);
+  const wholeSeconds = Math.floor(safeSeconds % 60);
+  const fraction = safeSeconds % 1;
+  const suffix = fraction > 0 ? `.${Math.round(fraction * 10)}` : "";
+  return `${minutes}:${String(wholeSeconds).padStart(2, "0")}${suffix}`;
+}
+
+function annotationDuration(annotations: ResultAnnotation[]) {
+  return Math.max(1, ...annotations.map((annotation) => annotation.end_time));
+}
+
+function percent(value: number) {
+  return `${Math.max(0, Math.min(100, value)).toFixed(4)}%`;
+}
+
+function renderResultMedia(upload: UploadRecord, episode: ResultEpisode) {
+  const file = findEpisodeFile(upload, episode);
+  if (!file) {
+    return `<div class="result-missing-media">
+      <strong>Media file not found.</strong>
+      <p>The result references <code>${escapeHtml(episode.filename)}</code>, but that filename is not attached to this upload.</p>
+    </div>`;
+  }
+
+  const href = `/uploads/${escapeHtml(upload.id)}/files/${escapeHtml(file.id)}`;
+  const contentType = resultFileContentType(file);
+  if (contentType.startsWith("video/")) {
+    return `<div class="result-media-frame">
+      <video controls preload="metadata">
+        <source src="${href}" type="${escapeHtml(contentType)}">
+      </video>
+    </div>`;
+  }
+
+  if (contentType.startsWith("image/")) {
+    return `<div class="result-media-frame">
+      <img src="${href}" alt="${escapeHtml(file.originalName)}" loading="lazy">
+    </div>`;
+  }
+
+  return `<div class="result-missing-media">
+    <strong>Preview unavailable.</strong>
+    <p>${escapeHtml(file.originalName)}</p>
+    <a class="button secondary compact" href="${href}" target="_blank" rel="noopener">Open file</a>
+  </div>`;
+}
+
+function renderAnnotationTimeline(annotations: ResultAnnotation[]) {
+  if (annotations.length === 0) {
+    return `<div class="empty-row">No annotations in this episode.</div>`;
+  }
+
+  const duration = annotationDuration(annotations);
+  const segments = annotations.map((annotation) => {
+    const start = annotation.start_time / duration * 100;
+    const width = Math.max(0.25, (annotation.end_time - annotation.start_time) / duration * 100);
+    const center = (annotation.start_time + annotation.end_time) / 2 / duration * 100;
+
+    return `<span class="annotation-segment" style="--start:${percent(start)};--width:${percent(width)}"></span>
+      <span class="annotation-chip" style="--center:${percent(center)}">${escapeHtml(annotation.label)}</span>`;
+  }).join("");
+
+  return `<div class="annotation-timeline">
+    <div class="annotation-track">${segments}</div>
+    <div class="annotation-time-axis">0:00 - ${secondsLabel(duration)}</div>
+  </div>`;
+}
+
+function renderAnnotationList(annotations: ResultAnnotation[]) {
+  if (annotations.length === 0) {
+    return "";
+  }
+
+  return `<ul class="annotation-list">
+    ${annotations.map((annotation) => `<li>
+      <strong>${escapeHtml(annotation.label)}</strong>
+      <span>${secondsLabel(annotation.start_time)} - ${secondsLabel(annotation.end_time)}</span>
+    </li>`).join("")}
+  </ul>`;
+}
+
+function renderResultEpisode(upload: UploadRecord, episode: ResultEpisode, index: number) {
+  const id = resultEpisodeId(index);
+  const hidden = index === 0 ? "" : " hidden";
+
+  return `<section class="result-panel" id="${id}" data-result-panel="${id}"${hidden}>
+    <h2>${escapeHtml(episode.filename)}</h2>
+    ${renderResultMedia(upload, episode)}
+    <section class="result-annotations">
+      <div class="admin-section-header">
+        <h2>Annotations</h2>
+        <p>${formatCount(episode.annotations.length)} labels</p>
+      </div>
+      ${renderAnnotationTimeline(episode.annotations)}
+      ${renderAnnotationList(episode.annotations)}
+    </section>
+  </section>`;
 }
 
 function isShotwellAdminEmail(email: string) {
@@ -1925,6 +2278,46 @@ export function adminPage(user: User, dashboard: AdminDashboard) {
         ${renderAdminUploads(dashboard.uploads)}
       </section>
     </main>`,
+    { navHtml }
+  );
+}
+
+export function resultPage(user: User, upload: UploadRecord, result: UploadResult) {
+  const publicSiteUrl = config.publicSiteUrl.toString();
+  const navHtml = renderAccountNav(
+    user,
+    `<a class="button secondary" href="/">App</a>
+        <a class="button secondary" href="/uploads/${escapeHtml(upload.id)}/results">Download JSON</a>
+        <a class="button secondary" href="${escapeHtml(publicSiteUrl)}">Main Site</a>`
+  );
+  const hasSidebar = result.episodes.length > 1;
+  const sidebar = hasSidebar
+    ? `<aside class="result-sidebar">
+        <h2>Episodes</h2>
+        ${result.episodes.map((episode, index) => {
+          const id = resultEpisodeId(index);
+          const current = index === 0 ? ` aria-current="true"` : "";
+          return `<button class="result-nav-item" type="button" data-result-nav="${id}"${current}>${escapeHtml(episode.filename)}</button>`;
+        }).join("")}
+      </aside>`
+    : "";
+  const panels = result.episodes.map((episode, index) => renderResultEpisode(upload, episode, index)).join("");
+
+  return page(
+    "Shotwell Result",
+    `<main class="result-main">
+      <section class="result-heading">
+        <span class="eyebrow">Result</span>
+        <h1>Shotwell annotations.</h1>
+        <p>${escapeHtml(uploadTitle(upload))}</p>
+      </section>
+
+      <section class="result-layout${hasSidebar ? "" : " single"}" data-result-viewer>
+        ${sidebar}
+        <div class="result-viewer">${panels}</div>
+      </section>
+    </main>
+    <script src="/app.js" defer></script>`,
     { navHtml }
   );
 }

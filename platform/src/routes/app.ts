@@ -1,16 +1,23 @@
-import { Router, type Request, type Response } from "express";
+import { Router, type NextFunction, type Request, type Response } from "express";
 
-import { adminStore, type AdminUploadFileSummary } from "../admin/store.js";
+import { adminStore } from "../admin/store.js";
 import { readSessionCookie, setSessionCookie } from "../auth/cookies.js";
 import { authStore, type User } from "../auth/store.js";
 import { config } from "../config.js";
 import { notifyContactSubmitted, notifyUploadSubmitted } from "../email/notifications.js";
-import { adminPage, appPage, messagePage } from "../http/render.js";
+import { adminPage, appPage, messagePage, resultPage } from "../http/render.js";
 import { createGcsUploadSessions, createResultReadStream, createUploadReadStream, type NewUploadFileInput } from "../uploads/gcs.js";
+import { parseUploadResultJson } from "../uploads/results.js";
 import { createUploadId, uploadStore } from "../uploads/store.js";
 
 export const appRouter = Router();
 const maxMediaChunkBytes = 8 * 1024 * 1024;
+type StreamableUploadFile = {
+  originalName: string;
+  objectName: string;
+  contentType: string;
+  sizeBytes: number;
+};
 
 function loginUrl() {
   const url = new URL("/login", config.authBaseUrl);
@@ -78,7 +85,7 @@ function isUuid(value: string | undefined) {
   return Boolean(value && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value));
 }
 
-function contentTypeForUploadFile(file: AdminUploadFileSummary) {
+function contentTypeForUploadFile(file: StreamableUploadFile) {
   const contentType = file.contentType.trim().toLowerCase();
   const name = file.originalName.toLowerCase();
   if (name.endsWith(".mov") && (contentType === "video/quicktime" || contentType === "application/octet-stream")) {
@@ -171,6 +178,58 @@ function contentDispositionInline(fileName: string) {
     .replace(/\*/g, "%2A");
 
   return `inline; filename="${asciiName}"; filename*=UTF-8''${encodedName}`;
+}
+
+function contentDispositionAttachment(fileName: string) {
+  const asciiName = safeDownloadName(fileName);
+  const encodedName = encodeURIComponent(fileName.trim() || "shotwell-results")
+    .replace(/['()]/g, (char) => `%${char.charCodeAt(0).toString(16).toUpperCase()}`)
+    .replace(/\*/g, "%2A");
+
+  return `attachment; filename="${asciiName}"; filename*=UTF-8''${encodedName}`;
+}
+
+function streamUploadFile(file: StreamableUploadFile, req: Request, res: Response, next: NextFunction) {
+  const contentType = contentTypeForUploadFile(file);
+  const size = Math.max(0, Math.trunc(file.sizeBytes));
+  const parsedRange = parseRangeHeader(req.headers.range, size);
+
+  res.setHeader("Accept-Ranges", "bytes");
+  res.setHeader("Content-Type", contentType);
+  res.setHeader("Content-Disposition", contentDispositionInline(file.originalName));
+
+  if (parsedRange === null) {
+    res.status(416);
+    if (size > 0) {
+      res.setHeader("Content-Range", `bytes */${size}`);
+    }
+    res.end();
+    return;
+  }
+
+  const range = parsedRange ?? (isStreamableMedia(contentType) ? defaultMediaRange(size) : undefined);
+  if (range) {
+    res.status(206);
+    res.setHeader("Content-Range", `bytes ${range.start}-${range.end}/${size}`);
+    res.setHeader("Content-Length", String(range.end - range.start + 1));
+  } else if (size > 0) {
+    res.setHeader("Content-Length", String(size));
+  }
+
+  const stream = createUploadReadStream(file.objectName, range ?? undefined);
+  stream.on("error", next);
+  stream.pipe(res);
+}
+
+function readStreamText(stream: NodeJS.ReadableStream): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const chunks: Buffer[] = [];
+    stream.on("data", (chunk: Buffer | string) => {
+      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    });
+    stream.on("error", reject);
+    stream.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
+  });
 }
 
 function cleanFileName(value: unknown) {
@@ -398,6 +457,42 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+  const viewer = document.querySelector("[data-result-viewer]");
+  if (!viewer) return;
+
+  const navItems = Array.from(viewer.querySelectorAll("[data-result-nav]"));
+  const panels = Array.from(viewer.querySelectorAll("[data-result-panel]"));
+
+  function showEpisode(id) {
+    for (const nav of navItems) {
+      const isActive = nav.dataset.resultNav === id;
+      nav.setAttribute("aria-current", isActive ? "true" : "false");
+    }
+
+    for (const panel of panels) {
+      panel.hidden = panel.dataset.resultPanel !== id;
+    }
+  }
+
+  for (const nav of navItems) {
+    nav.addEventListener("click", () => {
+      const id = nav.dataset.resultNav;
+      if (!id) return;
+      showEpisode(id);
+      if (window.history && window.history.replaceState) {
+        window.history.replaceState(null, "", "#" + id);
+      }
+    });
+  }
+
+  const requestedId = window.location.hash ? window.location.hash.slice(1) : "";
+  const initial = panels.find((panel) => panel.dataset.resultPanel === requestedId) || panels[0];
+  if (initial && initial.dataset.resultPanel) {
+    showEpisode(initial.dataset.resultPanel);
+  }
+});
 `;
 }
 
@@ -566,35 +661,7 @@ appRouter.get("/admin/uploads/:uploadId/files/:fileId", async (req, res, next) =
       return;
     }
 
-    const contentType = contentTypeForUploadFile(file);
-    const size = Math.max(0, Math.trunc(file.sizeBytes));
-    const parsedRange = parseRangeHeader(req.headers.range, size);
-
-    res.setHeader("Accept-Ranges", "bytes");
-    res.setHeader("Content-Type", contentType);
-    res.setHeader("Content-Disposition", contentDispositionInline(file.originalName));
-
-    if (parsedRange === null) {
-      res.status(416);
-      if (size > 0) {
-        res.setHeader("Content-Range", `bytes */${size}`);
-      }
-      res.end();
-      return;
-    }
-
-    const range = parsedRange ?? (isStreamableMedia(contentType) ? defaultMediaRange(size) : undefined);
-    if (range) {
-      res.status(206);
-      res.setHeader("Content-Range", `bytes ${range.start}-${range.end}/${size}`);
-      res.setHeader("Content-Length", String(range.end - range.start + 1));
-    } else if (size > 0) {
-      res.setHeader("Content-Length", String(size));
-    }
-
-    const stream = createUploadReadStream(file.objectName, range ?? undefined);
-    stream.on("error", next);
-    stream.pipe(res);
+    streamUploadFile(file, req, res, next);
   } catch (error) {
     next(error);
   }
@@ -694,6 +761,29 @@ appRouter.post("/api/uploads/:uploadId/uploaded", async (req, res, next) => {
   }
 });
 
+appRouter.get("/uploads/:uploadId/files/:fileId", async (req, res, next) => {
+  try {
+    const user = await getAppUser(req, res);
+    if (!user) {
+      return;
+    }
+
+    const upload = await uploadStore.getUserUpload(user.id, req.params.uploadId);
+    const file = upload?.files.find((item) => item.id === req.params.fileId);
+    if (!upload || !file) {
+      res
+        .status(404)
+        .type("html")
+        .send(messagePage("File not found", "That upload file could not be found.", "/", "Back to app"));
+      return;
+    }
+
+    streamUploadFile(file, req, res, next);
+  } catch (error) {
+    next(error);
+  }
+});
+
 appRouter.post("/uploads/:uploadId/prompt", async (req, res, next) => {
   try {
     const user = await getAppUser(req, res);
@@ -721,6 +811,41 @@ appRouter.post("/uploads/:uploadId/prompt", async (req, res, next) => {
   }
 });
 
+appRouter.get("/uploads/:uploadId/result", async (req, res, next) => {
+  try {
+    const user = await getAppUser(req, res);
+    if (!user) {
+      return;
+    }
+
+    const upload = await uploadStore.getUserUpload(user.id, req.params.uploadId);
+    if (!upload || upload.status !== "completed" || !upload.resultObjectName) {
+      res
+        .status(404)
+        .type("html")
+        .send(messagePage("Results pending", "Results are not ready for this upload yet.", "/", "Back to app"));
+      return;
+    }
+
+    let result;
+    try {
+      const text = await readStreamText(createResultReadStream(upload.resultObjectName));
+      result = parseUploadResultJson(text);
+    } catch (error) {
+      console.error("Could not read result JSON.", error);
+      res
+        .status(500)
+        .type("html")
+        .send(messagePage("Result unavailable", "The result JSON could not be loaded.", "/", "Back to app"));
+      return;
+    }
+
+    res.type("html").send(resultPage(user, upload, result));
+  } catch (error) {
+    next(error);
+  }
+});
+
 appRouter.get("/uploads/:uploadId/results", async (req, res, next) => {
   try {
     const user = await getAppUser(req, res);
@@ -737,9 +862,9 @@ appRouter.get("/uploads/:uploadId/results", async (req, res, next) => {
       return;
     }
 
-    const fileName = (upload.resultFileName ?? "shotwell-results").replace(/[\\r\\n"]/g, "");
+    const fileName = upload.resultFileName ?? "shotwell-results.json";
     res.setHeader("Content-Type", upload.resultContentType ?? "application/octet-stream");
-    res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+    res.setHeader("Content-Disposition", contentDispositionAttachment(fileName));
 
     const stream = createResultReadStream(upload.resultObjectName);
     stream.on("error", next);
