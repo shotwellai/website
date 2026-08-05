@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shotwell x Ultra OG Image (Light)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Outfit:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { width: 1200px; height: 630px; margin: 0; overflow: hidden; }
+    body {
+      display: grid;
+      place-items: center;
+      background: #F5F2EB;
+      color: #22222A;
+      font-family: 'Outfit', sans-serif;
+    }
+    .card {
+      position: relative;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      width: 1136px;
+      height: 566px;
+      padding: 54px 64px 48px;
+      border: 1px solid rgba(34, 34, 42, .18);
+      background: #EDE9DF;
+    }
+    .logos { display: flex; align-items: center; gap: 34px; }
+    .logos .shotwell { height: 52px; width: auto; }
+    .divider {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 40px;
+      font-weight: 300;
+      line-height: 1;
+      color: rgba(34, 34, 42, .55);
+    }
+    .ultra { width: 330px; height: auto; }
+    .copy { align-self: center; padding-bottom: 14px; }
+    .kicker {
+      display: block;
+      margin-bottom: 26px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 16px;
+      letter-spacing: .24em;
+      color: #B98E00;
+    }
+    h1 {
+      max-width: 1000px;
+      margin: 0;
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 66px;
+      font-weight: 300;
+      line-height: 1.06;
+      letter-spacing: -.015em;
+    }
+    .strip { display: grid; gap: 12px; }
+    .track { display: flex; height: 26px; gap: 2px; }
+    .track span { height: 100%; }
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 15px;
+      letter-spacing: .14em;
+      color: rgba(34, 34, 42, .5);
+    }
+    .meta b { color: #B98E00; font-weight: 500; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="logos" aria-label="Shotwell and Ultra">
+      <img class="shotwell" src="../brand/assets/SVG/shotwell-logo-horizontal-black.svg" alt="Shotwell">
+      <div class="divider" aria-hidden="true">&times;</div>
+      <img class="ultra" src="../ultra-logo.svg" alt="Ultra">
+    </div>
+    <section class="copy">
+      <span class="kicker">CASE STUDY</span>
+      <h1>Turning robot teleoperation data into reliable training data</h1>
+    </section>
+    <div class="strip" aria-hidden="true">
+      <div class="track">
+        <span style="flex:8;background:#8E8E96"></span>
+        <span style="flex:10;background:#B9B4A6"></span>
+        <span style="flex:22;background:#BF4D34"></span>
+        <span style="flex:20;background:#D6A02E"></span>
+        <span style="flex:14;background:#6E6E78"></span>
+        <span style="flex:12;background:#4E7CA8"></span>
+        <span style="flex:8;background:#9D5690"></span>
+        <span style="flex:6;background:#A29D8F"></span>
+      </div>
+      <div class="meta">
+        <span>00:00.0</span>
+        <span><b>6&#215;</b>&nbsp;&nbsp;MORE OPERATORS PER ENGINEER</span>
+        <span>19:06.7</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
