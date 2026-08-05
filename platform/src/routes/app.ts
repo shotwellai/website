@@ -562,6 +562,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const actions = parseActions(demo);
     const video = demo.querySelector("[data-result-video]");
     const track = demo.querySelector("[data-result-track]");
+    const zoomTrack = demo.querySelector("[data-result-zoom-track]");
     const cards = demo.querySelector("[data-result-cards]");
     const tip = demo.querySelector("[data-result-tip]");
     const tipName = demo.querySelector("[data-result-tip-name]");
@@ -576,9 +577,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const segmentEls = [];
     const rowEls = [];
     let playhead = null;
+    let zoomPlayhead = null;
     let isScrubbing = false;
     let manuallyPaused = true;
     let frameRequest = 0;
+    let windowStart = 0;
+    let windowDuration = 1;
 
     function mediaDuration() {
       if (!video || Number.isNaN(video.duration) || video.duration <= 0) {
@@ -588,8 +592,19 @@ document.addEventListener("DOMContentLoaded", () => {
       return Math.max(maxActionEnd, video.duration);
     }
 
+    function focusedWindowDuration() {
+      if (duration <= 75) return duration;
+      return Math.min(duration, actions.length > 80 ? 30 : 45);
+    }
+
+    function focusedWindowStart(time) {
+      const size = focusedWindowDuration();
+      return clamp(time - size / 2, 0, Math.max(0, duration - size));
+    }
+
     function build() {
       track.innerHTML = "";
+      if (zoomTrack) zoomTrack.innerHTML = "";
       cards.innerHTML = "";
       segmentEls.length = 0;
       rowEls.length = 0;
@@ -603,7 +618,21 @@ document.addEventListener("DOMContentLoaded", () => {
         fill.style.background = action.color;
         segment.appendChild(fill);
         track.appendChild(segment);
-        segmentEls.push({ root: segment, fill });
+
+        let zoomSegment = null;
+        let zoomFill = null;
+        if (zoomTrack) {
+          zoomSegment = document.createElement("div");
+          zoomSegment.className = "result-seg";
+          zoomSegment.style.setProperty("--seg-color", action.color);
+          zoomFill = document.createElement("div");
+          zoomFill.className = "result-seg-fill";
+          zoomFill.style.background = action.color;
+          zoomSegment.appendChild(zoomFill);
+          zoomTrack.appendChild(zoomSegment);
+        }
+
+        segmentEls.push({ root: segment, fill, zoomRoot: zoomSegment, zoomFill });
 
         const row = document.createElement("li");
         row.className = "result-card-row";
@@ -622,6 +651,12 @@ document.addEventListener("DOMContentLoaded", () => {
       playhead.className = "result-playhead";
       track.appendChild(playhead);
 
+      if (zoomTrack) {
+        zoomPlayhead = document.createElement("div");
+        zoomPlayhead.className = "result-playhead";
+        zoomTrack.appendChild(zoomPlayhead);
+      }
+
       if (actions.length === 0) {
         const row = document.createElement("li");
         row.className = "result-card-row";
@@ -634,6 +669,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function layout() {
       duration = mediaDuration();
       track.setAttribute("aria-valuemax", duration.toFixed(2));
+      if (zoomTrack) zoomTrack.setAttribute("aria-valuemax", duration.toFixed(2));
 
       actions.forEach((action, index) => {
         const startPct = action.start / duration * 100;
@@ -659,8 +695,17 @@ document.addEventListener("DOMContentLoaded", () => {
       const safeTime = clamp(time, 0, duration);
       const ratio = duration > 0 ? safeTime / duration : 0;
       if (playhead) playhead.style.setProperty("--pos", ratio.toFixed(4));
+      windowDuration = focusedWindowDuration();
+      windowStart = focusedWindowStart(safeTime);
+      const windowEnd = windowStart + windowDuration;
+      const windowRatio = windowDuration > 0 ? (safeTime - windowStart) / windowDuration : 0;
+      if (zoomPlayhead) zoomPlayhead.style.setProperty("--pos", clamp(windowRatio, 0, 1).toFixed(4));
       track.setAttribute("aria-valuenow", safeTime.toFixed(2));
       track.setAttribute("aria-valuetext", formatTime(safeTime));
+      if (zoomTrack) {
+        zoomTrack.setAttribute("aria-valuenow", safeTime.toFixed(2));
+        zoomTrack.setAttribute("aria-valuetext", formatTime(safeTime));
+      }
       if (clock) clock.textContent = formatTime(safeTime);
 
       actions.forEach((action, index) => {
@@ -671,14 +716,36 @@ document.addEventListener("DOMContentLoaded", () => {
         segmentEls[index].root.dataset.state = state;
         segmentEls[index].fill.style.transform = "scaleX(" + clamp(fill, 0, 1).toFixed(3) + ")";
         rowEls[index].dataset.active = String(state === "active");
+        rowEls[index].dataset.windowVisible = String(action.end >= windowStart && action.start <= windowEnd);
         rowEls[index].style.borderColor = state === "active" ? action.color : "";
+
+        const zoomRoot = segmentEls[index].zoomRoot;
+        const zoomFill = segmentEls[index].zoomFill;
+        if (zoomRoot && zoomFill) {
+          const visibleStart = Math.max(action.start, windowStart);
+          const visibleEnd = Math.min(action.end, windowEnd);
+          const isVisible = visibleEnd > visibleStart;
+          zoomRoot.hidden = !isVisible;
+          if (isVisible) {
+            const startPct = (visibleStart - windowStart) / windowDuration * 100;
+            const widthPct = Math.max(0.35, (visibleEnd - visibleStart) / windowDuration * 100);
+            zoomRoot.style.left = startPct.toFixed(3) + "%";
+            zoomRoot.style.width = widthPct.toFixed(3) + "%";
+            zoomRoot.dataset.state = state;
+            zoomFill.style.transform = "scaleX(" + clamp(fill, 0, 1).toFixed(3) + ")";
+          }
+        }
       });
 
       const activeIndex = activeIndexAt(safeTime);
       const active = activeIndex >= 0 ? actions[activeIndex] : null;
       if (tip && tipName && active) {
-        const trackWidth = track.getBoundingClientRect().width;
-        const center = ((active.start + active.end) / 2) / duration * trackWidth;
+        const tipTrack = zoomTrack || track;
+        const trackWidth = tipTrack.getBoundingClientRect().width;
+        const centerTime = clamp((active.start + active.end) / 2, windowStart, windowEnd);
+        const center = zoomTrack
+          ? (centerTime - windowStart) / windowDuration * trackWidth
+          : centerTime / duration * trackWidth;
         tip.hidden = false;
         tip.style.left = clamp(center, 70, Math.max(70, trackWidth - 70)) + "px";
         tip.style.setProperty("--result-tip-color", active.color);
@@ -688,9 +755,12 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    function pointerTime(event) {
-      const rect = track.getBoundingClientRect();
+    function pointerTime(event, pointerTrack) {
+      const rect = pointerTrack.getBoundingClientRect();
       const ratio = rect.width ? (event.clientX - rect.left) / rect.width : 0;
+      if (pointerTrack === zoomTrack) {
+        return windowStart + clamp(ratio, 0, 1) * windowDuration;
+      }
       return clamp(ratio, 0, 1) * duration;
     }
 
@@ -704,23 +774,25 @@ document.addEventListener("DOMContentLoaded", () => {
       if (event.button != null && event.button !== 0) return;
       event.preventDefault();
       isScrubbing = true;
-      track.classList.add("is-dragging");
-      if (track.setPointerCapture && event.pointerId != null) track.setPointerCapture(event.pointerId);
-      seekTo(pointerTime(event));
+      const targetTrack = event.currentTarget;
+      targetTrack.classList.add("is-dragging");
+      if (targetTrack.setPointerCapture && event.pointerId != null) targetTrack.setPointerCapture(event.pointerId);
+      seekTo(pointerTime(event, targetTrack));
     }
 
     function moveScrub(event) {
       if (!isScrubbing) return;
       event.preventDefault();
-      seekTo(pointerTime(event));
+      seekTo(pointerTime(event, event.currentTarget));
     }
 
     function endScrub(event) {
       if (!isScrubbing) return;
       isScrubbing = false;
-      track.classList.remove("is-dragging");
-      if (track.releasePointerCapture && event.pointerId != null) {
-        try { track.releasePointerCapture(event.pointerId); } catch (_error) {}
+      const targetTrack = event.currentTarget;
+      targetTrack.classList.remove("is-dragging");
+      if (targetTrack.releasePointerCapture && event.pointerId != null) {
+        try { targetTrack.releasePointerCapture(event.pointerId); } catch (_error) {}
       }
     }
 
@@ -790,7 +862,15 @@ document.addEventListener("DOMContentLoaded", () => {
     track.addEventListener("pointermove", moveScrub);
     track.addEventListener("pointerup", endScrub);
     track.addEventListener("pointercancel", endScrub);
-    track.addEventListener("keydown", (event) => {
+
+    if (zoomTrack) {
+      zoomTrack.addEventListener("pointerdown", startScrub);
+      zoomTrack.addEventListener("pointermove", moveScrub);
+      zoomTrack.addEventListener("pointerup", endScrub);
+      zoomTrack.addEventListener("pointercancel", endScrub);
+    }
+
+    function handleTrackKeydown(event) {
       const current = video ? video.currentTime || 0 : 0;
       const step = event.shiftKey ? 5 : 1;
       let next = null;
@@ -806,7 +886,10 @@ document.addEventListener("DOMContentLoaded", () => {
       if (next == null) return;
       event.preventDefault();
       seekTo(next);
-    });
+    }
+
+    track.addEventListener("keydown", handleTrackKeydown);
+    if (zoomTrack) zoomTrack.addEventListener("keydown", handleTrackKeydown);
 
     document.addEventListener("keydown", (event) => {
       if (event.defaultPrevented || !isVisibleDemo() || isKeyboardEditingTarget(event.target)) return;

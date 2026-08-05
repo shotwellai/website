@@ -1392,6 +1392,8 @@ export function page(title: string, body: string, options: { navHtml?: string; b
 
     .result-media-frame {
       position: relative;
+      width: min(100%, 960px);
+      margin: 0 auto;
       aspect-ratio: 16 / 9;
       max-height: 540px;
       overflow: hidden;
@@ -1430,13 +1432,15 @@ export function page(title: string, body: string, options: { navHtml?: string; b
 
     .result-demo-bar {
       display: flex;
-      justify-content: flex-end;
+      justify-content: center;
       align-items: center;
+      width: min(100%, 960px);
       min-height: 52px;
+      margin: 0 auto;
       border-right: 1px solid var(--color-line);
       border-left: 1px solid var(--color-line);
       border-bottom: 1px solid var(--color-line);
-      padding: 8px 20px;
+      padding: 12px 20px;
       background: color-mix(in srgb, var(--color-panel) 72%, transparent);
     }
 
@@ -1445,12 +1449,14 @@ export function page(title: string, body: string, options: { navHtml?: string; b
       border-right: 1px solid var(--color-line);
       border-left: 1px solid var(--color-line);
       border-bottom: 1px solid var(--color-line);
-      padding: 62px 14px 16px;
+      padding: 18px 14px 16px;
       background: color-mix(in srgb, var(--color-panel) 66%, transparent);
     }
 
     .result-timeline-wrap {
       position: relative;
+      display: grid;
+      gap: 14px;
       flex: 1 1 auto;
       min-width: 0;
     }
@@ -1460,6 +1466,20 @@ export function page(title: string, body: string, options: { navHtml?: string; b
       height: 26px;
       cursor: pointer;
       touch-action: none;
+    }
+
+    .result-overview-track {
+      height: 16px;
+      opacity: 0.72;
+    }
+
+    .result-zoom-stage {
+      position: relative;
+      padding-top: 52px;
+    }
+
+    .result-zoom-track {
+      height: 36px;
     }
 
     .result-track:focus-visible {
@@ -1479,6 +1499,14 @@ export function page(title: string, body: string, options: { navHtml?: string; b
       overflow: hidden;
       background: color-mix(in srgb, var(--seg-color, var(--color-text)) 24%, transparent);
       transition: background 0.2s var(--ease-out);
+    }
+
+    .result-overview-track .result-seg {
+      height: 16px;
+    }
+
+    .result-zoom-track .result-seg {
+      height: 36px;
     }
 
     [data-theme="light"] .result-seg {
@@ -1502,14 +1530,24 @@ export function page(title: string, body: string, options: { navHtml?: string; b
 
     .result-playhead {
       position: absolute;
-      top: -10px;
+      top: -8px;
       width: 2px;
-      height: 48px;
+      height: 42px;
       background: var(--color-text);
       left: calc(var(--pos, 0) * 100%);
       transform: translateX(-1px);
       z-index: 3;
       pointer-events: none;
+    }
+
+    .result-overview-track .result-playhead {
+      top: -7px;
+      height: 30px;
+    }
+
+    .result-zoom-track .result-playhead {
+      top: -12px;
+      height: 60px;
     }
 
     .result-playhead::before {
@@ -1527,7 +1565,7 @@ export function page(title: string, body: string, options: { navHtml?: string; b
     .result-tip {
       --result-tip-color: var(--color-line);
       position: absolute;
-      top: -48px;
+      top: 0;
       left: 70px;
       z-index: 4;
       max-width: min(260px, 80%);
@@ -1566,7 +1604,7 @@ export function page(title: string, body: string, options: { navHtml?: string; b
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 7px 12px;
-      margin: 18px 0 0;
+      margin: 4px 0 0;
       padding: 0;
       list-style: none;
     }
@@ -1585,6 +1623,10 @@ export function page(title: string, body: string, options: { navHtml?: string; b
 
     .result-card-row[data-active="true"] {
       background: color-mix(in srgb, var(--color-text) 7%, var(--color-panel));
+    }
+
+    .result-card-row[data-window-visible="false"] {
+      display: none;
     }
 
     .result-card-row b {
@@ -1622,12 +1664,12 @@ export function page(title: string, body: string, options: { navHtml?: string; b
     .result-play-toggle {
       flex: 0 0 auto;
       min-height: 0;
-      padding: 5px 12px;
+      padding: 10px 28px;
       border: 1px solid var(--color-line);
       background: var(--color-cta);
       color: var(--color-cta-text);
       font-family: var(--font-mono);
-      font-size: 0.56rem;
+      font-size: 0.72rem;
       font-weight: 800;
       letter-spacing: 0.16em;
       line-height: 1.3;
@@ -2139,8 +2181,11 @@ function renderResultDemo(upload: ResultPageUpload, episode: ResultEpisode, opti
     </div>
     <div class="result-strip">
       <div class="result-timeline-wrap">
-        <div class="result-track" data-result-track tabindex="0" role="slider" aria-label="Annotation timeline" aria-valuemin="0"></div>
-        <div class="result-tip" data-result-tip hidden><span data-result-tip-name></span></div>
+        <div class="result-track result-overview-track" data-result-track tabindex="0" role="slider" aria-label="Full annotation timeline" aria-valuemin="0"></div>
+        <div class="result-zoom-stage">
+          <div class="result-tip" data-result-tip hidden><span data-result-tip-name></span></div>
+          <div class="result-track result-zoom-track" data-result-zoom-track tabindex="0" role="slider" aria-label="Focused annotation timeline" aria-valuemin="0"></div>
+        </div>
         <ul class="result-cards" data-result-cards></ul>
       </div>
     </div>
