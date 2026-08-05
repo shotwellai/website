@@ -593,6 +593,71 @@ export function page(title: string, body: string, options: { navHtml?: string; b
       justify-content: center;
     }
 
+    .login-intro {
+      max-width: 52ch;
+    }
+
+    .login-intro .eyebrow {
+      margin-bottom: 18px;
+    }
+
+    .login-intro h1 {
+      font-size: clamp(2rem, 3.4vw, 3rem);
+      margin-bottom: 14px;
+    }
+
+    .login-intro > p {
+      color: var(--color-text-light);
+      font-weight: 300;
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    .intro-steps {
+      list-style: none;
+      margin: 26px 0 0;
+      padding: 0;
+    }
+
+    .intro-steps li {
+      position: relative;
+      padding: 12px 0 12px 34px;
+      border-top: 1px solid var(--color-line);
+      color: var(--color-text-light);
+      font-weight: 300;
+      font-size: 0.9375rem;
+    }
+
+    .intro-steps li:last-child {
+      border-bottom: 1px solid var(--color-line);
+    }
+
+    .intro-steps li::before {
+      content: attr(data-n);
+      position: absolute;
+      left: 0;
+      top: 14px;
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      letter-spacing: 0.18em;
+      color: var(--color-accent);
+    }
+
+    .intro-links {
+      margin-top: 22px;
+      font-size: 0.875rem;
+    }
+
+    .intro-links a {
+      color: var(--color-text-light);
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+
+    .intro-links a:hover {
+      color: var(--color-text);
+    }
+
     .login-panel {
       background: var(--color-panel);
     }
@@ -1987,9 +2052,23 @@ export function loginPage(input: {
       ? ""
       : `<div class="notice">Email delivery is not configured yet.</div>`;
 
+  const publicSiteUrl = config.publicSiteUrl.toString();
+
   return page(
     "Shotwell Login",
-    `<main class="auth-main auth-main-single">
+    `<main class="auth-main">
+      <section class="login-intro">
+        <span class="eyebrow">Shotwell</span>
+        <h1>Annotations for robotics data.</h1>
+        <p>Shotwell provides fast, accurate and dense annotations for robotics training
+          data. We segment long videos into discrete steps and detect failures in each step.</p>
+        <ul class="intro-steps">
+          <li data-n="01">Upload robot episodes: raw videos, MCAP files, logs, images, or any supporting artifacts.</li>
+          <li data-n="02">We return dense subtask annotations with sub-second boundaries and pass/fail rubric checks.</li>
+          <li data-n="03">Results come back within 24 hours, and your first 2 hours of robot video are free.</li>
+        </ul>
+        <p class="intro-links"><a href="https://demo.shotwell.ai/">See the live demo</a> &middot; <a href="${escapeHtml(new URL("/ultra-case-study/", publicSiteUrl).toString())}">Read how Ultra uses Shotwell</a></p>
+      </section>
       <section class="panel login-panel">
         <h1>Sign in to start uploading.</h1>
         <p>Login with your company email. Get 2 hours of robot video annotated for free, with 24 hour turnaround time. <a class="zdr-link" href="/privacy">Zero Data Retention.</a></p>
