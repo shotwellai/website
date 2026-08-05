@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sample — Hero B, plate</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Outfit:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<style>
+  /* The plate: the frame is an object on the page, measured on all sides.
+     Type lives on clean ground beneath it. */
+  .hero{padding:56px 0 96px}
+  .plate-wrap{position:relative;padding:34px 40px}
+
+  /* registration chrome around the plate */
+  .corner{position:absolute;width:15px;height:15px}
+  .corner::before,.corner::after{content:"";position:absolute;background:var(--wire-strong)}
+  .corner::before{left:7px;top:0;width:1px;height:15px}
+  .corner::after{top:7px;left:0;height:1px;width:15px}
+  .c-tl{left:8px;top:8px}.c-tr{right:8px;top:8px}
+  .c-bl{left:8px;bottom:8px}.c-br{right:8px;bottom:8px}
+
+  .dim-h{position:absolute;left:40px;right:40px;top:14px;height:1px;background:var(--wire)}
+  .dim-h::before,.dim-h::after{content:"";position:absolute;top:-3px;width:1px;height:7px;
+    background:var(--wire-strong)}
+  .dim-h::before{left:0}.dim-h::after{right:0}
+  .dim-label{position:absolute;top:2px;left:50%;transform:translateX(-50%);
+    background:var(--ground);padding:0 9px;font-family:var(--mono);font-size:.5625rem;
+    letter-spacing:.14em;color:var(--faint)}
+
+  .plate{position:relative;border:1px solid var(--wire);overflow:hidden;background:var(--surface)}
+  .plate canvas{width:100%;display:block}
+  .kp{position:absolute;inset:0;pointer-events:none}
+
+  .caption{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;
+    margin-top:12px;font-family:var(--mono);font-size:.625rem;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--faint)}
+  .caption b{font-weight:400;color:var(--ember)}
+
+  .copy{margin-top:64px;display:grid;grid-template-columns:1.15fr 1fr;gap:56px;align-items:start}
+  h1{font-family:var(--display);font-weight:300;font-size:clamp(2.1rem,4.6vw,3.5rem);
+    line-height:1.04;letter-spacing:-.015em;max-width:16ch}
+  h1 em{font-style:italic;color:var(--dim)}
+  .sub{color:var(--dim);font-weight:300;font-size:1.0625rem;max-width:42ch}
+  .stats{margin-top:26px;display:grid;grid-template-columns:1fr 1fr;gap:18px 30px}
+  .stats div{border-top:1px solid var(--wire);padding-top:10px;
+    font-family:var(--mono);font-size:.625rem;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--faint)}
+  .stats b{display:block;font-family:var(--display);font-size:1.7rem;font-weight:300;
+    letter-spacing:-.01em;color:var(--fg);margin-top:6px;text-transform:none}
+  @media (max-width:860px){
+    .copy{grid-template-columns:1fr;gap:32px}
+    .plate-wrap{padding:26px 22px}
+    .dim-h{left:22px;right:22px}
+  }
+</style>
+</head>
+<body>
+
+<nav class="samplebar">
+  <span class="sb-label">Samples</span>
+  <a href="index.html">Index</a>
+  <a href="demo.html">Demo</a>
+  <a href="blog.html">Blog</a>
+  <a href="hero-a.html">Hero A</a>
+  <a href="hero-b.html" aria-current="page">Hero B</a>
+  <a href="hero-c.html">Hero C</a>
+  <a href="press.html">Press</a>
+  <a href="fields.html">Fields</a>
+  <a href="palettes.html">Colour</a>
+  <span class="sb-spacer"></span>
+  <button id="themeToggle">Light</button>
+</nav>
+
+<main class="hero wrap">
+  <div class="plate-wrap">
+    <span class="corner c-tl"></span><span class="corner c-tr"></span>
+    <span class="corner c-bl"></span><span class="corner c-br"></span>
+    <div class="dim-h"><span class="dim-label">1916 × 1074 · 30 fps</span></div>
+
+    <div class="plate">
+      <canvas id="c"></canvas>
+      <svg class="kp" id="kp" aria-hidden="true"></svg>
+    </div>
+
+    <div class="caption">
+      <span>episode 0412 · fold_tshirt</span>
+      <span>frame <b>00720</b> / 01716</span>
+      <span>7 keypoints · 4 masks</span>
+      <span>agreement <b>0.94</b></span>
+    </div>
+  </div>
+
+  <div class="copy">
+    <div>
+      <h1>Every frame, <em>measured.</em></h1>
+    </div>
+    <div>
+      <p class="sub">We annotate robot manipulation data — masks, keypoints, and
+        trajectories — then run the rubric on our own output before it reaches you.</p>
+      <div class="stats">
+        <div>Episodes<b>1,284</b></div>
+        <div>Mean IoU<b>0.94</b></div>
+        <div>Frames labelled<b>2.1M</b></div>
+        <div>Rejected on review<b>3.2%</b></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script type="module">
+import { halftone } from './assets/halftone.js';
+import { init, dotStyle } from './assets/theme.js';
+
+var canvas=document.getElementById('c'),kp=document.getElementById('kp'),
+    img=new Image(),ready=false,RATIO=1916/1074;
+var POINTS=[{x:.700,y:.115,l:'wrist'},{x:.760,y:.330,l:'elbow'},{x:.735,y:.585,l:'gripper'},
+            {x:.365,y:.400,l:'corner_a'},{x:.560,y:.300,l:'corner_b'},
+            {x:.640,y:.700,l:'corner_c'},{x:.330,y:.640,l:'corner_d'}];
+var LINKS=[[0,1],[1,2],[2,5],[3,4],[4,5],[5,6],[6,3]];
+var NS='http://www.w3.org/2000/svg';
+
+function render(){
+  if(!ready)return;
+  var w=canvas.parentElement.getBoundingClientRect().width, h=w/RATIO;
+  var dpr=Math.min(window.devicePixelRatio||1,2);
+  canvas.style.width=w+'px'; canvas.style.height=h+'px';
+  canvas.width=Math.round(w*dpr); canvas.height=Math.round(h*dpr);
+  var s=dotStyle();
+  halftone(canvas,img,{step:6*dpr,dot:s.dot,invert:s.invert,lo:.04,hi:.85,gamma:.62});
+
+  var css=getComputedStyle(document.documentElement);
+  kp.setAttribute('viewBox','0 0 '+w+' '+h); kp.innerHTML='';
+  LINKS.forEach(function(p){
+    var a=POINTS[p[0]],b=POINTS[p[1]],l=document.createElementNS(NS,'line');
+    l.setAttribute('x1',a.x*w);l.setAttribute('y1',a.y*h);
+    l.setAttribute('x2',b.x*w);l.setAttribute('y2',b.y*h);
+    l.setAttribute('stroke',css.getPropertyValue('--wire-strong').trim());
+    l.setAttribute('stroke-width','1');kp.appendChild(l);
+  });
+  POINTS.forEach(function(p){
+    var cx=p.x*w,cy=p.y*h;
+    var r=document.createElementNS(NS,'circle');
+    r.setAttribute('cx',cx);r.setAttribute('cy',cy);r.setAttribute('r',9);
+    r.setAttribute('fill','none');r.setAttribute('stroke','rgba(201,110,45,.65)');
+    r.setAttribute('stroke-width','1.2');kp.appendChild(r);
+    var d=document.createElementNS(NS,'circle');
+    d.setAttribute('cx',cx);d.setAttribute('cy',cy);d.setAttribute('r',2.5);
+    d.setAttribute('fill','#C96E2D');kp.appendChild(d);
+  });
+}
+img.onload=function(){ready=true;render();};
+img.src='assets/frame-fold.jpg';
+init();
+addEventListener('themechange',render);
+var to; addEventListener('resize',function(){clearTimeout(to);to=setTimeout(render,150);});
+</script>
+</body>
+</html>

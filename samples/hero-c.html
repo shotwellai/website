@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sample — Hero C, editorial split</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Outfit:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<style>
+  /* Editorial split — the frame is one panel, the argument is the other.
+     No type ever sits on the dot field. A capped band, not a full screen:
+     the source frame is landscape, and a viewport-height panel would crop
+     it into an unreadable portrait slice. */
+  .split{display:grid;grid-template-columns:1.18fr .82fr;
+    min-height:clamp(500px,66vh,640px);border-bottom:1px solid var(--wire)}
+
+  .art{position:relative;overflow:hidden;background:var(--surface);
+    border-right:1px solid var(--wire)}
+  .art canvas{position:absolute;inset:0;width:100%;height:100%}
+  .kp{position:absolute;inset:0;pointer-events:none}
+  .stamp{position:absolute;left:0;bottom:0;font-family:var(--mono);
+    font-size:.625rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);
+    background:var(--ground);border-top:1px solid var(--wire);
+    border-right:1px solid var(--wire);padding:6px 12px}
+  .stamp b{font-weight:400;color:var(--ember)}
+
+  .said{display:flex;flex-direction:column;justify-content:center;
+    padding:56px 60px;position:relative}
+  .said .tag{display:block;margin-bottom:24px}
+  h1{font-family:var(--display);font-weight:300;font-size:clamp(2.1rem,4vw,3.4rem);
+    line-height:1.05;letter-spacing:-.015em;max-width:14ch}
+  h1 em{font-style:italic;color:var(--dim)}
+  .sub{margin-top:22px;max-width:40ch;color:var(--dim);font-weight:300;font-size:1.0625rem}
+
+  .checks{margin-top:40px;border-top:1px solid var(--wire)}
+  .checks div{display:flex;gap:12px;align-items:baseline;padding:11px 0;
+    border-bottom:1px solid var(--wire);font-family:var(--mono);font-size:.75rem;
+    color:var(--dim)}
+  .checks .ok::before{content:"✓";color:var(--pass);width:12px;flex:none}
+  .checks .no::before{content:"✕";color:var(--ember);width:12px;flex:none}
+  .checks em{font-style:normal;margin-left:auto;color:var(--faint)}
+  .checks .no{color:var(--fg)}
+
+  /* vertical rule with ticks, down the seam */
+  .seam{position:absolute;left:-1px;top:0;bottom:0;width:1px;pointer-events:none}
+  .seam i{position:absolute;left:0;width:7px;height:1px;background:var(--wire-strong)}
+
+  .after{padding:56px 0 90px}
+  .after h2{font-family:var(--display);font-weight:300;font-size:1.6rem;
+    letter-spacing:-.01em;max-width:22ch}
+  .after p{margin-top:12px;max-width:56ch;color:var(--dim);font-weight:300;font-size:.9375rem}
+
+  @media (max-width:900px){
+    .split{grid-template-columns:1fr}
+    .art{min-height:44vh;border-right:0;border-bottom:1px solid var(--wire)}
+    .said{padding:44px 24px 60px}
+    .seam{display:none}
+  }
+</style>
+</head>
+<body>
+
+<nav class="samplebar">
+  <span class="sb-label">Samples</span>
+  <a href="index.html">Index</a>
+  <a href="demo.html">Demo</a>
+  <a href="blog.html">Blog</a>
+  <a href="hero-a.html">Hero A</a>
+  <a href="hero-b.html">Hero B</a>
+  <a href="hero-c.html" aria-current="page">Hero C</a>
+  <a href="press.html">Press</a>
+  <a href="fields.html">Fields</a>
+  <a href="palettes.html">Colour</a>
+  <span class="sb-spacer"></span>
+  <button id="themeToggle">Light</button>
+</nav>
+
+<main class="split">
+  <div class="art">
+    <canvas id="c"></canvas>
+    <svg class="kp" id="kp" aria-hidden="true"></svg>
+    <span class="stamp">episode 0412 · fold_tshirt · frame <b>00720</b></span>
+  </div>
+
+  <div class="said">
+    <div class="seam" id="seam"></div>
+    <span class="tag">[ Quality layer · <b>robotics data</b> ]</span>
+    <h1>Every frame, <em>measured.</em></h1>
+    <p class="sub">Masks, keypoints, and trajectories at full frame rate — then the
+      rubric runs on our own output before anything reaches your training set.</p>
+
+    <div class="checks">
+      <div class="ok">Mask continuity across cuts<em>1,716 frames</em></div>
+      <div class="ok">Keypoint visibility flags<em>7 tracks</em></div>
+      <div class="no">Drift, frames 604–661<em>returned</em></div>
+      <div class="ok">Inter-annotator agreement<em>0.94</em></div>
+    </div>
+  </div>
+</main>
+
+<section class="after wrap">
+  <h2>The frame argues, the column verifies.</h2>
+  <p>Split hero: annotated evidence on one side, the rubric's verdict on the
+    other. The keypoints are anchored in the frame itself — they ride the crop
+    at any panel size instead of floating over it.</p>
+</section>
+
+<script type="module">
+import { halftone } from './assets/halftone.js';
+import { init, dotStyle } from './assets/theme.js';
+
+var canvas=document.getElementById('c'),kp=document.getElementById('kp'),
+    seam=document.getElementById('seam'),img=new Image(),ready=false;
+
+/* Keypoints live in IMAGE space (fractions of the source frame), anchored to
+   real features — right-arm chain, both grippers, and the shirt's collar,
+   sleeves, and hem. They pass through the same cover-fit crop the halftone
+   uses, so they stay on the subject at any panel aspect. */
+var FX=.58; // horizontal crop bias — keeps the fold action in frame
+var POINTS=[{x:.707,y:.057},{x:.814,y:.383},{x:.768,y:.619},
+            {x:.686,y:.606},{x:.539,y:.408},{x:.357,y:.600},
+            {x:.493,y:.714},{x:.282,y:.753},{x:.236,y:.893}];
+var LINKS=[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,3],[8,7],[7,5]];
+var NS='http://www.w3.org/2000/svg';
+
+/* Same math as halftone's cover-fit: image fraction -> panel px, or null
+   if the crop removed that point. */
+function coverMap(p,w,h){
+  var W=img.width,H=img.height,sr=W/H,dr=w/h,sx=0,sy=0,sw=W,sh=H;
+  if(sr>dr){sw=H*dr;sx=(W-sw)*FX;}else{sh=W/dr;sy=(H-sh)/2;}
+  var x=(p.x*W-sx)/sw*w, y=(p.y*H-sy)/sh*h;
+  if(x<10||x>w-10||y<10||y>h-10) return null;
+  return {x:x,y:y};
+}
+
+function render(){
+  if(!ready)return;
+  var box=canvas.parentElement.getBoundingClientRect();
+  var dpr=Math.min(window.devicePixelRatio||1,2);
+  canvas.width=Math.round(box.width*dpr); canvas.height=Math.round(box.height*dpr);
+  var s=dotStyle();
+  halftone(canvas,img,{step:6*dpr,dot:s.dot,invert:s.invert,lo:.04,hi:.85,gamma:.62,focusX:FX});
+
+  var css=getComputedStyle(document.documentElement);
+  var w=box.width,h=box.height;
+  var pts=POINTS.map(function(p){return coverMap(p,w,h);});
+  kp.setAttribute('viewBox','0 0 '+w+' '+h); kp.innerHTML='';
+  LINKS.forEach(function(p){
+    var a=pts[p[0]],b=pts[p[1]];
+    if(!a||!b)return;
+    var l=document.createElementNS(NS,'line');
+    l.setAttribute('x1',a.x);l.setAttribute('y1',a.y);
+    l.setAttribute('x2',b.x);l.setAttribute('y2',b.y);
+    l.setAttribute('stroke',css.getPropertyValue('--wire-strong').trim());
+    l.setAttribute('stroke-width','1');kp.appendChild(l);
+  });
+  pts.forEach(function(p){
+    if(!p)return;
+    var r=document.createElementNS(NS,'circle');
+    r.setAttribute('cx',p.x);r.setAttribute('cy',p.y);r.setAttribute('r',9);
+    r.setAttribute('fill','none');r.setAttribute('stroke','rgba(201,110,45,.65)');
+    r.setAttribute('stroke-width','1.2');kp.appendChild(r);
+    var d=document.createElementNS(NS,'circle');
+    d.setAttribute('cx',p.x);d.setAttribute('cy',p.y);d.setAttribute('r',2.5);
+    d.setAttribute('fill','#C96E2D');kp.appendChild(d);
+  });
+
+  // ticks down the seam, one per 48px
+  seam.innerHTML='';
+  var n=Math.floor(seam.getBoundingClientRect().height/48);
+  for(var i=1;i<n;i++){
+    var t=document.createElement('i'); t.style.top=(i*48)+'px'; seam.appendChild(t);
+  }
+}
+img.onload=function(){ready=true;render();};
+img.src='assets/frame-fold.jpg';
+init();
+addEventListener('themechange',render);
+var to; addEventListener('resize',function(){clearTimeout(to);to=setTimeout(render,150);});
+</script>
+</body>
+</html>

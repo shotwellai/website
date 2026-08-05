@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-palette="board">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sample — Blog: Shotwell × Ultra</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400,1&family=Outfit:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<style>
+  [data-palette="board"]{--acc:#EFB702;--acc2:#3D82E8;--fail:#AF3261;--on-acc:#0C0C0E}
+
+  .brandbar{position:sticky;top:41px;z-index:40;display:flex;align-items:center;
+    justify-content:space-between;gap:20px;padding:14px 40px;
+    background:color-mix(in srgb,var(--ground) 90%,transparent);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--wire)}
+  .brandbar img{height:24px;width:auto}
+  .navlinks{display:flex;gap:26px;align-items:center}
+  .navlinks a{font-size:.875rem;color:var(--dim);text-decoration:none}
+  .navlinks .tbtn{background:none;border:0;padding:4px 8px;cursor:pointer;
+    color:var(--dim);font-size:1.05rem;line-height:1}
+  .navlinks .tbtn:hover{color:var(--fg)}
+  .navlinks a:hover,.navlinks a[aria-current]{color:var(--fg)}
+  .cta{background:var(--acc);color:var(--on-acc);padding:9px 17px;font-size:.8125rem;
+    font-weight:500;text-decoration:none}
+  .cta small{font-size:.75em;font-weight:400;opacity:.75}
+
+  /* ── press-card article ── */
+  .page{padding:64px 0 110px}
+  .crumb{font-family:var(--mono);font-size:.625rem;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--faint);text-decoration:none;display:inline-block;
+    margin-bottom:18px}
+  .crumb:hover{color:var(--fg)}
+
+  .card{position:relative;background:var(--surface);border:1px solid var(--wire);
+    padding:64px 64px 56px;overflow:hidden}
+  .card::before{content:"";position:absolute;top:0;right:76px;width:52px;height:132px;
+    background:var(--acc)}
+
+  .kicker{font-family:var(--mono);font-size:.625rem;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--dim);margin-bottom:34px;display:block}
+
+  h1{font-family:var(--display);font-weight:300;font-size:clamp(2.1rem,4.4vw,3.3rem);
+    line-height:1.06;letter-spacing:-.015em;max-width:17ch}
+  .dek{margin-top:20px;color:var(--fg);font-weight:300;font-size:1.0625rem;
+    line-height:1.65;max-width:58ch}
+
+  /* art band bleeds to the card edges, press-object style */
+  .band{position:relative;margin:44px -64px;height:clamp(240px,38vh,400px);
+    overflow:hidden}
+  .band canvas{position:absolute;inset:0;width:100%;height:100%}
+  .stamp{position:absolute;left:0;bottom:0;font-family:var(--mono);font-size:.5625rem;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--dim);
+    background:var(--surface);border-top:1px solid var(--wire);
+    border-right:1px solid var(--wire);padding:5px 10px}
+
+  /* body copy, single measure inside the card */
+  .prose h2{font-family:var(--display);font-weight:300;font-size:1.75rem;
+    letter-spacing:-.012em;margin:52px 0 4px;max-width:24ch}
+  .prose h2::before{content:attr(data-n);display:block;font-family:var(--mono);
+    font-size:.5625rem;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);
+    margin-bottom:12px}
+  .prose p{margin-top:16px;color:var(--dim);font-weight:300;font-size:.9375rem;
+    line-height:1.72;max-width:64ch}
+  .prose p b{font-weight:400;color:var(--fg)}
+  .prose ul{margin:16px 0 0 2px;list-style:none;max-width:64ch}
+  .prose li{margin-top:9px;color:var(--dim);font-weight:300;font-size:.9375rem;
+    padding-left:20px;position:relative}
+  .prose li::before{content:"—";position:absolute;left:0;color:var(--faint)}
+
+  h3{font-family:var(--display);font-weight:300;font-size:1.25rem;margin:32px 0 0}
+  h3 i{font-style:normal;font-family:var(--mono);font-size:.625rem;letter-spacing:.18em;
+    color:var(--dim);margin-right:12px;vertical-align:2px}
+
+  /* the query card, same component as the demo page */
+  .query{font-family:var(--mono);font-size:.75rem;line-height:2.05;margin:32px 0 8px;
+    max-width:64ch;border:1px solid var(--wire);background:var(--ground)}
+  .q-head{padding:9px 14px;border-bottom:1px solid var(--wire);color:var(--faint);
+    letter-spacing:.14em;font-size:.5625rem;text-transform:uppercase}
+  .q-body{padding:14px 16px 12px}
+  .q-body i{font-style:normal;color:var(--faint)}
+  .q-body b{font-weight:400;color:var(--acc)}
+  .q-foot{padding:0 16px 14px;color:var(--faint);font-size:.6875rem}
+
+  /* before/after workflow, in mono */
+  .flow{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:32px 0 8px;max-width:64ch}
+  .flow>div{border:1px solid var(--wire);background:var(--ground)}
+  .f-head{padding:9px 14px;border-bottom:1px solid var(--wire);font-family:var(--mono);
+    font-size:.5625rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+  .f-body{padding:14px 16px;font-family:var(--mono);font-size:.6875rem;line-height:2.1;
+    color:var(--dim)}
+  .f-body em{font-style:normal;color:var(--fail)}
+  .f-body b{font-weight:400;color:var(--acc)}
+
+  /* pull quote — the number the article is about */
+  .pull{border-left:2px solid var(--acc);margin:44px 0 8px;padding:6px 0 6px 28px}
+  .pull p{font-family:var(--display);font-style:italic;font-weight:300;
+    font-size:1.5rem;line-height:1.3;color:var(--fg);max-width:26ch;margin:0}
+  .pull span{display:block;margin-top:12px;font-family:var(--mono);font-size:.625rem;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+
+  .ctas{display:flex;gap:14px;flex-wrap:wrap;margin-top:44px}
+  .ctas .ghost{font-family:var(--body);font-size:.875rem;font-weight:500;
+    color:var(--fg);text-decoration:none;border:1px solid var(--wire-strong);
+    padding:11px 20px}
+  .ctas .ghost:hover{border-color:var(--acc)}
+
+  .meta{margin-top:56px;
+    display:flex;gap:44px;flex-wrap:wrap}
+  .meta div{font-family:var(--mono);font-size:.6875rem;letter-spacing:.08em;color:var(--faint)}
+  .meta b{display:block;font-weight:400;color:var(--fg);margin-top:5px;letter-spacing:.04em}
+
+  footer{margin-top:72px;padding:26px 0 0;
+    font-family:var(--mono);font-size:.625rem;letter-spacing:.1em;color:var(--faint);
+    display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+
+  @media (max-width:820px){
+    .brandbar{padding:12px 16px;flex-wrap:wrap}
+    .navlinks{gap:14px} .navlinks a{font-size:.8125rem} .cta{padding:8px 12px}
+    .card{padding:40px 26px 46px}
+    .card::before{right:22px;width:38px;height:96px}
+    .band{margin:36px -26px}
+    .flow{grid-template-columns:1fr}
+  }
+
+  /* CTA pair: ghost secondary + filled primary; 24hr promise on wide screens */
+  .navlinks .ghostcta{border:1px solid var(--wire-strong);padding:8px 15px;
+    color:var(--fg);font-weight:500}
+  .navlinks .ghostcta:hover{border-color:var(--acc)}
+  .cta small{display:none;font-size:.75em;font-weight:400;opacity:.75}
+  @media (min-width:1100px){.cta small{display:inline}}
+</style>
+</head>
+<body>
+
+<nav class="samplebar">
+  <span class="sb-label">Samples</span>
+  <a href="index.html">Index</a>
+  <a href="demo.html">Demo</a>
+  <a href="blog.html" aria-current="page">Blog</a>
+  <a href="hero-a.html">Hero A</a>
+  <a href="hero-b.html">Hero B</a>
+  <a href="hero-c.html">Hero C</a>
+  <a href="press.html">Press</a>
+  <a href="fields.html">Fields</a>
+  <a href="palettes.html">Colour</a>
+  <span class="sb-spacer"></span>
+  <button id="themeToggle">Light</button>
+</nav>
+
+<div class="brandbar">
+  <a href="demo.html" data-theme-longpress><img id="mark" src="../brand/assets/SVG/shotwell-logo-horizontal-white.svg" alt="Shotwell"></a>
+  <div class="navlinks">
+    <button class="tbtn" data-theme-toggle type="button" aria-label="Toggle theme">☀</button>
+    <a href="https://demo.shotwell.ai/">Demo</a>
+    <a href="blog.html" aria-current="page">Blog</a>
+    <a class="ghostcta" href="contact.html">Talk to us</a>
+    <a class="cta" href="https://app.shotwell.ai/">Upload videos now <small>· 24 hr turnaround</small></a>
+  </div>
+</div>
+
+<main class="page wrap">
+  <a class="crumb" href="blog.html">← Blog</a>
+
+  <article class="card">
+    <span class="kicker">Case study · 2026</span>
+    <h1>Shotwell x Ultra: Turning Robot Teleoperation Data Into Reliable Training Data</h1>
+
+    <div class="band">
+      <canvas id="art"></canvas>
+      <span class="stamp">ultra · teleoperation episode · tower stacking</span>
+    </div>
+
+    <div class="prose">
+      <h2 data-n="01">Introduction</h2>
+      <p>Ultra is one of the leading robotics companies deploying robots in factories and
+        logistics centers across the US. In these settings, teleoperators produce large
+        volumes of data that are used for policy training. Across thousands of hours,
+        teleoperators make mistakes: they drop items, pack things incorrectly, or place
+        things in the wrong containers.</p>
+      <p>Shotwell partnered with Ultra to label and structure teleoperation episodes from
+        real robot camera feeds, turning raw video into searchable, high-signal training
+        data. With Shotwell, Ultra can identify clean demonstrations and build high-quality
+        datasets for policy training.</p>
+
+      <h2 data-n="02">The Challenge</h2>
+      <p>Ultra's robot policies are trained on teleoperation data collected in real,
+        unscripted environments. This data is valuable because it captures the messiness of
+        production that scripted demos lack. But raw teleoperation video is difficult to use
+        at scale.</p>
+      <p>Before Shotwell, Ultra's team had to spend significant engineering time reviewing
+        episodes, giving feedback to operators, and manually identifying which demonstrations
+        were suitable for training. <b>One engineer could keep up with feedback and quality
+        management for the output of 10 teleoperators.</b> As the teleoperation operation
+        grew, this workflow became a bottleneck.</p>
+      <p>Ultra needed a way to answer questions like:</p>
+      <ul>
+        <li>Which episodes contain clean task executions?</li>
+        <li>Where exactly does each subtask begin and end?</li>
+        <li>Which episodes include missed grasps and retries? Do these demonstrations help
+          or hurt policy training?</li>
+        <li>Are new operators following the SOP consistently? Are old operators showing
+          regressions?</li>
+        <li>Which parts of the task are responsible for most failures?</li>
+      </ul>
+
+      <div class="flow">
+        <div>
+          <div class="f-head">Before Shotwell</div>
+          <div class="f-body">operator data collection<br>
+            ↓ <em>manual review — bottleneck</em><br>
+            ↓ filter<br>
+            ↓ train model</div>
+        </div>
+        <div>
+          <div class="f-head">With Shotwell</div>
+          <div class="f-body">operator data collection<br>
+            ↓ <b>dense subtask annotations</b><br>
+            ↓ query the dataset<br>
+            ↓ train model</div>
+        </div>
+      </div>
+
+      <p>Without dense labels, these questions required manual review. With Shotwell, they
+        became database queries.</p>
+
+      <div class="query">
+        <div class="q-head">Episodes become searchable data — dataset.query</div>
+        <div class="q-body">
+          <div><i>where</i>&nbsp; subtask = <b>"Set Yellow"</b></div>
+          <div><i>and</i>&nbsp;&nbsp;&nbsp; result = <b>"fail"</b></div>
+          <div><i>and</i>&nbsp;&nbsp;&nbsp; attribute includes <b>"retry"</b></div>
+          <div><i>return</i> episode_id, start_time, end_time, operator_id</div>
+        </div>
+        <div class="q-foot">Returns failed subtasks, exact timestamps, and episode context</div>
+      </div>
+
+      <h2 data-n="03">The Solution</h2>
+      <p>Shotwell provided Ultra with dense event and subtask annotations across its
+        teleoperation data. Instead of treating each episode as a single opaque video,
+        Shotwell decomposed episodes into meaningful subtasks with attributes and failure
+        mode detection per subtask.</p>
+      <p>For Ultra's tower stacking toy task, Shotwell annotated each <b>"Pick"</b>,
+        <b>"Set"</b>, and <b>"Unstack"</b> subtask the robot performed. For each subtask,
+        Shotwell provided color attributes and failure attributes.</p>
+      <p>For Ultra's other tasks, there is a separate vocabulary of subtasks and a separate
+        list of attributes per subtask. Ultra can then slice training data along the
+        dimensions they care about to curate the right training set. Noisy or failed
+        attempts can be excluded or filtered in different ways for different policy
+        experiments. Subtask boundaries can be used to train more precise policies. Operator
+        behavior can be measured consistently over time.</p>
+      <p>The result is a data layer that makes robotics training data more transparent,
+        searchable, and useful.</p>
+
+      <h2 data-n="04">The Process</h2>
+      <p>Shotwell and Ultra built the annotation workflow in three stages.</p>
+      <h3><i>1</i>SOP Creation</h3>
+      <p>The first step was to define what "good" looked like.</p>
+      <p>Shotwell worked with Ultra to translate task goals and substeps into a concrete
+        annotation SOP. This included the task schema, event definitions, and success
+        criteria.</p>
+      <h3><i>2</i>Manual Annotation and Schema Alignment</h3>
+      <p>Shotwell began with manual annotation to align closely with Ultra's internal
+        understanding of each task.</p>
+      <p>This stage resolved ambiguity such as what motion counts as a retry, when a subtask
+        begins, and what exactly is considered a failure. Going through many examples of
+        episodes and annotating them manually allowed Shotwell to quickly align with Ultra
+        on these questions.</p>
+      <h3><i>3</i>Model Training + Human-in-the-Loop</h3>
+      <p>Once the schema was stable, Shotwell trained models to identify events and segment
+        boundaries on an initial batch of approved human annotations.</p>
+      <p>Shotwell then moved the workflow into a steady-state model-plus-human review
+        process. In tasks where the models had lower confidence, the models provided
+        pre-annotations that a human annotator could quickly fix.</p>
+      <p>As more episodes were annotated, the model was further trained and developed higher
+        confidence across the subtasks. At this stage, humans were still used to check for
+        data drift and perform model QA. Humans could also be flagged to re-annotate low
+        confidence segments of otherwise high confidence episodes. This annotation flywheel
+        continuously improves model performance and speeds up the overall annotation
+        process.</p>
+      <p>Shotwell's approach scaled quickly to Ultra's load to provide 24 hour turnaround
+        times, which were particularly useful for operator feedback.</p>
+
+      <h2 data-n="05">Outcomes</h2>
+      <p>With Shotwell, Ultra transformed teleoperation data review from a manual bottleneck
+        into a scalable data operation.</p>
+      <div class="pull">
+        <p>One engineer who previously struggled to manage feedback and quality review for
+          around 10 operators can now support 60+ operators using Shotwell's annotation and
+          review pipeline.</p>
+        <span>Ultra can grow teleoperation data collection without growing engineering
+          overhead at the same rate</span>
+      </div>
+      <p>With higher quality annotations, Ultra was able to improve their policy success
+        rate and task adherence.</p>
+      <p>Shotwell also delivered materially faster turnaround than competing annotation
+        solutions. Ultra had tried two approaches prior to Shotwell. They had teleoperators
+        perform task annotation as they performed actions, but those annotations were lower
+        quality, around 80% accurate, and far less granular than what Shotwell provided.
+        They also tried hiring labeling companies that were more expensive, lower fidelity
+        in annotation, and unable to provide single day turnaround times because they relied
+        entirely on offshore manual labor.</p>
+      <p>When it comes to training robot policies, data quality is everything, and Shotwell
+        guarantees it.</p>
+
+      <div class="ctas">
+        <a class="cta" href="https://demo.shotwell.ai/">Try the demo</a>
+        <a class="ghost" href="https://calendly.com/nour-shotwell/30-minute-meeting-w-team">Book a call</a>
+        <a class="ghost" href="https://app.shotwell.ai/">Upload videos</a>
+      </div>
+    </div>
+
+    <div class="meta">
+      <div>Date<b>2026</b></div>
+      <div>Customer<b>Ultra</b></div>
+      <div>Task<b>Tower stacking</b></div>
+      <div>Contact<b>hello@shotwell.ai</b></div>
+    </div>
+  </article>
+
+  <footer>
+    <span>Shotwell — annotations for robotics data</span>
+    <span>hello@shotwell.ai</span>
+  </footer>
+</main>
+
+<script type="module">
+import { halftone } from './assets/halftone.js';
+import { init, dotStyle, isLight } from './assets/theme.js';
+
+var c=document.getElementById('art'), mark=document.getElementById('mark'),
+    img=new Image(), ready=false;
+var dpr=Math.min(window.devicePixelRatio||1,2);
+
+function render(){
+  if(!ready) return;
+  var b=c.parentElement.getBoundingClientRect();
+  c.width=Math.round(b.width*dpr); c.height=Math.round(b.height*dpr);
+  var s=dotStyle();
+  halftone(c,img,{step:6*dpr,dot:s.dot,invert:s.invert,lo:.04,hi:.85,gamma:.62});
+}
+function syncMark(){
+  mark.src = isLight()
+    ? '../brand/assets/SVG/shotwell-logo-horizontal-black.svg'
+    : '../brand/assets/SVG/shotwell-logo-horizontal-white.svg';
+}
+img.onload=function(){ready=true;render();};
+img.src='assets/frame-ultra.jpg';
+init(); syncMark();
+addEventListener('themechange',function(){render();syncMark();});
+var to; addEventListener('resize',function(){clearTimeout(to);to=setTimeout(render,150);});
+/* local preview: point the app CTAs at the locally running platform */
+if(location.hostname==='localhost'||location.hostname==='127.0.0.1'){
+  document.querySelectorAll('a[href^="https://app.shotwell.ai"]').forEach(function(a){
+    a.href='http://localhost:3456/';
+  });
+}
+</script>
+</body>
+</html>

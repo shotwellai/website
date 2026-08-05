@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sample — Hero A, live halftone</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Outfit:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<style>
+  /* A band, not a viewport. The hero states the case and gets out of the way. */
+  .hero{position:relative;height:clamp(400px,58vh,580px);overflow:hidden;
+    border-bottom:1px solid var(--wire)}
+  .hero canvas{position:absolute;inset:0;width:100%;height:100%}
+  .hero video{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+
+  .panel{position:absolute;left:0;bottom:0;max-width:600px;background:var(--ground);
+    border-top:1px solid var(--wire);border-right:1px solid var(--wire);
+    padding:28px 40px 30px}
+  .panel .tag{display:block;margin-bottom:13px}
+  h1{font-family:var(--display);font-weight:300;font-size:clamp(1.9rem,3.6vw,2.8rem);
+    line-height:1.05;letter-spacing:-.015em;max-width:18ch}
+  h1 em{font-style:italic;color:var(--dim)}
+  .sub{margin-top:13px;max-width:44ch;color:var(--dim);font-weight:300;font-size:.9375rem}
+
+  .readout{position:absolute;right:0;top:0;background:var(--ground);
+    border-left:1px solid var(--wire);border-bottom:1px solid var(--wire);
+    padding:13px 18px;text-align:right;font-family:var(--mono);font-size:.625rem;
+    line-height:1.9;color:var(--faint)}
+  .readout b{font-weight:400;color:var(--fg)}
+
+  .ticks{position:absolute;left:0;right:0;top:0;height:18px;pointer-events:none}
+  .tick{position:absolute;top:0;width:1px;height:6px;background:var(--wire-strong)}
+  .tick span{position:absolute;top:8px;left:-18px;width:44px;text-align:center;
+    font-family:var(--mono);font-size:.5rem;color:var(--faint)}
+
+  /* review timeline — synced to actual playback, echoing the live site's scrubber */
+  .strip{display:flex;align-items:center;gap:18px;padding:12px 40px;
+    border-bottom:1px solid var(--wire);flex-wrap:wrap}
+  .strip .lbl{font-family:var(--mono);font-size:.5625rem;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--faint);flex:none}
+  .track{position:relative;flex:1;min-width:220px;height:14px;cursor:pointer;touch-action:none}
+  .track:focus-visible{outline:2px solid var(--fg);outline-offset:3px}
+  .track .seg{transition:opacity .15s var(--ease)}
+  .track:hover .seg{opacity:.8}
+  .track .seg{position:absolute;top:4px;height:6px}
+  .track .seg.p{background:var(--wire)}
+  .track .seg.f{background:var(--accent-fail,#E5006E)}
+  .track .play{position:absolute;top:-2px;width:2px;height:18px;background:var(--fg);
+    pointer-events:none;transform:translateX(-1px)}
+  .strip button{font-family:var(--mono);font-size:.5625rem;letter-spacing:.16em;
+    text-transform:uppercase;background:none;border:1px solid var(--wire);
+    color:var(--dim);padding:5px 11px;cursor:pointer;flex:none}
+  .strip button:hover{color:var(--fg);border-color:var(--wire-strong)}
+  .strip .clock{font-family:var(--mono);font-size:.625rem;color:var(--faint);flex:none}
+
+  .after{padding:56px 0 90px}
+  .after h2{font-family:var(--display);font-weight:300;font-size:1.6rem;
+    letter-spacing:-.01em;max-width:22ch}
+  .after p{margin-top:12px;max-width:56ch;color:var(--dim);font-weight:300;font-size:.9375rem}
+
+  @media (max-width:760px){
+    .panel{max-width:none;right:0;padding:22px}
+    .readout{display:none}
+    .strip{padding:12px 22px}
+  }
+</style>
+</head>
+<body>
+
+<nav class="samplebar">
+  <span class="sb-label">Samples</span>
+  <a href="index.html">Index</a>
+  <a href="demo.html">Demo</a>
+  <a href="blog.html">Blog</a>
+  <a href="hero-a.html" aria-current="page">Hero A</a>
+  <a href="hero-b.html">Hero B</a>
+  <a href="hero-c.html">Hero C</a>
+  <a href="press.html">Press</a>
+  <a href="fields.html">Fields</a>
+  <a href="palettes.html">Colour</a>
+  <span class="sb-spacer"></span>
+  <button id="themeToggle">Light</button>
+</nav>
+
+<section class="hero">
+  <video id="v" src="../fold-rubric.mp4" muted loop playsinline preload="auto"></video>
+  <canvas id="c"></canvas>
+  <div class="ticks" id="ticks"></div>
+
+  <div class="readout">
+    <div>EPISODE <b>0431</b></div>
+    <div>1278×720 · <b>19.1s</b></div>
+    <div>AGREEMENT <b>0.94</b></div>
+  </div>
+
+  <div class="panel">
+    <span class="tag">[ live episode · <b>fold_tshirt</b> ]</span>
+    <h1>Every frame, <em>measured.</em></h1>
+    <p class="sub">Masks, keypoints, and trajectories on robot manipulation data —
+      scored against our own rubric before delivery.</p>
+  </div>
+</section>
+
+<div class="strip">
+  <span class="lbl">Review</span>
+  <div class="track" id="track"></div>
+  <span class="clock" id="state">passed</span>
+  <span class="clock" id="clock">0:00</span>
+  <button id="pp">Pause</button>
+</div>
+
+<main class="after wrap">
+  <h2>The hero is a band now, not a screen.</h2>
+  <p>It holds the claim and one piece of evidence, then the page continues. The
+    halftone runs on the video itself rather than a still — same renderer, one frame
+    loop — so the treatment survives contact with real motion.</p>
+</main>
+
+<script type="module">
+import { halftone } from './assets/halftone.js';
+import { init, dotStyle } from './assets/theme.js';
+import { scrubber, clock as fmt } from './assets/scrubber.js';
+
+var v=document.getElementById('v'), c=document.getElementById('c'),
+    ticks=document.getElementById('ticks'), track=document.getElementById('track'),
+    clock=document.getElementById('clock'), pp=document.getElementById('pp');
+
+/* Deterministic review segments — stand-ins for real rubric output. */
+var SEGS=[[0,.18,'p'],[.18,.26,'f'],[.26,.55,'p'],[.55,.61,'f'],[.61,1,'p']];
+var sc=scrubber(track,v,SEGS);
+var stateEl=document.getElementById('state');
+
+function drawTicks(w){
+  ticks.innerHTML='';
+  var n=Math.max(4,Math.round(w/210));
+  for(var i=0;i<=n;i++){
+    var t=document.createElement('div'); t.className='tick';
+    t.style.left=(i/n*100)+'%';
+    t.innerHTML='<span>'+String(Math.round(i/n*572)).padStart(5,'0')+'</span>';
+    ticks.appendChild(t);
+  }
+}
+
+var dpr=Math.min(window.devicePixelRatio||1,2), sized=false, live=false;
+
+/* Poster-first: the hero paints from a still immediately, so it is never
+   blank while the video loads — or if autoplay is blocked outright. */
+var poster=new Image();
+function paintPoster(){
+  if(live||!sized||!poster.complete||!poster.naturalWidth) return;
+  var s=dotStyle();
+  halftone(c,poster,{step:7*dpr,dot:s.dot,invert:s.invert,lo:.04,hi:.85,gamma:.62});
+}
+poster.onload=paintPoster;
+poster.src='assets/frame-rubric.jpg';
+
+function size(){
+  var b=c.parentElement.getBoundingClientRect();
+  c.width=Math.round(b.width*dpr); c.height=Math.round(b.height*dpr);
+  drawTicks(b.width); sized=true;
+  paintPoster();
+}
+
+/* Cap the repaint rate — the dot grid is the cost, not the video. */
+var FPS=24, last=0;
+function loop(now){
+  requestAnimationFrame(loop);
+  if(!sized||v.readyState<2||v.currentTime<.05) return;
+  if(now-last < 1000/FPS) return;
+  last=now;
+  live=true;
+  var s=dotStyle();
+  halftone(c,v,{step:7*dpr,dot:s.dot,invert:s.invert,lo:.04,hi:.85,gamma:.62});
+  var st=sc.update();
+  if(st){
+    clock.textContent=fmt(v.currentTime);
+    stateEl.textContent = st.seg.fail ? 'flagged' : 'passed';
+    stateEl.style.color = st.seg.fail ? 'var(--accent-fail)' : 'var(--faint)';
+  }
+}
+
+size(); init();
+/* Play whether the video finishes loading before or after this script runs —
+   `loadeddata` alone loses the race on a fast connection and the hero
+   freezes on frame 0 (which is nearly black). */
+var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+function startVideo(){
+  if(reduce){ pp.textContent='Play'; return; }
+  var pr=v.play();
+  if(pr&&pr.catch)pr.catch(function(){pp.textContent='Play';});
+}
+if(v.readyState>=2) startVideo();
+else v.addEventListener('loadeddata',startVideo);
+pp.addEventListener('click',function(){
+  if(v.paused){ v.play(); pp.textContent='Pause'; } else { v.pause(); pp.textContent='Play'; }
+});
+requestAnimationFrame(loop);
+addEventListener('themechange',function(){last=0;paintPoster();});
+var to; addEventListener('resize',function(){clearTimeout(to);to=setTimeout(size,150);});
+</script>
+</body>
+</html>

@@ -46,7 +46,7 @@ function htmlRow(label: string, value: string) {
   </tr>`;
 }
 
-async function deliverAdminNotification(input: { subject: string; text: string; html: string }) {
+async function deliverAdminNotification(input: { subject: string; text: string; html: string; replyTo?: string }) {
   if (!emailDeliveryConfigured()) {
     console.warn("Admin notification skipped because email delivery is not configured.");
     return;
@@ -156,6 +156,52 @@ export async function notifyUploadSubmitted(user: User, upload: UploadRecord) {
         <p style="margin:0 0 8px;color:#9b3328;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;">Shotwell platform</p>
         <h1 style="margin:0 0 18px;font-size:24px;line-height:1.2;">New upload submitted</h1>
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;font-size:14px;">${rows}</table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`
+  });
+}
+
+export type ContactSubmission = {
+  name: string;
+  company: string;
+  email: string;
+  message: string;
+};
+
+export async function notifyContactSubmitted(input: ContactSubmission) {
+  const subject = `Contact — ${truncate(input.company, 120)}`;
+  const rows = [
+    htmlRow("Name", escapeHtml(input.name)),
+    htmlRow("Company", escapeHtml(input.company)),
+    htmlRow("Email", escapeHtml(input.email)),
+    htmlRow("Message", escapeHtml(truncate(input.message, maxPromptLength)).replace(/\n/g, "<br>"))
+  ].join("");
+
+  await deliverAdminNotification({
+    subject,
+    replyTo: input.email,
+    text: [
+      "New contact form submission",
+      "",
+      `Name: ${input.name}`,
+      `Company: ${input.company}`,
+      `Email: ${input.email}`,
+      "",
+      input.message
+    ].join("\n"),
+    html: `<!doctype html>
+<html lang="en">
+<body style="margin:0;padding:24px;background:#f4f1e8;color:#111827;font-family:Arial,sans-serif;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:680px;margin:0 auto;background:#ffffff;border:1px solid #d1d5db;">
+    <tr>
+      <td style="padding:24px;">
+        <p style="margin:0 0 8px;color:#9b3328;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;">Shotwell website</p>
+        <h1 style="margin:0 0 18px;font-size:24px;line-height:1.2;">Talk to us submission</h1>
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;font-size:14px;">${rows}</table>
+        <p style="margin:18px 0 0;font-size:13px;color:#6b7280;">Reply to this email to answer ${escapeHtml(input.name)} directly.</p>
       </td>
     </tr>
   </table>

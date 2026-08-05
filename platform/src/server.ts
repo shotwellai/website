@@ -25,7 +25,8 @@ app.use(
         objectSrc: ["'none'"],
         connectSrc: ["'self'", "https://storage.googleapis.com"],
         scriptSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
         upgradeInsecureRequests: config.isProduction ? [] : null
       }
     }
@@ -36,6 +37,62 @@ app.use(morgan(config.isProduction ? "combined" : "dev"));
 app.use(cookieParser(config.sessionSecret));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json({ limit: "1mb" }));
+
+app.get("/theme.js", (_req, res) => {
+  res.type("application/javascript").send(`"use strict";
+(function () {
+  var KEY = "shotwell-platform-theme";
+  var saved = null;
+  try { saved = localStorage.getItem(KEY); } catch (e) {}
+  var theme = saved || (window.matchMedia && matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+
+  function apply(next) {
+    document.documentElement.setAttribute("data-theme", next);
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    var btn = document.getElementById("themeToggle");
+    if (btn) {
+      btn.textContent = next === "light" ? "\u263E" : "\u2600";
+      btn.setAttribute("aria-label", next === "light" ? "Switch to dark mode" : "Switch to light mode");
+    }
+    document.querySelectorAll(".brand-mark").forEach(function (img) {
+      var src = next === "light" ? img.dataset.markLight : img.dataset.markDark;
+      if (src) img.src = src;
+    });
+  }
+
+  // set the attribute immediately so the first paint has the right theme
+  document.documentElement.setAttribute("data-theme", theme);
+
+  function flip() {
+    apply(document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light");
+  }
+
+  function wireLongPress(el) {
+    var timer = null, fired = false;
+    el.addEventListener("pointerdown", function () {
+      fired = false;
+      timer = setTimeout(function () { fired = true; flip(); }, 600);
+    });
+    ["pointerup", "pointerleave", "pointercancel"].forEach(function (ev) {
+      el.addEventListener(ev, function () { clearTimeout(timer); });
+    });
+    el.addEventListener("click", function (e) {
+      if (fired) { e.preventDefault(); fired = false; }
+    });
+    el.addEventListener("contextmenu", function (e) {
+      if (fired) e.preventDefault();
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    apply(theme);
+    var btn = document.getElementById("themeToggle");
+    if (btn) btn.addEventListener("click", flip);
+    document.querySelectorAll(".brand").forEach(wireLongPress);
+  });
+})();
+`);
+});
 
 app.get("/healthz", (_req, res) => {
   res.json({

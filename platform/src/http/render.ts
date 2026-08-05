@@ -28,7 +28,8 @@ function publicAsset(path: string) {
 
 export function page(title: string, body: string, options: { navHtml?: string } = {}) {
   const publicSiteUrl = config.publicSiteUrl.toString();
-  const logoUrl = publicAsset("shotwell-logo.png");
+  const logoUrl = publicAsset("brand/assets/SVG/shotwell-mark-white.svg");
+  const logoLightUrl = publicAsset("brand/assets/SVG/shotwell-mark-black.svg");
   const navHtml = options.navHtml ?? `<a class="button secondary" href="${escapeHtml(publicSiteUrl)}">Main Site</a>`;
 
   return `<!doctype html>
@@ -37,31 +38,72 @@ export function page(title: string, body: string, options: { navHtml?: string } 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${escapeHtml(title)}</title>
+  <link rel="icon" type="image/svg+xml" href="${publicAsset("favicon.svg")}">
+  <link rel="icon" type="image/png" sizes="32x32" href="${publicAsset("favicon-32.png")}">
+  <link rel="icon" type="image/png" sizes="16x16" href="${publicAsset("favicon-16.png")}">
+  <link rel="apple-touch-icon" sizes="180x180" href="${publicAsset("apple-touch-icon.png")}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Outfit:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="/theme.js"></script>
   <style>
     :root {
-      color-scheme: light;
-      --color-bg: #d7c7a9;
-      --color-bg-alt: #ddc596;
-      --color-surface: #efe5ce;
-      --color-panel: #efe5ce;
-      --color-panel-soft: #f6ecd5;
-      --color-text: #201c17;
-      --color-text-light: #4a4034;
-      --color-muted: #6d5e4b;
-      --color-line: #3d3428;
-      --color-line-strong: #3d3428;
-      --color-cta: #201c17;
-      --color-cta-text: #efe5ce;
-      --color-accent: #9b3328;
-      --color-accent-soft: #ead8b7;
-      --color-warn: #9b3328;
-      --color-warn-bg: #f6ecd5;
-      --font-body: Arial, Helvetica, sans-serif;
-      --font-display: Georgia, serif;
+      color-scheme: dark;
+      --color-bg: #0B0B0F;
+      --color-bg-alt: #101016;
+      --color-surface: #111116;
+      --color-panel: #16161C;
+      --color-panel-soft: #1A1A21;
+      --color-text: #F5F2EB;
+      --color-text-light: rgba(245, 242, 235, 0.72);
+      --color-muted: rgba(245, 242, 235, 0.45);
+      --color-line: rgba(245, 242, 235, 0.18);
+      --color-line-strong: rgba(245, 242, 235, 0.4);
+      --color-cta: #EFB702;
+      --color-cta-text: #0C0C0E;
+      --color-accent: #EFB702;
+      --color-accent-soft: rgba(239, 183, 2, 0.14);
+      --color-warn: #E38FB4;
+      --color-warn-bg: rgba(175, 50, 97, 0.16);
+      --font-body: 'Outfit', system-ui, sans-serif;
+      --font-display: 'Fraunces', Georgia, serif;
+      --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+      --color-hover: rgba(245, 242, 235, 0.07);
+      --color-hover-soft: rgba(245, 242, 235, 0.05);
+      --color-hover-strong: rgba(245, 242, 235, 0.08);
+      --color-focus-bg: #1F1F27;
+      --color-topbar: rgba(17, 17, 22, 0.92);
       --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
       --nav-height: 72px;
       --max-width: 1280px;
       --radius: 0;
+    }
+
+    [data-theme="light"] {
+      color-scheme: light;
+      --color-bg: #EDE9DF;
+      --color-bg-alt: #EAE5D9;
+      --color-surface: #F5F2EB;
+      --color-panel: #F0EDE4;
+      --color-panel-soft: #FAF8F2;
+      --color-text: #22222A;
+      --color-text-light: rgba(34, 34, 42, 0.75);
+      --color-muted: rgba(34, 34, 42, 0.5);
+      --color-line: rgba(34, 34, 42, 0.16);
+      --color-line-strong: rgba(34, 34, 42, 0.42);
+      --color-accent: #9C7A00;
+      --color-accent-soft: rgba(239, 183, 2, 0.2);
+      --color-warn: #97264F;
+      --color-warn-bg: rgba(175, 50, 97, 0.1);
+      --color-hover: rgba(34, 34, 42, 0.06);
+      --color-hover-soft: rgba(34, 34, 42, 0.04);
+      --color-hover-strong: rgba(34, 34, 42, 0.07);
+      --color-focus-bg: #FFF7E0;
+      --color-topbar: rgba(245, 242, 235, 0.92);
+    }
+
+    [data-theme="light"] .noise {
+      mix-blend-mode: multiply;
     }
 
     *,
@@ -93,7 +135,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       height: 100%;
       pointer-events: none;
       opacity: 0.04;
-      mix-blend-mode: multiply;
+      mix-blend-mode: screen;
     }
 
     .shell {
@@ -104,7 +146,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       grid-template-rows: auto 1fr;
       background: var(--color-surface);
       border: 1px solid var(--color-line);
-      box-shadow: 10px 12px 0 rgba(32, 28, 23, 0.18);
+      box-shadow: none;
     }
 
     .topbar {
@@ -113,7 +155,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       z-index: 20;
       height: var(--nav-height);
       border-bottom: 1px solid var(--color-line);
-      background: rgba(239, 229, 206, 0.96);
+      background: var(--color-topbar);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
     }
@@ -142,15 +184,15 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       align-items: center;
       gap: 12px;
       color: var(--color-text);
-      font-family: var(--font-body);
-      font-size: 1.5rem;
-      font-weight: 800;
+      font-family: var(--font-display);
+      font-size: 1.45rem;
+      font-weight: 400;
       line-height: 1;
-      letter-spacing: -0.03em;
+      letter-spacing: -0.01em;
     }
 
     .brand-mark {
-      width: 42px;
+      width: 30px;
       height: 42px;
       object-fit: contain;
       display: block;
@@ -158,6 +200,22 @@ export function page(title: string, body: string, options: { navHtml?: string } 
     }
 
     .brand-dot {
+      color: var(--color-text);
+    }
+
+    .topbar .button,
+    .topbar button {
+      min-height: 0;
+      padding: 8px 10px;
+      background: none;
+      border: none;
+      color: var(--color-text-light);
+    }
+
+    .topbar .button:hover,
+    .topbar button:hover {
+      background: none;
+      border: none;
       color: var(--color-text);
     }
 
@@ -177,9 +235,9 @@ export function page(title: string, body: string, options: { navHtml?: string } 
     h1 {
       font-family: var(--font-display);
       font-size: clamp(3rem, 6vw, 5.25rem);
-      font-weight: 400;
-      line-height: 0.96;
-      letter-spacing: -0.045em;
+      font-weight: 300;
+      line-height: 1.02;
+      letter-spacing: -0.018em;
     }
 
     h1 em,
@@ -190,9 +248,9 @@ export function page(title: string, body: string, options: { navHtml?: string } 
     h2 {
       font-family: var(--font-display);
       font-size: clamp(2rem, 3.5vw, 3.3rem);
-      font-weight: 400;
-      line-height: 1.02;
-      letter-spacing: -0.04em;
+      font-weight: 300;
+      line-height: 1.06;
+      letter-spacing: -0.015em;
     }
 
     h3 {
@@ -215,9 +273,10 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       border-radius: var(--radius);
       padding: 7px 9px;
       color: var(--color-accent);
-      font-size: 0.72rem;
-      font-weight: 800;
-      letter-spacing: 0.14em;
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
       line-height: 1;
       text-transform: uppercase;
     }
@@ -235,11 +294,10 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       background: var(--color-cta);
       color: var(--color-cta-text);
       font: inherit;
-      font-size: 0.82rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
+      font-size: 0.875rem;
+      font-weight: 500;
+      letter-spacing: 0.01em;
       line-height: 1;
-      text-transform: uppercase;
       text-decoration: none;
       cursor: pointer;
       transition:
@@ -251,21 +309,21 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 
     .button:hover,
     button:hover {
-      background: var(--color-accent);
-      border-color: var(--color-accent);
+      background: #F8C41C;
+      border-color: #F8C41C;
       color: var(--color-cta-text);
     }
 
     .button.secondary,
     button.secondary {
       background: transparent;
-      color: var(--color-cta);
-      border-color: var(--color-cta);
+      color: var(--color-text);
+      border-color: var(--color-line-strong);
     }
 
     .button.secondary:hover,
     button.secondary:hover {
-      background: rgba(32, 28, 23, 0.06);
+      background: var(--color-hover);
       color: var(--color-cta);
       border-color: var(--color-cta);
     }
@@ -284,9 +342,9 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 
     .button[aria-disabled="true"],
     button:disabled {
-      color: rgba(32, 28, 23, 0.44);
-      background: rgba(32, 28, 23, 0.06);
-      border-color: rgba(32, 28, 23, 0.18);
+      color: var(--color-muted);
+      background: var(--color-hover);
+      border-color: var(--color-line);
       pointer-events: none;
     }
 
@@ -313,9 +371,10 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 
     .panel-kicker {
       color: var(--color-muted);
-      font-size: 0.72rem;
-      font-weight: 800;
-      letter-spacing: 0.14em;
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      font-weight: 400;
+      letter-spacing: 0.2em;
       line-height: 1;
       text-transform: uppercase;
     }
@@ -331,10 +390,10 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       display: grid;
       gap: 7px;
       color: var(--color-text);
-      font-size: 0.78rem;
-      font-weight: 500;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
+      font-size: 0.9rem;
+      font-weight: 400;
+      letter-spacing: 0;
+      text-transform: none;
     }
 
     input,
@@ -377,9 +436,9 @@ export function page(title: string, body: string, options: { navHtml?: string } 
     input:focus,
     textarea:focus,
     select:focus {
-      background: #fff4dd;
+      background: var(--color-focus-bg);
       border-color: var(--color-accent);
-      box-shadow: 0 0 0 2px rgba(155, 51, 40, 0.16);
+      box-shadow: 0 0 0 2px rgba(239, 183, 2, 0.28);
     }
 
     .divider {
@@ -403,7 +462,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 
     .notice {
       margin-top: 16px;
-      border: 1px solid rgba(157, 101, 0, 0.22);
+      border: 1px solid rgba(239, 183, 2, 0.3);
       border-radius: var(--radius);
       padding: 12px;
       background: var(--color-warn-bg);
@@ -576,6 +635,13 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       object-fit: cover;
       background: var(--color-cta);
       border: 1px solid var(--color-line);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-cta-text);
+      font-family: "Outfit", sans-serif;
+      font-size: 0.9375rem;
+      font-weight: 500;
     }
 
     .workspace-grid {
@@ -831,7 +897,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       border: 1px solid var(--color-line);
       border-radius: var(--radius);
       padding: 5px 9px;
-      background: rgba(32, 28, 23, 0.04);
+      background: var(--color-hover-soft);
       color: var(--color-text-light);
       font-size: 0.72rem;
       font-weight: 600;
@@ -1155,7 +1221,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       margin-top: 8px;
       overflow: hidden;
       border-radius: var(--radius);
-      background: rgba(42, 42, 50, 0.08);
+      background: var(--color-hover-strong);
     }
 
     .progress span {
@@ -1399,10 +1465,12 @@ export function page(title: string, body: string, options: { navHtml?: string } 
     <header class="topbar">
       <div class="topbar-inner">
         <a class="brand" href="${escapeHtml(publicSiteUrl)}">
-          <img class="brand-mark" src="${escapeHtml(logoUrl)}" alt="Shotwell logo">
+          <img class="brand-mark" src="${escapeHtml(logoUrl)}"
+            data-mark-dark="${escapeHtml(logoUrl)}"
+            data-mark-light="${escapeHtml(logoLightUrl)}" alt="Shotwell logo">
           <span>Shotwell<span class="brand-dot">.</span></span>
         </a>
-	        <nav>${navHtml}</nav>
+	        <nav><button class="button secondary compact" id="themeToggle" type="button">Light</button>${navHtml}</nav>
 	      </div>
 	    </header>
     ${body}
@@ -1570,7 +1638,7 @@ function renderAccountNav(user: User, linksHtml = "") {
   const displayName = user.name ?? user.email;
   const avatar = user.avatarUrl
     ? `<img class="avatar" src="${escapeHtml(user.avatarUrl)}" alt="">`
-    : `<span class="avatar"></span>`;
+    : `<span class="avatar">${escapeHtml(displayName.charAt(0).toUpperCase())}</span>`;
 
   return `${linksHtml}
         <div class="account-box">
