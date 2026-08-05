@@ -37,6 +37,10 @@ export function page(title: string, body: string, options: { navHtml?: string } 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${escapeHtml(title)}</title>
+  <link rel="icon" type="image/svg+xml" href="${publicAsset("favicon.svg")}">
+  <link rel="icon" type="image/png" sizes="32x32" href="${publicAsset("favicon-32.png")}">
+  <link rel="icon" type="image/png" sizes="16x16" href="${publicAsset("favicon-16.png")}">
+  <link rel="apple-touch-icon" sizes="180x180" href="${publicAsset("apple-touch-icon.png")}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Outfit:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
