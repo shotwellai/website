@@ -36,6 +36,15 @@
   h1 em{font-style:italic;color:var(--dim)}
   .lede p{margin:22px auto 0;max-width:56ch;color:var(--dim);font-weight:500;
     font-size:1.25rem}
+  .lede-cta{margin-top:34px;display:flex;justify-content:center;align-items:center;gap:14px}
+  .lede-cta .go{background:var(--acc);color:var(--on-acc);padding:13px 26px;
+    font-size:.9375rem;font-weight:500;text-decoration:none}
+  .lede-cta .go:hover{filter:brightness(1.06)}
+  .lede-cta .talk{border:1px solid var(--wire-strong);padding:12px 22px;
+    font-size:.9375rem;font-weight:500;color:var(--fg);text-decoration:none}
+  .lede-cta .talk:hover{border-color:var(--acc)}
+  .lede-note{margin-top:16px;font-family:var(--mono);font-size:.625rem;
+    letter-spacing:.18em;color:var(--faint)}
 
   /* ── hero band: the real footage, dots as static at the seams ── */
   .hero{position:relative;height:clamp(380px,54vh,540px);overflow:hidden;
@@ -217,6 +226,7 @@
     .brandbar{padding:12px 16px;flex-wrap:wrap}
     .navlinks{gap:14px} .navlinks a{font-size:.8125rem} .cta{padding:8px 12px}
     .lede{padding:44px 22px 36px}
+    .lede-cta{flex-wrap:wrap}
     .hero{margin:0 12px}
     .annobar{margin:0 22px;flex-wrap:wrap;min-height:0}
     .annobar .cell{border-right:0;padding:8px 14px}
@@ -277,6 +287,11 @@
   <h1>Annotations for <em>robotics data</em></h1>
   <p>Shotwell provides fast, accurate and dense annotations for robotics training
     data. We segment long videos into discrete steps and detect failures in each step.</p>
+  <div class="lede-cta">
+    <a class="go" href="https://app.shotwell.ai/">Upload videos now</a>
+    <a class="talk" href="contact.html">Talk to us</a>
+  </div>
+  <div class="lede-note">10 HOURS FREE &middot; 24 HR TURNAROUND &middot; ZERO DATA RETENTION</div>
 </header>
 
 <section class="hero">
