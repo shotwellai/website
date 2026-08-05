@@ -71,7 +71,7 @@ a{color:inherit}
   text-transform:uppercase;color:var(--faint);margin-right:10px;padding-left:4px}
 .samplebar .sb-spacer{flex:1}
 #themeToggle{border:1px solid var(--wire)}
-body{padding-top:41px}
+/* samplebar compensation removed in production */
 
 :focus-visible{outline:2px solid var(--ember);outline-offset:3px}
 
