@@ -1446,6 +1446,8 @@ export function page(title: string, body: string, options: { navHtml?: string; b
 
     .result-strip {
       display: flex;
+      width: 100%;
+      box-sizing: border-box;
       border-right: 1px solid var(--color-line);
       border-left: 1px solid var(--color-line);
       border-bottom: 1px solid var(--color-line);
@@ -1457,13 +1459,18 @@ export function page(title: string, body: string, options: { navHtml?: string; b
       position: relative;
       display: grid;
       gap: 14px;
+      width: 100%;
       flex: 1 1 auto;
       min-width: 0;
     }
 
     .result-track {
       position: relative;
+      display: block;
+      width: 100%;
+      min-width: 0;
       height: 26px;
+      background: color-mix(in srgb, var(--color-text) 14%, transparent);
       cursor: pointer;
       touch-action: none;
     }
@@ -1475,6 +1482,8 @@ export function page(title: string, body: string, options: { navHtml?: string; b
 
     .result-zoom-stage {
       position: relative;
+      width: 100%;
+      min-width: 0;
       padding-top: 52px;
     }
 

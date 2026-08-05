@@ -470,6 +470,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const navItems = Array.from(viewer.querySelectorAll("[data-result-nav]"));
   const panels = Array.from(viewer.querySelectorAll("[data-result-panel]"));
 
+  function notifyVisible(panel) {
+    const notify = () => panel.dispatchEvent(new CustomEvent("result:visible", { bubbles: true }));
+    window.requestAnimationFrame(() => {
+      notify();
+      window.requestAnimationFrame(notify);
+    });
+  }
+
   function showEpisode(id) {
     for (const nav of navItems) {
       const isActive = nav.dataset.resultNav === id;
@@ -484,7 +492,7 @@ document.addEventListener("DOMContentLoaded", () => {
           video.pause();
         }
       } else {
-        panel.dispatchEvent(new CustomEvent("result:visible", { bubbles: true }));
+        notifyVisible(panel);
       }
     }
   }
