@@ -232,6 +232,11 @@ function readStreamText(stream: NodeJS.ReadableStream): Promise<string> {
   });
 }
 
+async function readUploadResult(resultObjectName: string) {
+  const text = await readStreamText(createResultReadStream(resultObjectName));
+  return parseUploadResultJson(text);
+}
+
 function cleanFileName(value: unknown) {
   if (typeof value !== "string") {
     return "";
@@ -667,6 +672,84 @@ appRouter.get("/admin/uploads/:uploadId/files/:fileId", async (req, res, next) =
   }
 });
 
+appRouter.get("/admin/uploads/:uploadId/result", async (req, res, next) => {
+  try {
+    const user = await getAdminUser(req, res);
+    if (!user) {
+      return;
+    }
+
+    if (!isUuid(req.params.uploadId)) {
+      res.status(404).type("html").send(messagePage("Result not found", "That upload result could not be found.", "/admin#uploads", "Back to admin"));
+      return;
+    }
+
+    const upload = await adminStore.getUpload(req.params.uploadId);
+    if (!upload || upload.status !== "completed" || !upload.resultObjectName) {
+      res
+        .status(404)
+        .type("html")
+        .send(messagePage("Results pending", "Results are not ready for this upload yet.", "/admin#uploads", "Back to admin"));
+      return;
+    }
+
+    let result;
+    try {
+      result = await readUploadResult(upload.resultObjectName);
+    } catch (error) {
+      console.error("Could not read admin result JSON.", error);
+      res
+        .status(500)
+        .type("html")
+        .send(messagePage("Result unavailable", "The result JSON could not be loaded.", "/admin#uploads", "Back to admin"));
+      return;
+    }
+
+    res.type("html").send(resultPage(user, upload, result, {
+      backHref: "/admin#uploads",
+      backLabel: "Admin",
+      jsonHref: `/admin/uploads/${encodeURIComponent(upload.id)}/results`,
+      mediaHref: (file) => `/admin/uploads/${encodeURIComponent(upload.id)}/files/${encodeURIComponent(file.id)}`,
+      eyebrow: "Admin result"
+    }));
+  } catch (error) {
+    next(error);
+  }
+});
+
+appRouter.get("/admin/uploads/:uploadId/results", async (req, res, next) => {
+  try {
+    const user = await getAdminUser(req, res);
+    if (!user) {
+      return;
+    }
+
+    if (!isUuid(req.params.uploadId)) {
+      res.status(404).type("html").send(messagePage("Result not found", "That upload result could not be found.", "/admin#uploads", "Back to admin"));
+      return;
+    }
+
+    const upload = await adminStore.getUpload(req.params.uploadId);
+    if (!upload || upload.status !== "completed" || !upload.resultObjectName) {
+      res
+        .status(404)
+        .type("html")
+        .send(messagePage("Results pending", "Results are not ready for this upload yet.", "/admin#uploads", "Back to admin"));
+      return;
+    }
+
+    const fileName = upload.resultFileName ?? "shotwell-results.json";
+    res.setHeader("Content-Type", upload.resultContentType ?? "application/json");
+    res.setHeader("Content-Disposition", contentDispositionAttachment(fileName));
+
+    const stream = createResultReadStream(upload.resultObjectName);
+    stream.on("error", next);
+    stream.pipe(res);
+  } catch (error) {
+    next(error);
+  }
+});
+
 appRouter.post("/api/uploads", async (req, res, next) => {
   try {
     const user = await getApiUser(req, res);
@@ -829,8 +912,7 @@ appRouter.get("/uploads/:uploadId/result", async (req, res, next) => {
 
     let result;
     try {
-      const text = await readStreamText(createResultReadStream(upload.resultObjectName));
-      result = parseUploadResultJson(text);
+      result = await readUploadResult(upload.resultObjectName);
     } catch (error) {
       console.error("Could not read result JSON.", error);
       res

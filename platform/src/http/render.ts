@@ -4,6 +4,30 @@ import { config } from "../config.js";
 import type { ResultAnnotation, ResultEpisode, UploadResult } from "../uploads/results.js";
 import type { UploadRecord } from "../uploads/store.js";
 
+type ResultUploadFile = {
+  id: string;
+  uploadId: string;
+  originalName: string;
+  objectName: string;
+  contentType: string;
+  sizeBytes: number;
+};
+
+type ResultPageUpload = {
+  id: string;
+  sourceUrl?: string;
+  resultFileName?: string;
+  files: ResultUploadFile[];
+};
+
+type ResultPageOptions = {
+  backHref?: string;
+  backLabel?: string;
+  jsonHref?: string;
+  mediaHref?: (file: ResultUploadFile, upload: ResultPageUpload) => string;
+  eyebrow?: string;
+};
+
 export function escapeHtml(value: string) {
   return value.replace(/[&<>"']/g, (char) => {
     switch (char) {
@@ -1104,6 +1128,13 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       font-size: 0.78rem;
     }
 
+    .admin-upload-status {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
     .admin-upload-grid {
       display: grid;
       grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
@@ -1660,6 +1691,10 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 	        align-items: start;
 	      }
 
+	      .admin-upload-status {
+	        justify-content: flex-start;
+	      }
+
 	      .annotation-list li {
 	        grid-template-columns: 1fr;
 	      }
@@ -1782,7 +1817,7 @@ export function privacyPolicyPage() {
   );
 }
 
-function uploadTitle(upload: UploadRecord) {
+function uploadTitle(upload: Pick<ResultPageUpload, "sourceUrl" | "files">) {
   const firstFile = upload.files[0]?.originalName ?? "Untitled upload";
   const otherCount = Math.max(0, upload.files.length - 1);
 
@@ -1875,7 +1910,7 @@ function filenameBasename(value: string) {
   return value.split(/[\\/]/).pop() ?? value;
 }
 
-function findEpisodeFile(upload: UploadRecord, episode: ResultEpisode) {
+function findEpisodeFile(upload: ResultPageUpload, episode: ResultEpisode) {
   const filename = filenameBasename(episode.filename).toLowerCase();
   return upload.files.find((file) => file.originalName === episode.filename)
     ?? upload.files.find((file) => file.originalName.toLowerCase() === filename);
@@ -1898,7 +1933,7 @@ function percent(value: number) {
   return `${Math.max(0, Math.min(100, value)).toFixed(4)}%`;
 }
 
-function renderResultMedia(upload: UploadRecord, episode: ResultEpisode) {
+function renderResultMedia(upload: ResultPageUpload, episode: ResultEpisode, options: ResultPageOptions = {}) {
   const file = findEpisodeFile(upload, episode);
   if (!file) {
     return `<div class="result-missing-media">
@@ -1907,26 +1942,27 @@ function renderResultMedia(upload: UploadRecord, episode: ResultEpisode) {
     </div>`;
   }
 
-  const href = `/uploads/${escapeHtml(upload.id)}/files/${escapeHtml(file.id)}`;
+  const href = options.mediaHref?.(file, upload) ?? `/uploads/${encodeURIComponent(upload.id)}/files/${encodeURIComponent(file.id)}`;
+  const escapedHref = escapeHtml(href);
   const contentType = resultFileContentType(file);
   if (contentType.startsWith("video/")) {
     return `<div class="result-media-frame">
       <video controls preload="metadata">
-        <source src="${href}" type="${escapeHtml(contentType)}">
+        <source src="${escapedHref}" type="${escapeHtml(contentType)}">
       </video>
     </div>`;
   }
 
   if (contentType.startsWith("image/")) {
     return `<div class="result-media-frame">
-      <img src="${href}" alt="${escapeHtml(file.originalName)}" loading="lazy">
+      <img src="${escapedHref}" alt="${escapeHtml(file.originalName)}" loading="lazy">
     </div>`;
   }
 
   return `<div class="result-missing-media">
     <strong>Preview unavailable.</strong>
     <p>${escapeHtml(file.originalName)}</p>
-    <a class="button secondary compact" href="${href}" target="_blank" rel="noopener">Open file</a>
+    <a class="button secondary compact" href="${escapedHref}" target="_blank" rel="noopener">Open file</a>
   </div>`;
 }
 
@@ -1964,13 +2000,13 @@ function renderAnnotationList(annotations: ResultAnnotation[]) {
   </ul>`;
 }
 
-function renderResultEpisode(upload: UploadRecord, episode: ResultEpisode, index: number) {
+function renderResultEpisode(upload: ResultPageUpload, episode: ResultEpisode, index: number, options: ResultPageOptions = {}) {
   const id = resultEpisodeId(index);
   const hidden = index === 0 ? "" : " hidden";
 
   return `<section class="result-panel" id="${id}" data-result-panel="${id}"${hidden}>
     <h2>${escapeHtml(episode.filename)}</h2>
-    ${renderResultMedia(upload, episode)}
+    ${renderResultMedia(upload, episode, options)}
     <section class="result-annotations">
       <div class="admin-section-header">
         <h2>Annotations</h2>
@@ -2188,8 +2224,12 @@ function renderAdminUploads(uploads: AdminUploadSummary[]) {
       ? `${upload.userName} <${upload.userEmail}>`
       : upload.userEmail;
     const prompt = upload.prompt.trim() || "No prompt provided.";
-    const result = upload.resultObjectName
+    const resultMeta = upload.resultObjectName
       ? `<span>Result: ${escapeHtml(upload.resultFileName ?? upload.resultObjectName)}</span>`
+      : "";
+    const resultActions = upload.resultObjectName
+      ? `<a class="button compact" href="/admin/uploads/${escapeHtml(upload.id)}/result">View result</a>
+        <a class="button secondary compact" href="/admin/uploads/${escapeHtml(upload.id)}/results">Download JSON</a>`
       : "";
 
     return `<article class="admin-upload-card">
@@ -2201,10 +2241,13 @@ function renderAdminUploads(uploads: AdminUploadSummary[]) {
             <span>${formatDate(upload.createdAt)}</span>
             <span>${formatCount(upload.fileCount)} files</span>
             <span>${formatBytes(upload.totalSizeBytes)}</span>
-            ${result}
+            ${resultMeta}
           </div>
         </div>
-        <span class="${statusClass}">${escapeHtml(upload.status)}</span>
+        <div class="admin-upload-status">
+          ${resultActions}
+          <span class="${statusClass}">${escapeHtml(upload.status)}</span>
+        </div>
       </div>
       <div class="admin-upload-grid">
         <section class="admin-upload-block">
@@ -2282,12 +2325,15 @@ export function adminPage(user: User, dashboard: AdminDashboard) {
   );
 }
 
-export function resultPage(user: User, upload: UploadRecord, result: UploadResult) {
+export function resultPage(user: User, upload: ResultPageUpload, result: UploadResult, options: ResultPageOptions = {}) {
   const publicSiteUrl = config.publicSiteUrl.toString();
+  const backHref = options.backHref ?? "/";
+  const backLabel = options.backLabel ?? "App";
+  const jsonHref = options.jsonHref ?? `/uploads/${encodeURIComponent(upload.id)}/results`;
   const navHtml = renderAccountNav(
     user,
-    `<a class="button secondary" href="/">App</a>
-        <a class="button secondary" href="/uploads/${escapeHtml(upload.id)}/results">Download JSON</a>
+    `<a class="button secondary" href="${escapeHtml(backHref)}">${escapeHtml(backLabel)}</a>
+        <a class="button secondary" href="${escapeHtml(jsonHref)}">Download JSON</a>
         <a class="button secondary" href="${escapeHtml(publicSiteUrl)}">Main Site</a>`
   );
   const hasSidebar = result.episodes.length > 1;
@@ -2301,13 +2347,13 @@ export function resultPage(user: User, upload: UploadRecord, result: UploadResul
         }).join("")}
       </aside>`
     : "";
-  const panels = result.episodes.map((episode, index) => renderResultEpisode(upload, episode, index)).join("");
+  const panels = result.episodes.map((episode, index) => renderResultEpisode(upload, episode, index, options)).join("");
 
   return page(
     "Shotwell Result",
     `<main class="result-main">
       <section class="result-heading">
-        <span class="eyebrow">Result</span>
+        <span class="eyebrow">${escapeHtml(options.eyebrow ?? "Result")}</span>
         <h1>Shotwell annotations.</h1>
         <p>${escapeHtml(uploadTitle(upload))}</p>
       </section>

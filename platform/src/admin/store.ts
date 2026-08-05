@@ -51,6 +51,7 @@ export type AdminUploadSummary = {
   uploadPrefix: string;
   resultObjectName?: string;
   resultFileName?: string;
+  resultContentType?: string;
   filesUploadedAt?: Date;
   completedAt?: Date;
   createdAt: Date;
@@ -69,6 +70,7 @@ export type AdminDashboard = {
 
 export interface AdminStore {
   getDashboard(input?: { userId?: string }): Promise<AdminDashboard>;
+  getUpload(uploadId: string): Promise<AdminUploadSummary | null>;
   getUploadFile(uploadId: string, fileId: string): Promise<AdminUploadFileSummary | null>;
 }
 
@@ -108,6 +110,7 @@ type UploadSummaryRow = {
   upload_prefix: string;
   result_object_name: string | null;
   result_file_name: string | null;
+  result_content_type: string | null;
   files_uploaded_at: Date | null;
   completed_at: Date | null;
   created_at: Date;
@@ -175,6 +178,7 @@ function mapUploadSummary(row: UploadSummaryRow, files: AdminUploadFileSummary[]
     uploadPrefix: row.upload_prefix,
     resultObjectName: row.result_object_name ?? undefined,
     resultFileName: row.result_file_name ?? undefined,
+    resultContentType: row.result_content_type ?? undefined,
     filesUploadedAt: row.files_uploaded_at ?? undefined,
     completedAt: row.completed_at ?? undefined,
     createdAt: row.created_at,
@@ -275,6 +279,52 @@ export class PostgresAdminStore implements AdminStore {
     return result.rows[0] ? mapUploadFileSummary(result.rows[0]) : null;
   }
 
+  async getUpload(uploadId: string): Promise<AdminUploadSummary | null> {
+    const uploadResult = await this.pool.query<UploadSummaryRow>(
+      `select
+        up.id,
+        up.user_id,
+        u.email as user_email,
+        u.name as user_name,
+        up.prompt,
+        up.source_url,
+        up.status,
+        up.upload_prefix,
+        up.result_object_name,
+        up.result_file_name,
+        up.result_content_type,
+        up.files_uploaded_at,
+        up.completed_at,
+        up.created_at,
+        up.updated_at,
+        count(f.id) as file_count,
+        coalesce(sum(f.size_bytes), 0) as total_size_bytes
+      from shotwell_uploads up
+      join shotwell_auth_users u on u.id = up.user_id
+      left join shotwell_upload_files f on f.upload_id = up.id
+      where up.id = $1
+      group by
+        up.id,
+        up.user_id,
+        u.email,
+        u.name,
+        up.prompt,
+        up.source_url,
+        up.status,
+        up.upload_prefix,
+        up.result_object_name,
+        up.result_file_name,
+        up.result_content_type,
+        up.files_uploaded_at,
+        up.completed_at,
+        up.created_at,
+        up.updated_at`,
+      [uploadId]
+    );
+
+    return (await this.hydrateUploads(uploadResult.rows))[0] ?? null;
+  }
+
   private async getUploads(userId?: string): Promise<AdminUploadSummary[]> {
     const whereClause = userId ? "where up.user_id = $1" : "";
     const params = userId ? [userId] : [];
@@ -290,6 +340,7 @@ export class PostgresAdminStore implements AdminStore {
         up.upload_prefix,
         up.result_object_name,
         up.result_file_name,
+        up.result_content_type,
         up.files_uploaded_at,
         up.completed_at,
         up.created_at,
@@ -311,6 +362,7 @@ export class PostgresAdminStore implements AdminStore {
         up.upload_prefix,
         up.result_object_name,
         up.result_file_name,
+        up.result_content_type,
         up.files_uploaded_at,
         up.completed_at,
         up.created_at,
@@ -320,11 +372,15 @@ export class PostgresAdminStore implements AdminStore {
       params
     );
 
-    if (uploadResult.rows.length === 0) {
+    return this.hydrateUploads(uploadResult.rows);
+  }
+
+  private async hydrateUploads(uploadRows: UploadSummaryRow[]): Promise<AdminUploadSummary[]> {
+    if (uploadRows.length === 0) {
       return [];
     }
 
-    const uploadIds = uploadResult.rows.map((row) => row.id);
+    const uploadIds = uploadRows.map((row) => row.id);
     const fileResult = await this.pool.query<UploadFileSummaryRow>(
       `select id, upload_id, original_name, object_name, content_type, size_bytes, created_at
       from shotwell_upload_files
@@ -340,7 +396,7 @@ export class PostgresAdminStore implements AdminStore {
       filesByUploadId.set(row.upload_id, files);
     }
 
-    return uploadResult.rows.map((row) => mapUploadSummary(row, filesByUploadId.get(row.id) ?? []));
+    return uploadRows.map((row) => mapUploadSummary(row, filesByUploadId.get(row.id) ?? []));
   }
 }
 
@@ -359,6 +415,10 @@ class EmptyAdminStore implements AdminStore {
       users: [],
       uploads: []
     };
+  }
+
+  async getUpload(): Promise<AdminUploadSummary | null> {
+    return null;
   }
 
   async getUploadFile(): Promise<AdminUploadFileSummary | null> {
