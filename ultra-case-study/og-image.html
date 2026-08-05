@@ -4,85 +4,99 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shotwell x Ultra OG Image</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Outfit:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
     html, body { width: 1200px; height: 630px; margin: 0; overflow: hidden; }
     body {
       display: grid;
       place-items: center;
-      background: #d7c7a9;
-      color: #201c17;
-      font-family: Arial, Helvetica, sans-serif;
+      background: #0B0B0F;
+      color: #F5F2EB;
+      font-family: 'Outfit', sans-serif;
     }
     .card {
       position: relative;
       display: grid;
-      align-content: center;
-      width: 1116px;
-      height: 546px;
-      padding: 62px 68px;
-      border: 2px solid #3d3428;
-      background: #efe5ce;
-      box-shadow: 14px 16px 0 rgba(32, 28, 23, .18);
+      grid-template-rows: auto 1fr auto;
+      width: 1136px;
+      height: 566px;
+      padding: 54px 64px 48px;
+      border: 1px solid rgba(245, 242, 235, .18);
+      background: #111116;
     }
-    .logos {
-      display: flex;
-      align-items: center;
-      gap: 38px;
-      margin-bottom: 68px;
-    }
-    .shotwell {
-      display: flex;
-      align-items: center;
-      gap: 22px;
-      color: #201c17;
-      font-size: 66px;
-      font-weight: 800;
-      line-height: 1;
-      letter-spacing: -.03em;
-    }
-    .shotwell img { width: 94px; height: 140px; object-fit: contain; }
+    .logos { display: flex; align-items: center; gap: 34px; }
+    .logos .shotwell { height: 52px; width: auto; }
     .divider {
-      color: #201c17;
-      font-size: 42px;
-      font-weight: 800;
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 40px;
+      font-weight: 300;
       line-height: 1;
+      color: rgba(245, 242, 235, .55);
     }
-    .ultra { width: 440px; height: auto; color: #201c17; }
+    .ultra { width: 330px; height: auto; }
+    .copy { align-self: center; padding-bottom: 14px; }
+    .kicker {
+      display: block;
+      margin-bottom: 26px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 16px;
+      letter-spacing: .24em;
+      color: #EFB702;
+    }
     h1 {
       max-width: 1000px;
       margin: 0;
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 62px;
-      font-weight: 400;
-      line-height: 1;
-      letter-spacing: -.045em;
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 66px;
+      font-weight: 300;
+      line-height: 1.06;
+      letter-spacing: -.015em;
     }
-    h1 span { display: block; }
-    .rule {
-      position: absolute;
-      right: 68px;
-      bottom: 62px;
-      width: 220px;
-      height: 1px;
-      background: #9b3328;
+    .strip { display: grid; gap: 12px; }
+    .track { display: flex; height: 26px; gap: 2px; }
+    .track span { height: 100%; }
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 15px;
+      letter-spacing: .14em;
+      color: rgba(245, 242, 235, .45);
     }
+    .meta b { color: #EFB702; font-weight: 500; }
   </style>
 </head>
 <body>
   <main class="card">
-    <section>
-      <div class="logos" aria-label="Shotwell and Ultra">
-        <div class="shotwell">
-          <img src="../shotwell-logo.png" alt="">
-          <span>Shotwell.</span>
-        </div>
-        <div class="divider" aria-hidden="true">X</div>
-        <img class="ultra" src="../ultra-logo.svg" alt="Ultra">
-      </div>
-      <h1><span>Turning Robot Teleoperation Data</span><span>Into Reliable Training Data</span></h1>
+    <div class="logos" aria-label="Shotwell and Ultra">
+      <img class="shotwell" src="../brand/assets/SVG/shotwell-logo-horizontal-white.svg" alt="Shotwell">
+      <div class="divider" aria-hidden="true">&times;</div>
+      <img class="ultra" src="../ultra-logo-white.svg" alt="Ultra">
+    </div>
+    <section class="copy">
+      <span class="kicker">CASE STUDY</span>
+      <h1>Turning robot teleoperation data into reliable training data</h1>
     </section>
-    <div class="rule" aria-hidden="true"></div>
+    <div class="strip" aria-hidden="true">
+      <div class="track">
+        <span style="flex:8;background:#6E6E78"></span>
+        <span style="flex:10;background:#4A4A52"></span>
+        <span style="flex:22;background:#BF4D34"></span>
+        <span style="flex:20;background:#D6A02E"></span>
+        <span style="flex:14;background:#8E8E96"></span>
+        <span style="flex:12;background:#4E7CA8"></span>
+        <span style="flex:8;background:#9D5690"></span>
+        <span style="flex:6;background:#7E7E8A"></span>
+      </div>
+      <div class="meta">
+        <span>00:00.0</span>
+        <span><b>6&#215;</b>&nbsp;&nbsp;MORE OPERATORS PER ENGINEER</span>
+        <span>19:06.7</span>
+      </div>
+    </div>
   </main>
 </body>
 </html>

@@ -4,78 +4,89 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shotwell OG Image</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Outfit:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
     html, body { width: 1200px; height: 630px; margin: 0; overflow: hidden; }
     body {
       display: grid;
       place-items: center;
-      background: #d7c7a9;
-      color: #201c17;
-      font-family: Arial, Helvetica, sans-serif;
+      background: #0B0B0F;
+      color: #F5F2EB;
+      font-family: 'Outfit', sans-serif;
     }
     .card {
       position: relative;
       display: grid;
-      align-content: center;
-      width: 1116px;
-      height: 546px;
-      padding: 62px 68px;
-      border: 2px solid #3d3428;
-      background: #efe5ce;
-      box-shadow: 14px 16px 0 rgba(32, 28, 23, .18);
+      grid-template-rows: auto 1fr auto;
+      width: 1136px;
+      height: 566px;
+      padding: 54px 64px 48px;
+      border: 1px solid rgba(245, 242, 235, .18);
+      background: #111116;
     }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 22px;
-      margin-bottom: 58px;
-      color: #201c17;
-      font-weight: 800;
-    }
-    .brand img { width: 92px; height: 136px; object-fit: contain; }
-    .brand span {
-      font-size: 64px;
-      line-height: 1;
-      letter-spacing: -.03em;
-    }
+    .brand { display: flex; align-items: center; }
+    .brand img { height: 52px; width: auto; }
+    .copy { align-self: center; padding-bottom: 14px; }
     h1 {
-      max-width: 900px;
       margin: 0;
-      font-family: Georgia, "Times New Roman", serif;
+      font-family: 'Fraunces', Georgia, serif;
       font-size: 92px;
-      font-weight: 400;
-      line-height: .94;
-      letter-spacing: -.045em;
+      font-weight: 300;
+      line-height: 1.02;
+      letter-spacing: -.018em;
     }
+    h1 em { font-style: italic; }
     p {
-      max-width: 760px;
-      margin: 30px 0 0;
-      color: #4a4034;
-      font-size: 30px;
-      line-height: 1.34;
+      max-width: 860px;
+      margin: 26px 0 0;
+      color: rgba(245, 242, 235, .66);
+      font-size: 29px;
+      font-weight: 300;
+      line-height: 1.42;
     }
-    .rule {
-      position: absolute;
-      right: 68px;
-      bottom: 62px;
-      width: 220px;
-      height: 1px;
-      background: #9b3328;
+    .strip { display: grid; gap: 12px; }
+    .track { display: flex; height: 26px; gap: 2px; }
+    .track span { height: 100%; }
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 15px;
+      letter-spacing: .14em;
+      color: rgba(245, 242, 235, .45);
     }
+    .meta b { color: #EFB702; font-weight: 500; }
   </style>
 </head>
 <body>
   <main class="card">
-    <section>
-      <div class="brand" aria-label="Shotwell">
-        <img src="shotwell-logo.png" alt="">
-        <span>Shotwell.</span>
-      </div>
-      <h1>Annotations for robotics data</h1>
-      <p>Shotwell provides fast, accurate and dense annotations for robotics training data.</p>
+    <div class="brand" aria-label="Shotwell">
+      <img src="brand/assets/SVG/shotwell-logo-horizontal-white.svg" alt="">
+    </div>
+    <section class="copy">
+      <h1>Annotations for <em>robotics data</em></h1>
+      <p>Fast, accurate and dense annotations for robotics training data.</p>
     </section>
-    <div class="rule" aria-hidden="true"></div>
+    <div class="strip" aria-hidden="true">
+      <div class="track">
+        <span style="flex:8;background:#6E6E78"></span>
+        <span style="flex:10;background:#4A4A52"></span>
+        <span style="flex:22;background:#BF4D34"></span>
+        <span style="flex:20;background:#D6A02E"></span>
+        <span style="flex:14;background:#8E8E96"></span>
+        <span style="flex:12;background:#4E7CA8"></span>
+        <span style="flex:8;background:#9D5690"></span>
+        <span style="flex:6;background:#7E7E8A"></span>
+      </div>
+      <div class="meta">
+        <span>00:00.0</span>
+        <span><b>PASS</b>&nbsp;&nbsp;SUB-SECOND SUBTASK BOUNDARIES</span>
+        <span>19:06.7</span>
+      </div>
+    </div>
   </main>
 </body>
 </html>
