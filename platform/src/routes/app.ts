@@ -332,6 +332,25 @@ function setUploadMessage(element, message, isError) {
   element.classList.toggle("neutral", !isError);
 }
 
+function showUploadLimitDialog(dialog, status, contactUrl) {
+  if (!dialog) return;
+  const statusLabel = status === "completed" ? "complete" : "pending";
+  const message = dialog.querySelector("[data-upload-limit-message]");
+  const link = dialog.querySelector("[data-upload-limit-contact]");
+  if (message) {
+    message.textContent = "You already have one upload " + statusLabel + ". ";
+  }
+  if (link) {
+    link.href = contactUrl || "https://shotwell.ai/contact/";
+    link.textContent = "Contact us for more annotations!";
+  }
+  if (typeof dialog.showModal === "function") {
+    dialog.showModal();
+  } else {
+    dialog.hidden = false;
+  }
+}
+
 async function requestUploadSession(prompt, files, sourceUrl) {
   const response = await fetch("/api/uploads", {
     method: "POST",
@@ -349,6 +368,13 @@ async function requestUploadSession(prompt, files, sourceUrl) {
 
   if (!response.ok) {
     const payload = await response.json().catch(() => ({}));
+    if (response.status === 409 && payload.code === "UPLOAD_LIMIT") {
+      const error = new Error(payload.error || "You already have one upload.");
+      error.name = "UploadLimitError";
+      error.uploadStatus = payload.status;
+      error.contactUrl = payload.contactUrl;
+      throw error;
+    }
     throw new Error(payload.error || "Could not start upload.");
   }
 
@@ -382,6 +408,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const promptInput = form.querySelector("[data-upload-prompt]");
   const submit = form.querySelector("[data-upload-submit]");
   const message = form.querySelector("[data-upload-message]");
+  const uploadLimitDialog = document.querySelector("[data-upload-limit-dialog]");
+  const uploadLimitClose = uploadLimitDialog?.querySelector("[data-upload-limit-close]");
   const tabs = Array.from(form.querySelectorAll("[data-upload-tab]"));
   const panels = Array.from(form.querySelectorAll("[data-upload-panel]"));
 
@@ -418,6 +446,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   setUploadMode("files");
+
+  uploadLimitClose?.addEventListener("click", () => {
+    if (typeof uploadLimitDialog.close === "function") {
+      uploadLimitDialog.close();
+    } else {
+      uploadLimitDialog.hidden = true;
+    }
+  });
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -457,6 +493,11 @@ document.addEventListener("DOMContentLoaded", () => {
       setUploadMessage(message, sourceUrl ? "Link received. Refreshing..." : "Upload received. Refreshing...", false);
       window.location.reload();
     } catch (error) {
+      if (error instanceof Error && error.name === "UploadLimitError") {
+        showUploadLimitDialog(uploadLimitDialog, error.uploadStatus, error.contactUrl);
+        submit.disabled = false;
+        return;
+      }
       setUploadMessage(message, error instanceof Error ? error.message : "Upload failed.", true);
       submit.disabled = false;
     }
@@ -1224,6 +1265,18 @@ appRouter.post("/api/uploads", async (req, res, next) => {
   try {
     const user = await getApiUser(req, res);
     if (!user) {
+      return;
+    }
+
+    const existingUploads = await uploadStore.listUserUploads(user.id);
+    if (existingUploads.length > 0) {
+      const status = existingUploads[0].status;
+      res.status(409).json({
+        code: "UPLOAD_LIMIT",
+        status,
+        error: `You already have one upload ${status === "completed" ? "complete" : "pending"}. Contact us for more annotations!`,
+        contactUrl: new URL("/contact/", config.publicSiteUrl).toString()
+      });
       return;
     }
 

@@ -523,6 +523,35 @@ export function page(title: string, body: string, options: { navHtml?: string; b
       color: var(--color-text);
     }
 
+    .upload-limit-dialog {
+      width: min(480px, calc(100% - 32px));
+      border: 1px solid var(--color-line-strong);
+      border-radius: var(--radius);
+      background: var(--color-surface);
+      color: var(--color-text);
+      padding: 28px;
+    }
+
+    .upload-limit-dialog::backdrop {
+      background: rgba(34, 34, 42, 0.38);
+    }
+
+    .upload-limit-dialog p {
+      margin: 0 0 22px;
+      font-size: 1.05rem;
+    }
+
+    .upload-limit-dialog a {
+      display: inline-block;
+      margin-bottom: 18px;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .upload-limit-dialog button {
+      width: 100%;
+    }
+
 	    .inline-link {
 	      color: var(--color-text);
 	      text-decoration: underline;
@@ -1951,7 +1980,7 @@ export function loginPage(input: {
     `<main class="auth-main auth-main-single">
       <section class="panel login-panel">
         <h1>Sign in to start uploading.</h1>
-        <p>Login with your company email. Get 10 hours of robot video annotated for free, with 24 hour turnaround time. <a class="zdr-link" href="/privacy">Zero Data Retention.</a></p>
+        <p>Login with your company email. Get 2 hours of robot video annotated for free, with 24 hour turnaround time. <a class="zdr-link" href="/privacy">Zero Data Retention.</a></p>
         ${input.error ? `<div class="notice">${escapeHtml(input.error)}</div>` : ""}
         <div class="auth-actions">${googleButton}</div>
         <div class="divider">or</div>
@@ -2575,7 +2604,7 @@ Also keep track of "Retry" and "Fail" attributes for each step. "Retry" means mu
     "Shotwell App",
     `<main class="app-main">
       <section class="app-intro">
-        <p>Try out our service for free with up to 10 hours of robot data. We'll annotate it and send it back within 24 hours. <a class="zdr-link" href="/privacy">Zero Data Retention.</a></p>
+        <p>Try out our service for free with up to 2 hours of robot data. We'll annotate it and send it back within 24 hours. <a class="zdr-link" href="/privacy">Zero Data Retention.</a></p>
       </section>
 
       <section class="workspace-grid">
@@ -2611,6 +2640,11 @@ Also keep track of "Retry" and "Fail" attributes for each step. "Retry" means mu
             <button type="submit" data-upload-submit>Create upload</button>
             <div class="notice neutral" data-upload-message hidden></div>
           </form>
+          <dialog class="upload-limit-dialog" data-upload-limit-dialog>
+            <p data-upload-limit-message></p>
+            <a href="${escapeHtml(new URL("/contact/", config.publicSiteUrl).toString())}" data-upload-limit-contact>Contact us</a>
+            <button type="button" data-upload-limit-close>Close</button>
+          </dialog>
         </section>
 
         <section class="panel status-panel" id="previous-uploads">
