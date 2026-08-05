@@ -25,7 +25,8 @@
   .navlinks .tbtn{background:none;border:0;padding:4px 8px;cursor:pointer;
     color:var(--dim);font-size:1.05rem;line-height:1}
   .navlinks .tbtn:hover{color:var(--fg)}
-  .navlinks a:hover{color:var(--fg)}
+  .navlinks a:not(.cta):hover{color:var(--fg)}
+  .navlinks .cta:hover,.navlinks .cta:active{color:var(--on-acc);filter:brightness(1.06)}
   .cta{background:var(--acc);color:var(--on-acc);padding:9px 17px;font-size:.8125rem;
     font-weight:500;text-decoration:none}
 
