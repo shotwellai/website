@@ -1377,20 +1377,6 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       overflow-wrap: anywhere;
     }
 
-    .result-media-frame {
-      border: 1px solid var(--color-line);
-      background: #15120f;
-    }
-
-    .result-media-frame video,
-    .result-media-frame img {
-      display: block;
-      width: 100%;
-      max-height: min(66vh, 680px);
-      object-fit: contain;
-      background: #15120f;
-    }
-
     .result-missing-media {
       display: grid;
       gap: 8px;
@@ -1399,96 +1385,297 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       padding: 16px;
     }
 
-    .annotation-timeline {
-      position: relative;
-      min-height: 104px;
-      border: 1px solid var(--color-line);
-      background: var(--color-panel-soft);
-      padding: 46px 12px 28px;
-    }
-
-    .result-annotations {
+    .result-demo {
       display: grid;
-      gap: 12px;
+      gap: 0;
     }
 
-    .annotation-track {
+    .result-media-frame {
       position: relative;
-      height: 18px;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
       border: 1px solid var(--color-line);
-      background: var(--color-panel);
+      background:
+        radial-gradient(ellipse at center top, rgba(245, 242, 235, 0.06), transparent 60%),
+        #070707;
     }
 
-    .annotation-segment {
+    [data-theme="light"] .result-media-frame {
+      background:
+        radial-gradient(ellipse at center top, rgba(34, 34, 42, 0.06), transparent 60%),
+        #111;
+    }
+
+    .result-media-frame video,
+    .result-media-frame img {
       position: absolute;
-      top: -1px;
-      bottom: -1px;
-      left: var(--start);
-      width: var(--width);
-      min-width: 2px;
-      border: 1px solid var(--color-line);
-      background: var(--color-accent-soft);
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #070707;
     }
 
-    .annotation-segment:nth-child(even) {
-      background: var(--color-bg-alt);
-    }
-
-    .annotation-chip {
+    .result-media-frame::after {
+      content: "";
       position: absolute;
-      left: var(--center);
-      top: 11px;
-      max-width: 180px;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at center, transparent 62%, rgba(0, 0, 0, 0.16) 100%),
+        linear-gradient(180deg, transparent 70%, rgba(0, 0, 0, 0.14));
+    }
+
+    .result-demo-bar {
+      display: flex;
+      align-items: stretch;
+      min-height: 58px;
+      border-right: 1px solid var(--color-line);
+      border-left: 1px solid var(--color-line);
+      border-bottom: 1px solid var(--color-line);
+      font-family: var(--font-mono);
+    }
+
+    .result-demo-cell {
+      min-width: 0;
+      padding: 10px 16px 11px;
+      border-right: 1px solid var(--color-line);
+    }
+
+    .result-demo-cell:last-child {
+      border-right: 0;
+    }
+
+    .result-demo-cell.result-demo-cell-grow {
+      flex: 1 1 auto;
+    }
+
+    .result-demo-cell i {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--color-muted);
+      font-style: normal;
+      font-size: 0.5rem;
+      letter-spacing: 0.22em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    .result-demo-cell b {
+      display: block;
+      overflow: hidden;
+      color: var(--color-text);
+      font-size: 0.68rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      line-height: 1.35;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .result-strip {
+      display: flex;
+      align-items: flex-start;
+      gap: 18px;
+      border-right: 1px solid var(--color-line);
+      border-left: 1px solid var(--color-line);
+      border-bottom: 1px solid var(--color-line);
+      padding: 18px 14px 16px;
+      background: color-mix(in srgb, var(--color-panel) 66%, transparent);
+    }
+
+    .result-strip-label {
+      flex: 0 0 auto;
+      margin-top: 8px;
+      color: var(--color-muted);
+      font-family: var(--font-mono);
+      font-size: 0.56rem;
+      letter-spacing: 0.18em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    .result-timeline-wrap {
+      position: relative;
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .result-track {
+      position: relative;
+      height: 26px;
+      cursor: pointer;
+      touch-action: none;
+    }
+
+    .result-track:focus-visible {
+      outline: 2px solid var(--color-cta);
+      outline-offset: 4px;
+    }
+
+    .result-track.is-dragging,
+    .result-track.is-dragging .result-playhead {
+      cursor: ew-resize;
+    }
+
+    .result-seg {
+      position: absolute;
+      top: 0;
+      height: 26px;
+      overflow: hidden;
+      background: color-mix(in srgb, var(--seg-color, var(--color-text)) 24%, transparent);
+      transition: background 0.2s var(--ease-out);
+    }
+
+    [data-theme="light"] .result-seg {
+      background: color-mix(in srgb, var(--seg-color, var(--color-text)) 45%, transparent);
+    }
+
+    .result-seg[data-state="active"] {
+      background: color-mix(in srgb, var(--seg-color, var(--color-text)) 40%, transparent);
+    }
+
+    [data-theme="light"] .result-seg[data-state="active"] {
+      background: color-mix(in srgb, var(--seg-color, var(--color-text)) 62%, transparent);
+    }
+
+    .result-seg-fill {
+      position: absolute;
+      inset: 0;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.1s linear;
+    }
+
+    .result-playhead {
+      position: absolute;
+      top: -10px;
+      width: 2px;
+      height: 48px;
+      background: var(--color-text);
+      left: calc(var(--pos, 0) * 100%);
+      transform: translateX(-1px);
+      z-index: 3;
+      pointer-events: none;
+      transition: left 0.1s linear;
+    }
+
+    .result-playhead::before {
+      content: "";
+      position: absolute;
+      top: -5px;
+      left: 50%;
+      width: 11px;
+      height: 11px;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background: var(--color-text);
+    }
+
+    .result-tip {
+      position: absolute;
+      top: 44px;
+      left: 70px;
+      z-index: 4;
+      max-width: min(260px, 80%);
       transform: translateX(-50%);
       border: 1px solid var(--color-line);
       background: var(--color-panel);
-      padding: 5px 7px;
+      padding: 7px 12px;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .result-tip span {
+      display: block;
+      overflow: hidden;
       color: var(--color-text);
-      font-size: 0.66rem;
-      font-weight: 800;
-      letter-spacing: 0.04em;
-      line-height: 1.15;
-      text-align: center;
-      text-transform: uppercase;
-      overflow-wrap: anywhere;
+      font-size: 0.82rem;
+      font-weight: 500;
+      line-height: 1.2;
+      text-overflow: ellipsis;
     }
 
-    .annotation-time-axis {
-      position: absolute;
-      right: 12px;
-      bottom: 6px;
-      color: var(--color-muted);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size: 0.72rem;
-    }
-
-    .annotation-list {
+    .result-cards {
       display: grid;
-      gap: 8px;
-      margin: 0;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px 12px;
+      margin: 48px 0 0;
       padding: 0;
       list-style: none;
     }
 
-    .annotation-list li {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 12px;
+    .result-card-row {
+      display: flex;
       align-items: center;
+      gap: 10px;
+      min-width: 0;
       border: 1px solid var(--color-line);
-      background: var(--color-panel-soft);
-      padding: 10px 12px;
+      background: var(--color-panel);
+      padding: 6px 8px 6px 12px;
+      cursor: pointer;
+      transition: border-color 0.2s var(--ease-out), background 0.2s var(--ease-out);
     }
 
-    .annotation-list strong {
-      overflow-wrap: anywhere;
+    .result-card-row[data-active="true"] {
+      background: color-mix(in srgb, var(--color-text) 7%, var(--color-panel));
     }
 
-    .annotation-list span {
+    .result-card-row b {
+      min-width: 0;
+      flex: 1 1 auto;
+      overflow: hidden;
+      color: var(--color-text);
+      font-size: 0.82rem;
+      font-weight: 500;
+      line-height: 1.25;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .result-card-row em {
+      flex: 0 0 auto;
+      color: var(--color-muted);
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      font-style: normal;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .result-clock {
+      flex: 0 0 auto;
+      margin-top: 7px;
       color: var(--color-muted);
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size: 0.78rem;
+      font-size: 0.62rem;
+      font-variant-numeric: tabular-nums;
       white-space: nowrap;
+    }
+
+    .result-play-toggle {
+      flex: 0 0 auto;
+      min-height: 0;
+      margin-top: 2px;
+      padding: 5px 12px;
+      border: 1px solid var(--color-line);
+      background: var(--color-cta);
+      color: var(--color-cta-text);
+      font-family: var(--font-mono);
+      font-size: 0.56rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      line-height: 1.3;
+      text-transform: uppercase;
+    }
+
+    .result-demo[data-static="true"] .result-play-toggle {
+      display: none;
+    }
+
+    .result-demo[data-static="true"] .result-clock {
+      visibility: hidden;
     }
 
     .message-main {
@@ -1675,6 +1862,34 @@ export function page(title: string, body: string, options: { navHtml?: string } 
         font-size: 2.35rem;
       }
 
+      .result-demo-bar {
+        flex-wrap: wrap;
+      }
+
+      .result-demo-cell {
+        flex: 1 1 48%;
+        border-bottom: 1px solid var(--color-line);
+      }
+
+      .result-demo-cell:last-child {
+        border-bottom: 0;
+      }
+
+      .result-strip {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 12px;
+      }
+
+      .result-strip-label,
+      .result-timeline-wrap {
+        grid-column: 1 / -1;
+      }
+
+      .result-cards {
+        grid-template-columns: 1fr;
+      }
+
       .prompt-tools,
       .metric-grid {
         grid-template-columns: 1fr;
@@ -1693,10 +1908,6 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 
 	      .admin-upload-status {
 	        justify-content: flex-start;
-	      }
-
-	      .annotation-list li {
-	        grid-template-columns: 1fr;
 	      }
 
 	      .account-box {
@@ -1925,13 +2136,16 @@ function secondsLabel(seconds: number) {
   return `${minutes}:${String(wholeSeconds).padStart(2, "0")}${suffix}`;
 }
 
-function annotationDuration(annotations: ResultAnnotation[]) {
-  return Math.max(1, ...annotations.map((annotation) => annotation.end_time));
-}
-
-function percent(value: number) {
-  return `${Math.max(0, Math.min(100, value)).toFixed(4)}%`;
-}
+const resultAnnotationColors = [
+  "#6E6E78",
+  "#4A4A52",
+  "#BF4D34",
+  "#D6A02E",
+  "#8E8E96",
+  "#4E7CA8",
+  "#9D5690",
+  "#7E7E8A"
+];
 
 function renderResultMedia(upload: ResultPageUpload, episode: ResultEpisode, options: ResultPageOptions = {}) {
   const file = findEpisodeFile(upload, episode);
@@ -1947,7 +2161,7 @@ function renderResultMedia(upload: ResultPageUpload, episode: ResultEpisode, opt
   const contentType = resultFileContentType(file);
   if (contentType.startsWith("video/")) {
     return `<div class="result-media-frame">
-      <video controls preload="metadata">
+      <video data-result-video muted playsinline preload="metadata">
         <source src="${escapedHref}" type="${escapeHtml(contentType)}">
       </video>
     </div>`;
@@ -1966,38 +2180,42 @@ function renderResultMedia(upload: ResultPageUpload, episode: ResultEpisode, opt
   </div>`;
 }
 
-function renderAnnotationTimeline(annotations: ResultAnnotation[]) {
-  if (annotations.length === 0) {
-    return `<div class="empty-row">No annotations in this episode.</div>`;
-  }
+function resultActionsAttr(annotations: ResultAnnotation[]) {
+  const actions = annotations.map((annotation, index) => ({
+    label: annotation.label,
+    start: annotation.start_time,
+    end: annotation.end_time,
+    color: resultAnnotationColors[index % resultAnnotationColors.length]
+  }));
 
-  const duration = annotationDuration(annotations);
-  const segments = annotations.map((annotation) => {
-    const start = annotation.start_time / duration * 100;
-    const width = Math.max(0.25, (annotation.end_time - annotation.start_time) / duration * 100);
-    const center = (annotation.start_time + annotation.end_time) / 2 / duration * 100;
-
-    return `<span class="annotation-segment" style="--start:${percent(start)};--width:${percent(width)}"></span>
-      <span class="annotation-chip" style="--center:${percent(center)}">${escapeHtml(annotation.label)}</span>`;
-  }).join("");
-
-  return `<div class="annotation-timeline">
-    <div class="annotation-track">${segments}</div>
-    <div class="annotation-time-axis">0:00 - ${secondsLabel(duration)}</div>
-  </div>`;
+  return escapeHtml(JSON.stringify(actions));
 }
 
-function renderAnnotationList(annotations: ResultAnnotation[]) {
-  if (annotations.length === 0) {
-    return "";
-  }
+function renderResultDemo(upload: ResultPageUpload, episode: ResultEpisode, options: ResultPageOptions = {}) {
+  const file = findEpisodeFile(upload, episode);
+  const contentType = file ? resultFileContentType(file) : "";
+  const isStaticMedia = !contentType.startsWith("video/");
+  const duration = Math.max(0, ...episode.annotations.map((annotation) => annotation.end_time));
+  const annotationSummary = `${formatCount(episode.annotations.length)} ${episode.annotations.length === 1 ? "label" : "labels"}`;
 
-  return `<ul class="annotation-list">
-    ${annotations.map((annotation) => `<li>
-      <strong>${escapeHtml(annotation.label)}</strong>
-      <span>${secondsLabel(annotation.start_time)} - ${secondsLabel(annotation.end_time)}</span>
-    </li>`).join("")}
-  </ul>`;
+  return `<div class="result-demo" data-result-demo${isStaticMedia ? ` data-static="true"` : ""} data-actions="${resultActionsAttr(episode.annotations)}">
+    ${renderResultMedia(upload, episode, options)}
+    <div class="result-demo-bar">
+      <div class="result-demo-cell result-demo-cell-grow"><i>episode</i><b>${escapeHtml(episode.filename)}</b></div>
+      <div class="result-demo-cell"><i>annotations</i><b>${escapeHtml(annotationSummary)}</b></div>
+      <div class="result-demo-cell"><i>duration</i><b>${escapeHtml(secondsLabel(duration))}</b></div>
+    </div>
+    <div class="result-strip">
+      <span class="result-strip-label">Subtasks</span>
+      <div class="result-timeline-wrap">
+        <div class="result-track" data-result-track tabindex="0" role="slider" aria-label="Annotation timeline" aria-valuemin="0"></div>
+        <div class="result-tip" data-result-tip hidden><span data-result-tip-name></span></div>
+        <ul class="result-cards" data-result-cards></ul>
+      </div>
+      <span class="result-clock" data-result-clock>0:00</span>
+      <button class="result-play-toggle" type="button" data-result-play-toggle>Play</button>
+    </div>
+  </div>`;
 }
 
 function renderResultEpisode(upload: ResultPageUpload, episode: ResultEpisode, index: number, options: ResultPageOptions = {}) {
@@ -2006,15 +2224,7 @@ function renderResultEpisode(upload: ResultPageUpload, episode: ResultEpisode, i
 
   return `<section class="result-panel" id="${id}" data-result-panel="${id}"${hidden}>
     <h2>${escapeHtml(episode.filename)}</h2>
-    ${renderResultMedia(upload, episode, options)}
-    <section class="result-annotations">
-      <div class="admin-section-header">
-        <h2>Annotations</h2>
-        <p>${formatCount(episode.annotations.length)} labels</p>
-      </div>
-      ${renderAnnotationTimeline(episode.annotations)}
-      ${renderAnnotationList(episode.annotations)}
-    </section>
+    ${renderResultDemo(upload, episode, options)}
   </section>`;
 }
 

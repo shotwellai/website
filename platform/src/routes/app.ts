@@ -477,7 +477,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     for (const panel of panels) {
-      panel.hidden = panel.dataset.resultPanel !== id;
+      const isActive = panel.dataset.resultPanel === id;
+      panel.hidden = !isActive;
+      if (!isActive) {
+        for (const video of panel.querySelectorAll("video")) {
+          video.pause();
+        }
+      } else {
+        panel.dispatchEvent(new CustomEvent("result:visible", { bubbles: true }));
+      }
     }
   }
 
@@ -497,6 +505,319 @@ document.addEventListener("DOMContentLoaded", () => {
   if (initial && initial.dataset.resultPanel) {
     showEpisode(initial.dataset.resultPanel);
   }
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  const demos = Array.from(document.querySelectorAll("[data-result-demo]"));
+  if (demos.length === 0) return;
+
+  const prefersReducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function pad(value) {
+    return value < 10 ? "0" + value : String(value);
+  }
+
+  function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+  }
+
+  function formatTime(value) {
+    const safe = Math.max(0, Number(value) || 0);
+    const minutes = Math.floor(safe / 60);
+    const seconds = safe - minutes * 60;
+    if (Math.abs(seconds - Math.round(seconds)) < 0.05) {
+      return minutes + ":" + pad(Math.round(seconds));
+    }
+
+    const fixed = seconds.toFixed(1);
+    return minutes + ":" + (seconds < 10 ? "0" + fixed : fixed);
+  }
+
+  function actionState(action, time) {
+    if (time < action.start) return "pending";
+    if (time < action.end) return "active";
+    return "done";
+  }
+
+  function parseActions(demo) {
+    try {
+      const parsed = JSON.parse(demo.dataset.actions || "[]");
+      if (!Array.isArray(parsed)) return [];
+      return parsed.map((action, index) => {
+        const start = Math.max(0, Number(action.start) || 0);
+        const end = Math.max(start + 0.001, Number(action.end) || start + 0.001);
+        return {
+          label: String(action.label || "Annotation " + (index + 1)),
+          start,
+          end,
+          color: String(action.color || "#6E6E78")
+        };
+      });
+    } catch (_error) {
+      return [];
+    }
+  }
+
+  function initResultDemo(demo) {
+    const actions = parseActions(demo);
+    const video = demo.querySelector("[data-result-video]");
+    const track = demo.querySelector("[data-result-track]");
+    const cards = demo.querySelector("[data-result-cards]");
+    const tip = demo.querySelector("[data-result-tip]");
+    const tipName = demo.querySelector("[data-result-tip-name]");
+    const clock = demo.querySelector("[data-result-clock]");
+    const playToggle = demo.querySelector("[data-result-play-toggle]");
+    const isStatic = demo.dataset.static === "true" || !video;
+
+    if (!track || !cards) return;
+
+    const maxActionEnd = Math.max(1, ...actions.map((action) => action.end));
+    let duration = maxActionEnd;
+    const segmentEls = [];
+    const rowEls = [];
+    let playhead = null;
+    let isScrubbing = false;
+    let manuallyPaused = true;
+
+    function mediaDuration() {
+      if (!video || Number.isNaN(video.duration) || video.duration <= 0) {
+        return maxActionEnd;
+      }
+
+      return Math.max(maxActionEnd, video.duration);
+    }
+
+    function build() {
+      track.innerHTML = "";
+      cards.innerHTML = "";
+      segmentEls.length = 0;
+      rowEls.length = 0;
+
+      actions.forEach((action, index) => {
+        const segment = document.createElement("div");
+        segment.className = "result-seg";
+        segment.style.setProperty("--seg-color", action.color);
+        const fill = document.createElement("div");
+        fill.className = "result-seg-fill";
+        fill.style.background = action.color;
+        segment.appendChild(fill);
+        track.appendChild(segment);
+        segmentEls.push({ root: segment, fill });
+
+        const row = document.createElement("li");
+        row.className = "result-card-row";
+        row.style.borderColor = "transparent";
+        const name = document.createElement("b");
+        name.textContent = action.label;
+        const range = document.createElement("em");
+        range.textContent = "[" + formatTime(action.start) + " - " + formatTime(action.end) + "]";
+        row.append(name, range);
+        row.addEventListener("click", () => seekTo(action.start + 0.01));
+        cards.appendChild(row);
+        rowEls.push(row);
+      });
+
+      playhead = document.createElement("div");
+      playhead.className = "result-playhead";
+      track.appendChild(playhead);
+
+      if (actions.length === 0) {
+        const row = document.createElement("li");
+        row.className = "result-card-row";
+        row.textContent = "No annotations in this episode.";
+        cards.appendChild(row);
+        if (tip) tip.hidden = true;
+      }
+    }
+
+    function layout() {
+      duration = mediaDuration();
+      track.setAttribute("aria-valuemax", duration.toFixed(2));
+
+      actions.forEach((action, index) => {
+        const startPct = action.start / duration * 100;
+        const widthPct = Math.max(0.25, (action.end - action.start) / duration * 100);
+        const segment = segmentEls[index];
+        segment.root.style.left = startPct.toFixed(3) + "%";
+        segment.root.style.width = widthPct.toFixed(3) + "%";
+      });
+
+      update(video ? video.currentTime || 0 : 0);
+    }
+
+    function activeIndexAt(time) {
+      const active = actions.findIndex((action) => time >= action.start && time < action.end);
+      if (active !== -1) return active;
+      for (let index = actions.length - 1; index >= 0; index -= 1) {
+        if (time >= actions[index].end) return index;
+      }
+      return actions.length > 0 ? 0 : -1;
+    }
+
+    function update(time) {
+      const safeTime = clamp(time, 0, duration);
+      const ratio = duration > 0 ? safeTime / duration : 0;
+      if (playhead) playhead.style.setProperty("--pos", ratio.toFixed(4));
+      track.setAttribute("aria-valuenow", safeTime.toFixed(2));
+      track.setAttribute("aria-valuetext", formatTime(safeTime));
+      if (clock) clock.textContent = formatTime(safeTime);
+
+      actions.forEach((action, index) => {
+        const state = actionState(action, safeTime);
+        const fill = state === "active"
+          ? (safeTime - action.start) / (action.end - action.start)
+          : state === "done" ? 1 : 0;
+        segmentEls[index].root.dataset.state = state;
+        segmentEls[index].fill.style.transform = "scaleX(" + clamp(fill, 0, 1).toFixed(3) + ")";
+        rowEls[index].dataset.active = String(state === "active");
+        rowEls[index].style.borderColor = state === "active" ? action.color : "";
+      });
+
+      const activeIndex = activeIndexAt(safeTime);
+      const active = activeIndex >= 0 ? actions[activeIndex] : null;
+      if (tip && tipName && active) {
+        const trackWidth = track.getBoundingClientRect().width;
+        const center = ((active.start + active.end) / 2) / duration * trackWidth;
+        tip.hidden = false;
+        tip.style.left = clamp(center, 70, Math.max(70, trackWidth - 70)) + "px";
+        tip.style.borderColor = active.color;
+        tipName.textContent = active.label;
+      } else if (tip) {
+        tip.hidden = true;
+      }
+    }
+
+    function pointerTime(event) {
+      const rect = track.getBoundingClientRect();
+      const ratio = rect.width ? (event.clientX - rect.left) / rect.width : 0;
+      return clamp(ratio, 0, 1) * duration;
+    }
+
+    function seekTo(time) {
+      const next = clamp(time, 0, duration);
+      if (video) video.currentTime = next;
+      update(next);
+    }
+
+    function startScrub(event) {
+      if (event.button != null && event.button !== 0) return;
+      event.preventDefault();
+      isScrubbing = true;
+      track.classList.add("is-dragging");
+      if (track.setPointerCapture && event.pointerId != null) track.setPointerCapture(event.pointerId);
+      seekTo(pointerTime(event));
+    }
+
+    function moveScrub(event) {
+      if (!isScrubbing) return;
+      event.preventDefault();
+      seekTo(pointerTime(event));
+    }
+
+    function endScrub(event) {
+      if (!isScrubbing) return;
+      isScrubbing = false;
+      track.classList.remove("is-dragging");
+      if (track.releasePointerCapture && event.pointerId != null) {
+        try { track.releasePointerCapture(event.pointerId); } catch (_error) {}
+      }
+    }
+
+    function updatePlayToggle() {
+      if (!playToggle) return;
+      playToggle.textContent = video && !video.paused && !video.ended ? "Pause" : "Play";
+    }
+
+    function playVideo() {
+      if (!video || prefersReducedMotion) return;
+      manuallyPaused = false;
+      video.muted = true;
+      const promise = video.play();
+      if (promise && promise.catch) promise.catch(() => {});
+    }
+
+    function pauseVideo() {
+      if (!video) return;
+      video.pause();
+    }
+
+    build();
+    layout();
+
+    track.addEventListener("pointerdown", startScrub);
+    track.addEventListener("pointermove", moveScrub);
+    track.addEventListener("pointerup", endScrub);
+    track.addEventListener("pointercancel", endScrub);
+    track.addEventListener("keydown", (event) => {
+      const current = video ? video.currentTime || 0 : 0;
+      const step = event.shiftKey ? 5 : 1;
+      let next = null;
+      if (event.key === "ArrowLeft") next = current - step;
+      if (event.key === "ArrowRight") next = current + step;
+      if (event.key === "Home") next = 0;
+      if (event.key === "End") next = duration;
+      if (next == null) return;
+      event.preventDefault();
+      seekTo(next);
+    });
+
+    if (playToggle && !isStatic) {
+      playToggle.addEventListener("click", () => {
+        if (!video) return;
+        if (video.ended) video.currentTime = 0;
+        if (video.paused) {
+          playVideo();
+        } else {
+          manuallyPaused = true;
+          pauseVideo();
+        }
+      });
+    }
+
+    if (video) {
+      video.addEventListener("loadedmetadata", layout);
+      video.addEventListener("durationchange", layout);
+      video.addEventListener("timeupdate", () => update(video.currentTime || 0));
+      video.addEventListener("play", updatePlayToggle);
+      video.addEventListener("pause", updatePlayToggle);
+      video.addEventListener("ended", updatePlayToggle);
+      video.addEventListener("click", () => {
+        if (video.paused) playVideo();
+        else {
+          manuallyPaused = true;
+          pauseVideo();
+        }
+      });
+
+      if ("IntersectionObserver" in window && !prefersReducedMotion) {
+        const observer = new IntersectionObserver((entries) => {
+          const entry = entries[entries.length - 1];
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.45 && !manuallyPaused && !demo.closest("[hidden]")) {
+            playVideo();
+          } else if (!entry.isIntersecting || entry.intersectionRatio <= 0.1) {
+            pauseVideo();
+          }
+        }, { threshold: [0, 0.1, 0.45, 1] });
+        observer.observe(demo);
+      }
+    }
+
+    demo.addEventListener("result:visible", () => {
+      layout();
+      if (video && !manuallyPaused) playVideo();
+    });
+
+    if ("ResizeObserver" in window) {
+      const resizeObserver = new ResizeObserver(layout);
+      resizeObserver.observe(track);
+    } else {
+      window.addEventListener("resize", layout);
+    }
+
+    updatePlayToggle();
+  }
+
+  demos.forEach(initResultDemo);
 });
 `;
 }
