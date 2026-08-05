@@ -22,6 +22,9 @@
   .brandbar img{height:24px;width:auto}
   .navlinks{display:flex;gap:26px;align-items:center}
   .navlinks a{font-size:.875rem;color:var(--dim);text-decoration:none}
+  .navlinks .tbtn{background:none;border:0;padding:4px 8px;cursor:pointer;
+    color:var(--dim);font-size:1.05rem;line-height:1}
+  .navlinks .tbtn:hover{color:var(--fg)}
   .navlinks a:hover{color:var(--fg)}
   .cta{background:var(--acc);color:var(--on-acc);padding:9px 17px;font-size:.8125rem;
     font-weight:500;text-decoration:none}
@@ -260,10 +263,11 @@
 </nav>
 
 <div class="brandbar">
-  <img id="mark" data-theme-longpress src="../brand/assets/SVG/shotwell-logo-horizontal-white.svg" alt="Shotwell">
+  <a href="demo.html" data-theme-longpress><img id="mark" src="../brand/assets/SVG/shotwell-logo-horizontal-white.svg" alt="Shotwell"></a>
   <div class="navlinks">
     <a href="https://demo.shotwell.ai/">Demo</a>
     <a href="blog.html">Blog</a>
+    <button class="tbtn" data-theme-toggle type="button" aria-label="Toggle theme">☀</button>
     <a class="ghostcta" href="contact.html">Talk to us</a>
     <a class="cta" href="https://app.shotwell.ai/">Upload videos now <small>· 24 hr turnaround</small></a>
   </div>

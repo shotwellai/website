@@ -198,6 +198,22 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       color: var(--color-text);
     }
 
+    .topbar .button,
+    .topbar button {
+      min-height: 0;
+      padding: 8px 10px;
+      background: none;
+      border: none;
+      color: var(--color-text-light);
+    }
+
+    .topbar .button:hover,
+    .topbar button:hover {
+      background: none;
+      border: none;
+      color: var(--color-text);
+    }
+
     main {
       width: 100%;
       margin: 0 auto;
@@ -273,12 +289,10 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       background: var(--color-cta);
       color: var(--color-cta-text);
       font: inherit;
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
+      font-size: 0.875rem;
       font-weight: 500;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.01em;
       line-height: 1;
-      text-transform: uppercase;
       text-decoration: none;
       cursor: pointer;
       transition:
@@ -1114,7 +1128,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
   <div class="shell">
     <header class="topbar">
       <div class="topbar-inner">
-        <a class="brand" href="${escapeHtml(publicSiteUrl)}">
+        <a class="brand" href="/">
           <img class="brand-mark" src="${escapeHtml(logoUrl)}"
             data-mark-dark="${escapeHtml(logoUrl)}"
             data-mark-light="${escapeHtml(logoLightUrl)}" alt="Shotwell logo">

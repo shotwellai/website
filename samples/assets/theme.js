@@ -22,11 +22,10 @@ export function dotStyle() {
 
 function apply(t) {
   document.documentElement.setAttribute('data-theme', t);
-  var btn = document.getElementById('themeToggle');
-  if (btn) {
+  document.querySelectorAll('#themeToggle, [data-theme-toggle]').forEach(function (btn) {
     btn.textContent = t === 'light' ? '\u263E' : '\u2600';
     btn.setAttribute('aria-label', t === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
-  }
+  });
   try { localStorage.setItem(KEY, t); } catch (e) {}
   dispatchEvent(new CustomEvent('themechange', { detail: t }));
 }
@@ -57,9 +56,10 @@ export function init() {
   var saved;
   try { saved = localStorage.getItem(KEY); } catch (e) {}
   apply(saved || 'dark');
-  var btn = document.getElementById('themeToggle');
-  if (btn) btn.addEventListener('click', function () {
-    apply(current() === 'light' ? 'dark' : 'light');
+  document.querySelectorAll('#themeToggle, [data-theme-toggle]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      apply(current() === 'light' ? 'dark' : 'light');
+    });
   });
   document.querySelectorAll('[data-theme-longpress]').forEach(wireLongPress);
 }
