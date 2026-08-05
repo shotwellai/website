@@ -1,4 +1,5 @@
 import type { User } from "../auth/store.js";
+import type { AdminDashboard, AdminUploadSummary, AdminUserSummary } from "../admin/store.js";
 import { config } from "../config.js";
 import type { UploadRecord } from "../uploads/store.js";
 
@@ -910,6 +911,311 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       color: var(--color-cta);
     }
 
+    .admin-main {
+      display: grid;
+      gap: 24px;
+    }
+
+    .admin-hero {
+      display: grid;
+      gap: 10px;
+    }
+
+    .admin-hero p {
+      max-width: 52rem;
+      color: var(--color-text-light);
+      font-size: 1.02rem;
+    }
+
+    .admin-metrics {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .admin-metric {
+      min-height: 118px;
+      display: grid;
+      align-content: space-between;
+      gap: 18px;
+      border: 1px solid var(--color-line);
+      background: var(--color-panel-soft);
+      padding: 16px;
+    }
+
+    .admin-metric strong {
+      color: var(--color-text);
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 800;
+      letter-spacing: -0.05em;
+      line-height: 0.9;
+    }
+
+    .admin-metric span {
+      color: var(--color-muted);
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    .admin-section {
+      display: grid;
+      gap: 14px;
+    }
+
+    .admin-section-header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .admin-section-header h2 {
+      font-family: var(--font-body);
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+
+    .admin-section-header p {
+      color: var(--color-muted);
+      font-size: 0.82rem;
+      font-weight: 500;
+    }
+
+    .admin-table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--color-line);
+      background: var(--color-panel-soft);
+    }
+
+    .admin-table {
+      width: 100%;
+      min-width: 860px;
+      border-collapse: collapse;
+      font-size: 0.86rem;
+    }
+
+    .admin-table th,
+    .admin-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(61, 52, 40, 0.35);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .admin-table th {
+      color: var(--color-muted);
+      font-size: 0.66rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      line-height: 1;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .admin-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .admin-table tbody tr {
+      transition: background 0.16s var(--ease-out);
+    }
+
+    .admin-table tbody tr:hover,
+    .admin-table tbody tr.is-selected {
+      background: rgba(155, 51, 40, 0.08);
+    }
+
+    .admin-table .numeric {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .admin-cell-link {
+      min-height: 42px;
+      display: block;
+      margin: -12px -14px;
+      padding: 12px 14px;
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .admin-primary {
+      display: grid;
+      gap: 2px;
+      min-width: 210px;
+    }
+
+    .admin-primary strong {
+      overflow-wrap: anywhere;
+      line-height: 1.2;
+    }
+
+    .admin-primary span,
+    .admin-muted {
+      color: var(--color-muted);
+      font-size: 0.78rem;
+      font-weight: 300;
+    }
+
+    .admin-upload-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .admin-upload-card {
+      display: grid;
+      gap: 16px;
+      border: 1px solid var(--color-line);
+      background: var(--color-panel-soft);
+      padding: 16px;
+    }
+
+    .admin-upload-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .admin-upload-title {
+      display: grid;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    .admin-upload-title h3 {
+      overflow-wrap: anywhere;
+      font-size: 1.06rem;
+      line-height: 1.25;
+    }
+
+    .admin-upload-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      color: var(--color-muted);
+      font-size: 0.78rem;
+    }
+
+    .admin-upload-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: 14px;
+    }
+
+    .admin-upload-block {
+      display: grid;
+      gap: 8px;
+    }
+
+    .admin-upload-block h4 {
+      margin: 0;
+      color: var(--color-muted);
+      font-size: 0.66rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    .admin-file-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .admin-file-list li,
+    .admin-source,
+    .admin-prompt {
+      border: 1px solid rgba(61, 52, 40, 0.42);
+      background: var(--color-panel);
+      padding: 10px;
+    }
+
+    .admin-file-list li {
+      display: grid;
+      gap: 9px;
+    }
+
+    .admin-file-name,
+    .admin-source {
+      overflow-wrap: anywhere;
+    }
+
+    .admin-file-meta {
+      color: var(--color-muted);
+      font-size: 0.76rem;
+      font-weight: 300;
+    }
+
+    .admin-prompt {
+      max-height: 220px;
+      overflow: auto;
+      white-space: pre-wrap;
+      color: var(--color-text-light);
+      font-size: 0.86rem;
+      line-height: 1.45;
+    }
+
+    .admin-object-path {
+      display: block;
+      margin-top: 4px;
+      color: var(--color-muted);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 0.68rem;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+
+    .admin-media-preview {
+      display: block;
+      width: 100%;
+      max-height: 320px;
+      border: 1px solid var(--color-line);
+      background: #15120f;
+    }
+
+    img.admin-media-preview {
+      height: auto;
+      object-fit: contain;
+      background: var(--color-panel-soft);
+    }
+
+    audio.admin-media-preview {
+      max-height: none;
+      padding: 8px;
+      background: var(--color-panel-soft);
+    }
+
+    .admin-file-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .admin-filter-note {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid var(--color-line);
+      background: var(--color-panel-soft);
+      padding: 12px;
+    }
+
+    .admin-filter-note p {
+      color: var(--color-text);
+      font-size: 0.9rem;
+    }
+
     .progress {
       height: 6px;
       margin-top: 8px;
@@ -1012,6 +1318,14 @@ export function page(title: string, body: string, options: { navHtml?: string } 
     @media (max-width: 980px) {
 	      .auth-main,
 	      .workspace-grid {
+	        grid-template-columns: 1fr;
+	      }
+
+	      .admin-metrics {
+	        grid-template-columns: repeat(2, minmax(0, 1fr));
+	      }
+
+	      .admin-upload-grid {
 	        grid-template-columns: 1fr;
 	      }
 
@@ -1121,6 +1435,17 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       .metric-grid {
         grid-template-columns: 1fr;
       }
+
+	      .admin-metrics {
+	        grid-template-columns: 1fr;
+	      }
+
+	      .admin-section-header,
+	      .admin-upload-head {
+	        grid-template-columns: 1fr;
+	        display: grid;
+	        align-items: start;
+	      }
 
 	      .account-box {
 	        gap: 8px;
@@ -1304,15 +1629,314 @@ function renderUploadRow(upload: UploadRecord) {
   </article>`;
 }
 
-export function appPage(user: User, uploads: UploadRecord[] = []) {
-  const publicSiteUrl = config.publicSiteUrl.toString();
+function isShotwellAdminEmail(email: string) {
+  const [, domain = ""] = email.trim().toLowerCase().split("@");
+  return domain === "shotwell.ai";
+}
+
+function renderAccountNav(user: User, linksHtml = "") {
   const displayName = user.name ?? user.email;
   const avatar = user.avatarUrl
     ? `<img class="avatar" src="${escapeHtml(user.avatarUrl)}" alt="">`
     : `<span class="avatar">${escapeHtml(displayName.charAt(0).toUpperCase())}</span>`;
+
+  return `${linksHtml}
+        <div class="account-box">
+          <div class="identity">${avatar}<span>${escapeHtml(displayName)}</span></div>
+          <form method="post" action="/logout">
+            <button class="secondary compact" type="submit">Sign out</button>
+          </form>
+        </div>`;
+}
+
+function formatDate(date: Date | undefined) {
+  if (!date) {
+    return "-";
+  }
+
+  return `${date.toISOString().replace("T", " ").slice(0, 16)} UTC`;
+}
+
+function formatCount(value: number) {
+  return new Intl.NumberFormat("en-US").format(value);
+}
+
+function formatBytes(bytes: number) {
+  if (!Number.isFinite(bytes) || bytes <= 0) {
+    return "0 B";
+  }
+
+  const units = ["B", "KB", "MB", "GB", "TB"];
+  let value = bytes;
+  let unitIndex = 0;
+
+  while (value >= 1024 && unitIndex < units.length - 1) {
+    value /= 1024;
+    unitIndex += 1;
+  }
+
+  const digits = value >= 10 || unitIndex === 0 ? 0 : 1;
+  return `${value.toFixed(digits)} ${units[unitIndex]}`;
+}
+
+function renderAdminMetric(label: string, value: string | number) {
+  return `<article class="admin-metric">
+    <strong>${escapeHtml(String(value))}</strong>
+    <span>${escapeHtml(label)}</span>
+  </article>`;
+}
+
+function adminUserUploadsHref(userId: string) {
+  return `/admin/users/${encodeURIComponent(userId)}#uploads`;
+}
+
+function renderLinkedAdminCell(user: AdminUserSummary, html: string, className = "") {
+  const href = adminUserUploadsHref(user.id);
+  const tdClass = className ? ` class="${className}"` : "";
+  return `<td${tdClass}><a class="admin-cell-link" href="${escapeHtml(href)}">${html}</a></td>`;
+}
+
+function renderAdminUsers(users: AdminUserSummary[], selectedUserId?: string) {
+  const rows = users.map((user) => {
+    const uploadDetail = user.urlUploadCount > 0
+      ? `${formatCount(user.uploadCount)} (${formatCount(user.urlUploadCount)} links)`
+      : formatCount(user.uploadCount);
+    const selectedClass = user.id === selectedUserId ? ` class="is-selected"` : "";
+
+    return `<tr${selectedClass}>
+      ${renderLinkedAdminCell(user, `
+        <div class="admin-primary">
+          <strong>${escapeHtml(user.email)}</strong>
+          <span>${escapeHtml(user.name ?? "No name")}</span>
+        </div>`)}
+      ${renderLinkedAdminCell(user, escapeHtml(user.provider))}
+      ${renderLinkedAdminCell(user, formatDate(user.createdAt))}
+      ${renderLinkedAdminCell(user, formatDate(user.lastSessionAt))}
+      ${renderLinkedAdminCell(user, formatCount(user.sessionCount), "numeric")}
+      ${renderLinkedAdminCell(user, escapeHtml(uploadDetail), "numeric")}
+      ${renderLinkedAdminCell(user, formatCount(user.fileCount), "numeric")}
+      ${renderLinkedAdminCell(user, formatDate(user.lastUploadAt))}
+    </tr>`;
+  }).join("");
+
+  return `<div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Account</th>
+          <th>Provider</th>
+          <th>Created</th>
+          <th>Last session</th>
+          <th class="numeric">Sessions</th>
+          <th class="numeric">Uploads</th>
+          <th class="numeric">Files</th>
+          <th>Last upload</th>
+        </tr>
+      </thead>
+      <tbody>${rows || `<tr><td colspan="8">No accounts yet.</td></tr>`}</tbody>
+    </table>
+  </div>`;
+}
+
+function adminUploadTitle(upload: AdminUploadSummary) {
+  if (upload.sourceUrl) {
+    return upload.sourceUrl;
+  }
+
+  const firstFile = upload.files[0]?.originalName ?? "Untitled upload";
+  const otherCount = Math.max(0, upload.files.length - 1);
+
+  if (otherCount === 0) {
+    return firstFile;
+  }
+
+  return `${firstFile} & ${otherCount} ${otherCount === 1 ? "other" : "others"}`;
+}
+
+function adminFileContentType(file: AdminUploadSummary["files"][number]) {
+  const contentType = file.contentType.trim().toLowerCase();
+  const name = file.originalName.toLowerCase();
+  if (name.endsWith(".mov") && (contentType === "video/quicktime" || contentType === "application/octet-stream")) {
+    return "video/mp4";
+  }
+
+  if (contentType && contentType !== "application/octet-stream") {
+    return contentType;
+  }
+
+  if (name.endsWith(".mp4") || name.endsWith(".m4v")) return "video/mp4";
+  if (name.endsWith(".mov")) return "video/mp4";
+  if (name.endsWith(".webm")) return "video/webm";
+  if (name.endsWith(".mp3")) return "audio/mpeg";
+  if (name.endsWith(".wav")) return "audio/wav";
+  if (name.endsWith(".m4a")) return "audio/mp4";
+  if (name.endsWith(".png")) return "image/png";
+  if (name.endsWith(".jpg") || name.endsWith(".jpeg")) return "image/jpeg";
+  if (name.endsWith(".gif")) return "image/gif";
+  if (name.endsWith(".webp")) return "image/webp";
+  return contentType || "application/octet-stream";
+}
+
+function adminFileHref(file: AdminUploadSummary["files"][number]) {
+  return `/admin/uploads/${encodeURIComponent(file.uploadId)}/files/${encodeURIComponent(file.id)}`;
+}
+
+function renderAdminFilePreview(file: AdminUploadSummary["files"][number]) {
+  const href = adminFileHref(file);
+  const contentType = adminFileContentType(file);
+  const escapedHref = escapeHtml(href);
+  const escapedName = escapeHtml(file.originalName);
+
+  if (contentType.startsWith("video/")) {
+    return `<video class="admin-media-preview" controls preload="metadata">
+      <source src="${escapedHref}" type="${escapeHtml(contentType)}">
+    </video>`;
+  }
+
+  if (contentType.startsWith("image/")) {
+    return `<img class="admin-media-preview" src="${escapedHref}" alt="${escapedName}" loading="lazy">`;
+  }
+
+  if (contentType.startsWith("audio/")) {
+    return `<audio class="admin-media-preview" controls preload="metadata" src="${escapedHref}"></audio>`;
+  }
+
+  return "";
+}
+
+function renderAdminUploadFiles(upload: AdminUploadSummary) {
+  if (upload.files.length === 0) {
+    return upload.sourceUrl
+      ? `<div class="admin-source">${escapeHtml(upload.sourceUrl)}</div>`
+      : `<div class="admin-source">No files or source URL recorded.</div>`;
+  }
+
+  const files = upload.files.map((file) => `<li>
+    ${renderAdminFilePreview(file)}
+    <div class="admin-file-name">${escapeHtml(file.originalName)}</div>
+    <div class="admin-file-meta">${escapeHtml(file.contentType)} - ${formatBytes(file.sizeBytes)}</div>
+    <code class="admin-object-path">${escapeHtml(file.objectName)}</code>
+    <div class="admin-file-actions">
+      <a class="button secondary compact" href="${escapeHtml(adminFileHref(file))}" target="_blank" rel="noopener">Open file</a>
+    </div>
+  </li>`).join("");
+
+  return `<ul class="admin-file-list">${files}</ul>`;
+}
+
+function renderAdminUploads(uploads: AdminUploadSummary[]) {
+  if (uploads.length === 0) {
+    return `<div class="empty-row">No uploads yet.</div>`;
+  }
+
+  return `<div class="admin-upload-list">${uploads.map((upload) => {
+    const statusClass = upload.status === "completed" ? "status-pill ready" : "status-pill";
+    const userLabel = upload.userName
+      ? `${upload.userName} <${upload.userEmail}>`
+      : upload.userEmail;
+    const prompt = upload.prompt.trim() || "No prompt provided.";
+    const result = upload.resultObjectName
+      ? `<span>Result: ${escapeHtml(upload.resultFileName ?? upload.resultObjectName)}</span>`
+      : "";
+
+    return `<article class="admin-upload-card">
+      <div class="admin-upload-head">
+        <div class="admin-upload-title">
+          <h3>${escapeHtml(adminUploadTitle(upload))}</h3>
+          <div class="admin-upload-meta">
+            <span>${escapeHtml(userLabel)}</span>
+            <span>${formatDate(upload.createdAt)}</span>
+            <span>${formatCount(upload.fileCount)} files</span>
+            <span>${formatBytes(upload.totalSizeBytes)}</span>
+            ${result}
+          </div>
+        </div>
+        <span class="${statusClass}">${escapeHtml(upload.status)}</span>
+      </div>
+      <div class="admin-upload-grid">
+        <section class="admin-upload-block">
+          <h4>Input</h4>
+          ${renderAdminUploadFiles(upload)}
+        </section>
+        <section class="admin-upload-block">
+          <h4>Prompt</h4>
+          <div class="admin-prompt">${escapeHtml(prompt)}</div>
+        </section>
+      </div>
+    </article>`;
+  }).join("")}</div>`;
+}
+
+export function adminPage(user: User, dashboard: AdminDashboard) {
+  const publicSiteUrl = config.publicSiteUrl.toString();
+  const selectedUser = dashboard.selectedUser;
+  const selectedUserLabel = selectedUser
+    ? selectedUser.name
+      ? `${selectedUser.name} <${selectedUser.email}>`
+      : selectedUser.email
+    : "";
+  const filterNote = selectedUser
+    ? `<div class="admin-filter-note">
+        <p>Showing uploads from <strong>${escapeHtml(selectedUserLabel)}</strong>.</p>
+        <a class="button secondary compact" href="/admin#uploads">View all uploads</a>
+      </div>`
+    : "";
+  const uploadHeading = selectedUser ? "Uploads for account" : "Uploads";
+  const uploadCountText = selectedUser
+    ? `${formatCount(dashboard.uploads.length)} upload batches from this account`
+    : `Latest ${formatCount(dashboard.uploads.length)} upload batches`;
+  const navHtml = renderAccountNav(
+    user,
+    `<a class="button secondary" href="/">App</a>
+        <a class="button secondary" href="${escapeHtml(publicSiteUrl)}">Main Site</a>`
+  );
+
+  return page(
+    "Shotwell Admin",
+    `<main class="admin-main">
+      <section class="admin-hero">
+        <span class="eyebrow">Admin</span>
+        <h1>Platform activity.</h1>
+        <p>Accounts, sessions, upload batches, source links, uploaded files, prompts, and result status across Shotwell's authenticated app.</p>
+      </section>
+
+      <section class="admin-metrics" aria-label="Platform totals">
+        ${renderAdminMetric("Accounts", formatCount(dashboard.stats.userCount))}
+        ${renderAdminMetric("Uploads", formatCount(dashboard.stats.uploadCount))}
+        ${renderAdminMetric("Pending", formatCount(dashboard.stats.pendingUploadCount))}
+        ${renderAdminMetric("Completed", formatCount(dashboard.stats.completedUploadCount))}
+        ${renderAdminMetric("Files stored", `${formatCount(dashboard.stats.fileCount)} / ${formatBytes(dashboard.stats.totalSizeBytes)}`)}
+      </section>
+
+      <section class="admin-section">
+        <div class="admin-section-header">
+          <h2>Accounts</h2>
+          <p>${formatCount(dashboard.users.length)} total account records</p>
+        </div>
+        ${renderAdminUsers(dashboard.users, selectedUser?.id)}
+      </section>
+
+      <section class="admin-section" id="uploads">
+        <div class="admin-section-header">
+          <h2>${escapeHtml(uploadHeading)}</h2>
+          <p>${escapeHtml(uploadCountText)}</p>
+        </div>
+        ${filterNote}
+        ${renderAdminUploads(dashboard.uploads)}
+      </section>
+    </main>`,
+    { navHtml }
+  );
+}
+
+export function appPage(user: User, uploads: UploadRecord[] = []) {
+  const publicSiteUrl = config.publicSiteUrl.toString();
   const uploadRows = uploads.length > 0
     ? uploads.map(renderUploadRow).join("")
     : `<div class="empty-row">No uploads yet.</div>`;
+  const adminLink = isShotwellAdminEmail(user.email)
+    ? `<a class="button secondary" href="/admin">Admin</a>`
+    : "";
 
   const promptPlaceholder = `These videos are episodes of a robot folding a box. Provide timestamps for all of the following events:
 - Pick Box
@@ -1379,12 +2003,8 @@ Also keep track of "Retry" and "Fail" attributes for each step. "Retry" means mu
     <script src="/app.js" defer></script>`,
     {
       navHtml: `<a class="button secondary" href="${escapeHtml(publicSiteUrl)}">Main Site</a>
-        <div class="account-box">
-          <div class="identity">${avatar}<span>${escapeHtml(displayName)}</span></div>
-          <form method="post" action="/logout">
-            <button class="secondary compact" type="submit">Sign out</button>
-          </form>
-        </div>`
+        ${adminLink}
+        ${renderAccountNav(user)}`
     }
   );
 }
