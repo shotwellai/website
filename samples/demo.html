@@ -137,7 +137,8 @@
 
 
   /* contact — the one saturated field on the page, closed by the mark */
-  .field{background:var(--acc);color:var(--on-acc);padding:88px 0 96px}
+  .field{background:var(--acc);color:var(--on-acc);padding:88px 0 40px}
+  .field footer{margin-top:72px;padding:0;color:color-mix(in srgb,var(--on-acc) 62%,transparent)}
   .field .wrap{display:flex;align-items:center;justify-content:space-between;gap:40px}
   .field .f-mark{width:84px;height:auto;flex:none}
   .field h2{font-size:clamp(1.9rem,4vw,3rem);max-width:24ch}
@@ -375,14 +376,13 @@
       <a href="mailto:hello@shotwell.ai">hello@shotwell.ai</a></h2>
     <img class="f-mark" src="../brand/assets/SVG/shotwell-mark-black.svg" alt="Shotwell">
   </div>
+  <div class="wrap">
+    <footer>
+      <span>Shotwell — annotations for robotics data</span>
+      <span>hello@shotwell.ai</span>
+    </footer>
+  </div>
 </section>
-
-<div class="wrap">
-  <footer>
-    <span>Shotwell — annotations for robotics data</span>
-    <span>hello@shotwell.ai</span>
-  </footer>
-</div>
 
 <script type="module">
 import { halftone } from './assets/halftone.js';
