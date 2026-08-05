@@ -7,8 +7,9 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400,1&family=Outfit:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Outfit:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="../concepts/concept-animation.css">
 <script>try{var t=localStorage.getItem('shotwell-sample-theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 <style>
   [data-palette="board"]{--acc:#EFB702;--acc2:#3D82E8;--fail:#AF3261;--on-acc:#0C0C0E}
@@ -84,15 +85,26 @@
   .q-body b{font-weight:400;color:var(--acc)}
   .q-foot{padding:0 16px 14px;color:var(--faint);font-size:.6875rem}
 
-  /* before/after workflow, in mono */
-  .flow{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:32px 0 8px;max-width:64ch}
-  .flow>div{border:1px solid var(--wire);background:var(--ground)}
-  .f-head{padding:9px 14px;border-bottom:1px solid var(--wire);font-family:var(--mono);
-    font-size:.5625rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
-  .f-body{padding:14px 16px;font-family:var(--mono);font-size:.6875rem;line-height:2.1;
-    color:var(--dim)}
-  .f-body em{font-style:normal;color:var(--fail)}
-  .f-body b{font-weight:400;color:var(--acc)}
+  /* original case-study figures, retokened for the new design */
+  .case-visual{margin:32px 0 8px}
+  .case-visual figcaption{display:flex;gap:14px;align-items:baseline;margin-bottom:12px}
+  .case-visual figcaption span{font-family:var(--mono);font-size:.625rem;
+    letter-spacing:.2em;text-transform:uppercase;color:var(--faint)}
+  .case-visual figcaption strong{font-weight:400;font-size:.8125rem;color:var(--dim)}
+  .wf{width:100%;height:auto;display:block;max-width:64ch}
+  .wf text{fill:var(--fg);font-family:var(--mono);letter-spacing:.02em}
+  .wf .wf-accent{fill:var(--fail)}
+  .wf .wf-panel{fill:var(--surface);stroke:var(--wire)}
+  .wf .wf-box{fill:var(--ground);stroke:var(--wire-strong)}
+  .wf .wf-hot{fill:var(--surface);stroke:var(--fail)}
+  .wf .wf-arrow{stroke:var(--wire-strong);fill:none}
+  .wf .wf-tip{fill:var(--wire-strong)}
+  /* the live segmented player keeps its machinery, swaps its palette */
+  .concept-seg{--concept-text:var(--fg);--concept-card:var(--surface);
+    --concept-panel:color-mix(in srgb,var(--fg) 6%,transparent);
+    --concept-line:var(--wire-strong);--concept-muted:var(--dim);
+    --concept-accent:var(--acc);--concept-good:var(--pass);--concept-bad:var(--fail);
+    margin:36px 0 8px}
 
   /* pull quote — the number the article is about */
   .pull{border-left:2px solid var(--acc);margin:44px 0 8px;padding:6px 0 6px 28px}
@@ -122,7 +134,6 @@
     .card{padding:40px 26px 46px}
     .card::before{right:22px;width:38px;height:96px}
     .band{margin:36px -26px}
-    .flow{grid-template-columns:1fr}
   }
 
   /* CTA pair: ghost secondary + filled primary; 24hr promise on wide screens */
@@ -206,28 +217,57 @@
         <li>Which parts of the task are responsible for most failures?</li>
       </ul>
 
-      <div class="flow">
-        <div>
-          <div class="f-head">Before Shotwell</div>
-          <div class="f-body">operator data collection<br>
-            ↓ <em>manual review — bottleneck</em><br>
-            ↓ filter<br>
-            ↓ train model</div>
-        </div>
-        <div>
-          <div class="f-head">With Shotwell</div>
-          <div class="f-body">operator data collection<br>
-            ↓ <b>dense subtask annotations</b><br>
-            ↓ query the dataset<br>
-            ↓ train model</div>
-        </div>
-      </div>
+      <figure class="case-visual">
+        <figcaption>
+          <span>Before Shotwell</span>
+        </figcaption>
+        <svg class="wf" viewBox="0 0 760 188" role="img" aria-labelledby="manual-workflow-title manual-workflow-desc">
+          <title id="manual-workflow-title">Before Shotwell manual review workflow</title>
+          <desc id="manual-workflow-desc">Operator data collection moved through manual review, data filtering, and model training.</desc>
+          <defs>
+            <marker id="arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path class="wf-tip" d="M 0 0 L 10 5 L 0 10 z"></path>
+            </marker>
+          </defs>
+          <rect class="wf-panel" x="1" y="1" width="758" height="186" stroke-width="1.2"></rect>
+          <g>
+            <rect class="wf-box" x="24" y="56" width="146" height="76" stroke-width="1.2"></rect>
+            <text x="97" y="78" text-anchor="middle" font-size="13">Operator</text>
+            <text x="97" y="98" text-anchor="middle" font-size="13">Data</text>
+            <text x="97" y="118" text-anchor="middle" font-size="13">Collection</text>
+          </g>
+          <g>
+            <rect class="wf-hot" x="218" y="44" width="150" height="100" stroke-width="1.6"></rect>
+            <text x="293" y="78" text-anchor="middle" font-size="14">Manual</text>
+            <text x="293" y="100" text-anchor="middle" font-size="14">review</text>
+            <text class="wf-accent" x="293" y="123" text-anchor="middle" font-size="10" letter-spacing="1.6">BOTTLENECK</text>
+          </g>
+          <g>
+            <rect class="wf-box" x="418" y="56" width="146" height="76" stroke-width="1.2"></rect>
+            <text x="491" y="87" text-anchor="middle" font-size="14">Filter</text>
+            <text x="491" y="109" text-anchor="middle" font-size="14">Data</text>
+          </g>
+          <g>
+            <rect class="wf-box" x="610" y="56" width="126" height="76" stroke-width="1.2"></rect>
+            <text x="673" y="87" text-anchor="middle" font-size="13">Train</text>
+            <text x="673" y="109" text-anchor="middle" font-size="13">Model</text>
+          </g>
+          <path class="wf-arrow" d="M 170 94 H 205" stroke-width="1.4" marker-end="url(#arrowhead)"></path>
+          <path class="wf-arrow" d="M 368 94 H 405" stroke-width="1.4" marker-end="url(#arrowhead)"></path>
+          <path class="wf-arrow" d="M 564 94 H 597" stroke-width="1.4" marker-end="url(#arrowhead)"></path>
+        </svg>
+      </figure>
 
       <p>Without dense labels, these questions required manual review. With Shotwell, they
         became database queries.</p>
 
+      <figure class="case-visual">
+        <figcaption>
+          <span>With Shotwell</span>
+          <strong>Episodes become searchable data</strong>
+        </figcaption>
       <div class="query">
-        <div class="q-head">Episodes become searchable data — dataset.query</div>
+        <div class="q-head">dataset.query</div>
         <div class="q-body">
           <div><i>where</i>&nbsp; subtask = <b>"Set Yellow"</b></div>
           <div><i>and</i>&nbsp;&nbsp;&nbsp; result = <b>"fail"</b></div>
@@ -236,12 +276,33 @@
         </div>
         <div class="q-foot">Returns failed subtasks, exact timestamps, and episode context</div>
       </div>
+      </figure>
 
       <h2 data-n="03">The Solution</h2>
       <p>Shotwell provided Ultra with dense event and subtask annotations across its
         teleoperation data. Instead of treating each episode as a single opaque video,
         Shotwell decomposed episodes into meaningful subtasks with attributes and failure
         mode detection per subtask.</p>
+      <figure class="case-study-demo concept-seg concept-seg--dossier" data-concept-seg data-playback-rate="1.5" data-actions='[{"label":"Pick Green","start":0.154404,"end":3.427111,"color":"#4A7C59","result":"pass"},{"label":"Set Green","start":3.427111,"end":6.473055,"color":"#5D8F62","result":"pass"},{"label":"Pick Yellow","start":6.473055,"end":8.940236,"color":"#C6932C","result":"pass"},{"label":"Set Yellow","start":8.940236,"end":16.165543,"color":"#D6A02E","result":"fail"},{"label":"Pick Yellow","start":16.165543,"end":18.385386,"color":"#C6932C","result":"pass"},{"label":"Set Yellow","start":18.385386,"end":22.11797,"color":"#D6A02E","result":"fail"},{"label":"Pick Yellow","start":22.11797,"end":26.749562,"color":"#C6932C","result":"pass"},{"label":"Set Yellow","start":26.749562,"end":30.371884,"color":"#D6A02E","result":"fail"},{"label":"Pick Yellow","start":30.371884,"end":35.935966,"color":"#C6932C","result":"pass"},{"label":"Set Yellow","start":35.935966,"end":41.370291,"color":"#D6A02E","result":"pass"},{"label":"Unstack","start":41.370291,"end":52,"color":"#7E6E8F","result":"pass"}]'>
+        <div class="seg-video-head">
+          <span class="seg-video-title">Input Ultra Teleoperation Episode</span>
+          <button class="seg-play-toggle" type="button" aria-label="Pause animation" aria-pressed="false">
+            <span class="seg-play-toggle-icon" aria-hidden="true"></span>
+          </button>
+        </div>
+        <div class="seg-stage">
+          <video class="seg-video-el" src="../ultra-case-study/assets/ultra-teleop-episode.mp4" muted loop playsinline preload="auto"></video>
+          <div class="seg-yt-overlay" aria-hidden="true"></div>
+        </div>
+        <div class="seg-annotations">
+          <h2 class="seg-annotations-title">Output Shotwell Annotations</h2>
+          <div class="seg-timeline">
+            <div class="seg-scrubber-track" role="slider" tabindex="0" aria-label="Video timeline" aria-valuemin="0" aria-valuemax="52" aria-valuenow="0"></div>
+            <div class="seg-timeline-labels" aria-hidden="true"></div>
+          </div>
+          <ul class="seg-annotations-list" aria-label="Episode annotations"></ul>
+        </div>
+      </figure>
       <p>For Ultra's tower stacking toy task, Shotwell annotated each <b>"Pick"</b>,
         <b>"Set"</b>, and <b>"Unstack"</b> subtask the robot performed. For each subtask,
         Shotwell provided color attributes and failure attributes.</p>
@@ -356,5 +417,6 @@ if(location.hostname==='localhost'||location.hostname==='127.0.0.1'){
   });
 }
 </script>
+<script src="../concepts/concept-animation.js"></script>
 </body>
 </html>
