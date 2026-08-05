@@ -28,6 +28,7 @@ function publicAsset(path: string) {
 export function page(title: string, body: string, options: { navHtml?: string } = {}) {
   const publicSiteUrl = config.publicSiteUrl.toString();
   const logoUrl = publicAsset("brand/assets/SVG/shotwell-mark-white.svg");
+  const logoLightUrl = publicAsset("brand/assets/SVG/shotwell-mark-black.svg");
   const navHtml = options.navHtml ?? `<a class="button secondary" href="${escapeHtml(publicSiteUrl)}">Main Site</a>`;
 
   return `<!doctype html>
@@ -39,6 +40,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Outfit:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="/theme.js"></script>
   <style>
     :root {
       color-scheme: dark;
@@ -61,10 +63,42 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       --font-body: 'Outfit', system-ui, sans-serif;
       --font-display: 'Fraunces', Georgia, serif;
       --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+      --color-hover: rgba(245, 242, 235, 0.07);
+      --color-hover-soft: rgba(245, 242, 235, 0.05);
+      --color-hover-strong: rgba(245, 242, 235, 0.08);
+      --color-focus-bg: #1F1F27;
+      --color-topbar: rgba(17, 17, 22, 0.92);
       --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
       --nav-height: 72px;
       --max-width: 1280px;
       --radius: 0;
+    }
+
+    [data-theme="light"] {
+      color-scheme: light;
+      --color-bg: #EDE9DF;
+      --color-bg-alt: #EAE5D9;
+      --color-surface: #F5F2EB;
+      --color-panel: #F0EDE4;
+      --color-panel-soft: #FAF8F2;
+      --color-text: #22222A;
+      --color-text-light: rgba(34, 34, 42, 0.75);
+      --color-muted: rgba(34, 34, 42, 0.5);
+      --color-line: rgba(34, 34, 42, 0.16);
+      --color-line-strong: rgba(34, 34, 42, 0.42);
+      --color-accent: #9C7A00;
+      --color-accent-soft: rgba(239, 183, 2, 0.2);
+      --color-warn: #97264F;
+      --color-warn-bg: rgba(175, 50, 97, 0.1);
+      --color-hover: rgba(34, 34, 42, 0.06);
+      --color-hover-soft: rgba(34, 34, 42, 0.04);
+      --color-hover-strong: rgba(34, 34, 42, 0.07);
+      --color-focus-bg: #FFF7E0;
+      --color-topbar: rgba(245, 242, 235, 0.92);
+    }
+
+    [data-theme="light"] .noise {
+      mix-blend-mode: multiply;
     }
 
     *,
@@ -116,7 +150,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       z-index: 20;
       height: var(--nav-height);
       border-bottom: 1px solid var(--color-line);
-      background: rgba(17, 17, 22, 0.92);
+      background: var(--color-topbar);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
     }
@@ -270,7 +304,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 
     .button.secondary:hover,
     button.secondary:hover {
-      background: rgba(245, 242, 235, 0.07);
+      background: var(--color-hover);
       color: var(--color-cta);
       border-color: var(--color-cta);
     }
@@ -289,9 +323,9 @@ export function page(title: string, body: string, options: { navHtml?: string } 
 
     .button[aria-disabled="true"],
     button:disabled {
-      color: rgba(245, 242, 235, 0.45);
-      background: rgba(245, 242, 235, 0.07);
-      border-color: rgba(245, 242, 235, 0.18);
+      color: var(--color-muted);
+      background: var(--color-hover);
+      border-color: var(--color-line);
       pointer-events: none;
     }
 
@@ -383,7 +417,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
     input:focus,
     textarea:focus,
     select:focus {
-      background: #1A1A21;
+      background: var(--color-focus-bg);
       border-color: var(--color-accent);
       box-shadow: 0 0 0 2px rgba(239, 183, 2, 0.28);
     }
@@ -837,7 +871,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       border: 1px solid var(--color-line);
       border-radius: var(--radius);
       padding: 5px 9px;
-      background: rgba(245, 242, 235, 0.05);
+      background: var(--color-hover-soft);
       color: var(--color-text-light);
       font-size: 0.72rem;
       font-weight: 600;
@@ -856,7 +890,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       margin-top: 8px;
       overflow: hidden;
       border-radius: var(--radius);
-      background: rgba(245, 242, 235, 0.08);
+      background: var(--color-hover-strong);
     }
 
     .progress span {
@@ -1081,10 +1115,12 @@ export function page(title: string, body: string, options: { navHtml?: string } 
     <header class="topbar">
       <div class="topbar-inner">
         <a class="brand" href="${escapeHtml(publicSiteUrl)}">
-          <img class="brand-mark" src="${escapeHtml(logoUrl)}" alt="Shotwell logo">
+          <img class="brand-mark" src="${escapeHtml(logoUrl)}"
+            data-mark-dark="${escapeHtml(logoUrl)}"
+            data-mark-light="${escapeHtml(logoLightUrl)}" alt="Shotwell logo">
           <span>Shotwell<span class="brand-dot">.</span></span>
         </a>
-	        <nav>${navHtml}</nav>
+	        <nav><button class="button secondary compact" id="themeToggle" type="button">Light</button>${navHtml}</nav>
 	      </div>
 	    </header>
     ${body}

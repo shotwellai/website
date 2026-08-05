@@ -38,6 +38,41 @@ app.use(cookieParser(config.sessionSecret));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json({ limit: "1mb" }));
 
+app.get("/theme.js", (_req, res) => {
+  res.type("application/javascript").send(`"use strict";
+(function () {
+  var KEY = "shotwell-platform-theme";
+  var saved = null;
+  try { saved = localStorage.getItem(KEY); } catch (e) {}
+  var theme = saved || (window.matchMedia && matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+
+  function apply(next) {
+    document.documentElement.setAttribute("data-theme", next);
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    var btn = document.getElementById("themeToggle");
+    if (btn) btn.textContent = next === "light" ? "Dark" : "Light";
+    document.querySelectorAll(".brand-mark").forEach(function (img) {
+      var src = next === "light" ? img.dataset.markLight : img.dataset.markDark;
+      if (src) img.src = src;
+    });
+  }
+
+  // set the attribute immediately so the first paint has the right theme
+  document.documentElement.setAttribute("data-theme", theme);
+
+  document.addEventListener("DOMContentLoaded", function () {
+    apply(theme);
+    var btn = document.getElementById("themeToggle");
+    if (btn) {
+      btn.addEventListener("click", function () {
+        apply(document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light");
+      });
+    }
+  });
+})();
+`);
+});
+
 app.get("/healthz", (_req, res) => {
   res.json({
     ok: true,
