@@ -50,7 +50,10 @@ app.get("/theme.js", (_req, res) => {
     document.documentElement.setAttribute("data-theme", next);
     try { localStorage.setItem(KEY, next); } catch (e) {}
     var btn = document.getElementById("themeToggle");
-    if (btn) btn.textContent = next === "light" ? "Dark" : "Light";
+    if (btn) {
+      btn.textContent = next === "light" ? "\u263E" : "\u2600";
+      btn.setAttribute("aria-label", next === "light" ? "Switch to dark mode" : "Switch to light mode");
+    }
     document.querySelectorAll(".brand-mark").forEach(function (img) {
       var src = next === "light" ? img.dataset.markLight : img.dataset.markDark;
       if (src) img.src = src;
@@ -60,14 +63,32 @@ app.get("/theme.js", (_req, res) => {
   // set the attribute immediately so the first paint has the right theme
   document.documentElement.setAttribute("data-theme", theme);
 
+  function flip() {
+    apply(document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light");
+  }
+
+  function wireLongPress(el) {
+    var timer = null, fired = false;
+    el.addEventListener("pointerdown", function () {
+      fired = false;
+      timer = setTimeout(function () { fired = true; flip(); }, 600);
+    });
+    ["pointerup", "pointerleave", "pointercancel"].forEach(function (ev) {
+      el.addEventListener(ev, function () { clearTimeout(timer); });
+    });
+    el.addEventListener("click", function (e) {
+      if (fired) { e.preventDefault(); fired = false; }
+    });
+    el.addEventListener("contextmenu", function (e) {
+      if (fired) e.preventDefault();
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     apply(theme);
     var btn = document.getElementById("themeToggle");
-    if (btn) {
-      btn.addEventListener("click", function () {
-        apply(document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light");
-      });
-    }
+    if (btn) btn.addEventListener("click", flip);
+    document.querySelectorAll(".brand").forEach(wireLongPress);
   });
 })();
 `);
