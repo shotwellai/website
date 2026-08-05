@@ -1139,7 +1139,7 @@ export function page(title: string, body: string, options: { navHtml?: string } 
   <div class="shell">
     <header class="topbar">
       <div class="topbar-inner">
-        <a class="brand" href="/">
+        <a class="brand" href="${escapeHtml(publicSiteUrl)}">
           <img class="brand-mark" src="${escapeHtml(logoUrl)}"
             data-mark-dark="${escapeHtml(logoUrl)}"
             data-mark-light="${escapeHtml(logoLightUrl)}" alt="Shotwell logo">
