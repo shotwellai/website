@@ -81,7 +81,7 @@ export function page(title: string, body: string, options: { navHtml?: string; b
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${escapeHtml(title)}</title>
   <meta name="description" content="Upload robot episodes for annotation. Fast, accurate and dense annotations for robotics training data, with 24 hour turnaround.">
-  <meta property="og:title" content="${escapeHtml(title)}">
+  <meta property="og:title" content="Shotwell AI — Annotations for Robotics Data">
   <meta property="og:description" content="Upload robot episodes for annotation. Fast, accurate and dense annotations for robotics training data, with 24 hour turnaround.">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Shotwell AI">
@@ -90,6 +90,7 @@ export function page(title: string, body: string, options: { navHtml?: string; b
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Shotwell AI — annotations for robotics data">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Shotwell AI — Annotations for Robotics Data">
   <meta name="twitter:image" content="${publicAsset("og-default.png")}">
   <link rel="icon" type="image/svg+xml" href="${publicAsset("favicon.svg")}">
   <link rel="icon" type="image/png" sizes="32x32" href="${publicAsset("favicon-32.png")}">
