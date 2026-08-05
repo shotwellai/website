@@ -48,19 +48,22 @@
   [data-theme="light"] .xlogos .ll{display:block}
   .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   .kicker{font-family:var(--mono);font-size:.625rem;letter-spacing:.24em;
-    text-transform:uppercase;color:var(--dim);margin-bottom:34px;display:block}
+    text-transform:uppercase;color:var(--dim);margin-bottom:30px;display:block}
 
   h1{font-family:var(--display);font-weight:300;font-size:clamp(2.1rem,4.4vw,3.3rem);
     line-height:1.06;letter-spacing:-.015em;max-width:17ch}
   .dek{margin-top:20px;color:var(--fg);font-weight:300;font-size:1.0625rem;
     line-height:1.65;max-width:66ch}
 
-  /* art band bleeds to the card edges, press-object style */
-  .band{position:relative;margin:44px -64px;height:clamp(240px,38vh,400px);
-    overflow:hidden}
-  .band canvas{position:absolute;top:0;right:0;height:100%;width:52%}
-  .band .robot{position:absolute;right:0;bottom:-14%;width:54%;
-    mix-blend-mode:multiply;filter:brightness(1.09);display:none}
+  /* header split: the argument left, the machine right */
+  .head{display:grid;grid-template-columns:1.02fr .98fr;margin:-64px -64px 12px;
+    align-items:stretch}
+  .head-copy{padding:72px 44px 56px 64px;display:flex;flex-direction:column;
+    justify-content:center}
+  .band{position:relative;min-height:460px;overflow:hidden}
+  .band canvas{position:absolute;inset:0;width:100%;height:100%}
+  .band .robot{position:absolute;right:-6%;bottom:-8%;width:110%;
+    mix-blend-mode:multiply;filter:brightness(1.13);display:none}
   [data-theme="light"] .band canvas{display:none}
   [data-theme="light"] .band .robot{display:block}
   .stamp{position:absolute;left:0;bottom:0;font-family:var(--mono);font-size:.5625rem;
@@ -144,7 +147,9 @@
     .navlinks{gap:14px} .navlinks a{font-size:.8125rem} .cta{padding:8px 12px}
     .card{padding:40px 26px 46px}
     .card::before{right:22px;width:38px;height:96px}
-    .band{margin:36px -26px}
+    .head{grid-template-columns:1fr;margin:-40px -26px 12px}
+    .head-copy{padding:48px 26px 8px}
+    .band{min-height:300px}
   }
 
   /* CTA pair: ghost secondary + filled primary; 24hr promise on wide screens */
@@ -186,20 +191,23 @@
 <main class="page wrap">
 
   <article class="card">
-    <span class="kicker">2026</span>
-        <div class="xlogos" aria-label="Shotwell and Ultra">
-      <img class="sw ld" src="../brand/assets/SVG/shotwell-logo-horizontal-white.svg" alt="Shotwell">
-      <img class="sw ll" src="../brand/assets/SVG/shotwell-logo-horizontal-black.svg" alt="Shotwell">
-      <i aria-hidden="true">&times;</i>
-      <img class="ul ld" src="../ultra-logo-white.svg" alt="Ultra">
-      <img class="ul ll" src="../ultra-logo.svg" alt="Ultra">
-    </div>
-    <h1><span class="sr">Shotwell x Ultra: </span>Turning Robot Teleoperation Data Into Reliable Training Data</h1>
-
-    <div class="band">
+    <div class="head">
+      <div class="head-copy">
+  <span class="kicker">2026</span>
+          <div class="xlogos" aria-label="Shotwell and Ultra">
+        <img class="sw ld" src="../brand/assets/SVG/shotwell-logo-horizontal-white.svg" alt="Shotwell">
+        <img class="sw ll" src="../brand/assets/SVG/shotwell-logo-horizontal-black.svg" alt="Shotwell">
+        <i aria-hidden="true">&times;</i>
+        <img class="ul ld" src="../ultra-logo-white.svg" alt="Ultra">
+        <img class="ul ll" src="../ultra-logo.svg" alt="Ultra">
+      </div>
+      <h1><span class="sr">Shotwell x Ultra: </span>Turning Robot Teleoperation Data Into Reliable Training Data</h1>
+      </div>
+      <div class="band">
       <canvas id="art"></canvas>
       <img class="robot" src="../ultra-case-study/assets/ultra-robot.png" alt="Ultra's dual-arm teleoperation robot">
       <span class="stamp">ultra · dual-arm teleoperation platform</span>
+    </div>
     </div>
 
     <div class="prose">
