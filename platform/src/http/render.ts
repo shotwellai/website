@@ -634,6 +634,13 @@ export function page(title: string, body: string, options: { navHtml?: string } 
       object-fit: cover;
       background: var(--color-cta);
       border: 1px solid var(--color-line);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-cta-text);
+      font-family: "Outfit", sans-serif;
+      font-size: 0.9375rem;
+      font-weight: 500;
     }
 
     .workspace-grid {
@@ -1302,7 +1309,7 @@ export function appPage(user: User, uploads: UploadRecord[] = []) {
   const displayName = user.name ?? user.email;
   const avatar = user.avatarUrl
     ? `<img class="avatar" src="${escapeHtml(user.avatarUrl)}" alt="">`
-    : `<span class="avatar"></span>`;
+    : `<span class="avatar">${escapeHtml(displayName.charAt(0).toUpperCase())}</span>`;
   const uploadRows = uploads.length > 0
     ? uploads.map(renderUploadRow).join("")
     : `<div class="empty-row">No uploads yet.</div>`;
