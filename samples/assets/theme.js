@@ -20,13 +20,14 @@ export function dotStyle() {
     : { dot: '#F5F2EB', invert: true };
 }
 
-function apply(t) {
+function apply(t, persist) {
   document.documentElement.setAttribute('data-theme', t);
   document.querySelectorAll('#themeToggle, [data-theme-toggle]').forEach(function (btn) {
     btn.textContent = t === 'light' ? '\u263E' : '\u2600';
     btn.setAttribute('aria-label', t === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
   });
-  try { localStorage.setItem(KEY, t); } catch (e) {}
+  /* only an explicit choice pins the theme; otherwise keep following the OS */
+  if (persist) { try { localStorage.setItem(KEY, t); } catch (e) {} }
   dispatchEvent(new CustomEvent('themechange', { detail: t }));
 }
 
@@ -38,7 +39,7 @@ function wireLongPress(el) {
     fired = false;
     timer = setTimeout(function () {
       fired = true;
-      apply(current() === 'light' ? 'dark' : 'light');
+      apply(current() === 'light' ? 'dark' : 'light', true);
     }, 600);
   });
   ['pointerup', 'pointerleave', 'pointercancel'].forEach(function (ev) {
@@ -52,13 +53,27 @@ function wireLongPress(el) {
   });
 }
 
+function systemTheme() {
+  try {
+    return matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  } catch (e) { return 'dark'; }
+}
+
+function savedTheme() {
+  try { return localStorage.getItem(KEY); } catch (e) { return null; }
+}
+
 export function init() {
-  var saved;
-  try { saved = localStorage.getItem(KEY); } catch (e) {}
-  apply(saved || 'dark');
+  apply(savedTheme() || systemTheme());
+  /* no explicit choice yet: follow the OS live */
+  try {
+    matchMedia('(prefers-color-scheme: light)').addEventListener('change', function (e) {
+      if (!savedTheme()) apply(e.matches ? 'light' : 'dark');
+    });
+  } catch (e) {}
   document.querySelectorAll('#themeToggle, [data-theme-toggle]').forEach(function (btn) {
     btn.addEventListener('click', function () {
-      apply(current() === 'light' ? 'dark' : 'light');
+      apply(current() === 'light' ? 'dark' : 'light', true);
     });
   });
   document.querySelectorAll('[data-theme-longpress]').forEach(wireLongPress);
