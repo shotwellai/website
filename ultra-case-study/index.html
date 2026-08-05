@@ -77,7 +77,11 @@
   /* art band bleeds to the card edges, press-object style */
   .band{position:relative;margin:44px -64px;height:clamp(240px,38vh,400px);
     overflow:hidden}
-  .band canvas{position:absolute;inset:0;width:100%;height:100%}
+  .band canvas{position:absolute;top:0;right:0;height:100%;width:52%}
+  .band .robot{position:absolute;right:0;bottom:-14%;width:54%;
+    mix-blend-mode:multiply;filter:brightness(1.09);display:none}
+  [data-theme="light"] .band canvas{display:none}
+  [data-theme="light"] .band .robot{display:block}
   .stamp{position:absolute;left:0;bottom:0;font-family:var(--mono);font-size:.5625rem;
     letter-spacing:.14em;text-transform:uppercase;color:var(--dim);
     background:var(--surface);border-top:1px solid var(--wire);
@@ -198,7 +202,8 @@
 
     <div class="band">
       <canvas id="art"></canvas>
-      <span class="stamp">ultra · teleoperation episode · tower stacking</span>
+      <img class="robot" src="/ultra-case-study/assets/ultra-robot.png" alt="Ultra's dual-arm teleoperation robot">
+      <span class="stamp">ultra · dual-arm teleoperation platform</span>
     </div>
 
     <div class="prose">
@@ -412,7 +417,7 @@ var dpr=Math.min(window.devicePixelRatio||1,2);
 
 function render(){
   if(!ready) return;
-  var b=c.parentElement.getBoundingClientRect();
+  var b=c.getBoundingClientRect();
   c.width=Math.round(b.width*dpr); c.height=Math.round(b.height*dpr);
   var s=dotStyle();
   halftone(c,img,{step:6*dpr,dot:s.dot,invert:s.invert,lo:.04,hi:.85,gamma:.62});
@@ -423,7 +428,7 @@ function syncMark(){
     : '../brand/assets/SVG/shotwell-logo-horizontal-white.svg';
 }
 img.onload=function(){ready=true;render();};
-img.src='/assets/frame-ultra.jpg';
+img.src='/ultra-case-study/assets/ultra-robot.png';
 init(); syncMark();
 addEventListener('themechange',function(){render();syncMark();});
 var to; addEventListener('resize',function(){clearTimeout(to);to=setTimeout(render,150);});
