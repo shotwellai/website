@@ -2,14 +2,11 @@ import { z } from "zod";
 
 export const resultAnnotationSchema = z.object({
   label: z.string().min(1),
-  start_time: z.number().finite().nonnegative(),
-  end_time: z.number().finite().nonnegative()
-}).refine((annotation) => annotation.end_time >= annotation.start_time, {
-  message: "Annotation end_time must be greater than or equal to start_time."
+  timestamp: z.number().finite().nonnegative()
 });
 
 export const resultEpisodeSchema = z.object({
-  filename: z.string().min(1),
+  episode_id: z.string().min(1),
   annotations: z.array(resultAnnotationSchema)
 });
 
@@ -22,5 +19,28 @@ export type ResultEpisode = z.infer<typeof resultEpisodeSchema>;
 export type UploadResult = z.infer<typeof uploadResultSchema>;
 
 export function parseUploadResultJson(value: string): UploadResult {
-  return uploadResultSchema.parse(JSON.parse(value));
+  const parsed = JSON.parse(value);
+
+  // Keep older generated results readable while using the end-timestamp format
+  // for all new result files.
+  if (Array.isArray(parsed?.episodes) && parsed.episodes.every((episode: unknown) => {
+    if (!episode || typeof episode !== "object") return false;
+    const annotations = (episode as { annotations?: unknown }).annotations;
+    return Array.isArray(annotations) && annotations.every((annotation: unknown) => {
+      if (!annotation || typeof annotation !== "object") return false;
+      return "start_time" in annotation || "end_time" in annotation;
+    });
+  })) {
+    return uploadResultSchema.parse({
+      episodes: parsed.episodes.map((episode: { filename: string; annotations: Array<{ label: string; end_time: number }> }) => ({
+        episode_id: episode.filename,
+        annotations: episode.annotations.map((annotation) => ({
+          label: annotation.label,
+          timestamp: annotation.end_time
+        }))
+      }))
+    });
+  }
+
+  return uploadResultSchema.parse(parsed);
 }

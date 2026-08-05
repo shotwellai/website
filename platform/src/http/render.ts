@@ -2108,9 +2108,16 @@ function filenameBasename(value: string) {
   return value.split(/[\\/]/).pop() ?? value;
 }
 
+function resultEpisodeFilename(upload: ResultPageUpload, episode: ResultEpisode) {
+  const episodeId = filenameBasename(episode.episode_id);
+  const match = upload.files.find((file) => file.originalName === episode.episode_id)
+    ?? upload.files.find((file) => filenameBasename(file.originalName).toLowerCase() === episodeId.toLowerCase());
+  return match?.originalName ?? (upload.files.length === 1 ? upload.files[0].originalName : episode.episode_id);
+}
+
 function findEpisodeFile(upload: ResultPageUpload, episode: ResultEpisode) {
-  const filename = filenameBasename(episode.filename).toLowerCase();
-  return upload.files.find((file) => file.originalName === episode.filename)
+  const filename = resultEpisodeFilename(upload, episode);
+  return upload.files.find((file) => file.originalName === filename)
     ?? upload.files.find((file) => file.originalName.toLowerCase() === filename);
 }
 
@@ -2139,7 +2146,7 @@ function renderResultMedia(upload: ResultPageUpload, episode: ResultEpisode, opt
   if (!file) {
     return `<div class="result-missing-media">
       <strong>Media file not found.</strong>
-      <p>The result references <code>${escapeHtml(episode.filename)}</code>, but that filename is not attached to this upload.</p>
+      <p>The result references <code>${escapeHtml(episode.episode_id)}</code>, but that filename is not attached to this upload.</p>
     </div>`;
   }
 
@@ -2168,10 +2175,11 @@ function renderResultMedia(upload: ResultPageUpload, episode: ResultEpisode, opt
 }
 
 function resultActionsAttr(annotations: ResultAnnotation[]) {
+  let previousTimestamp = 0;
   const actions = annotations.map((annotation, index) => ({
     label: annotation.label,
-    start: annotation.start_time,
-    end: annotation.end_time,
+    start: previousTimestamp,
+    end: (previousTimestamp = annotation.timestamp),
     color: resultAnnotationColors[index % resultAnnotationColors.length]
   }));
 
@@ -2526,7 +2534,7 @@ export function resultPage(user: User, upload: ResultPageUpload, result: UploadR
         ${result.episodes.map((episode, index) => {
           const id = resultEpisodeId(index);
           const current = index === 0 ? ` aria-current="true"` : "";
-          return `<button class="result-nav-item" type="button" data-result-nav="${id}"${current}>${escapeHtml(episode.filename)}</button>`;
+          return `<button class="result-nav-item" type="button" data-result-nav="${id}"${current}>${escapeHtml(resultEpisodeFilename(upload, episode))}</button>`;
         }).join("")}
       </aside>`
     : "";
