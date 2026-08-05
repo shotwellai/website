@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-palette="board">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sample — Ultra banner options</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Outfit:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<style>
+  [data-palette="board"]{--acc:#EFB702;--on-acc:#0C0C0E}
+  body{padding:60px 0 120px}
+  .wrap{width:min(1220px,calc(100% - 80px));margin:0 auto}
+  .opt{margin-top:56px}
+  .opt-lbl{font-family:var(--mono);font-size:.625rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--faint);margin-bottom:14px}
+
+  .banner{position:relative;height:420px;overflow:hidden;border:1px solid var(--wire)}
+  .kick{font-family:var(--mono);font-size:.625rem;letter-spacing:.24em;
+    text-transform:uppercase;display:block;margin-bottom:22px}
+  .lockup{display:flex;align-items:center;gap:20px;margin-bottom:24px}
+  .lockup img{display:block}
+  .lockup .sw{height:34px;width:auto}
+  .lockup .ul{width:180px;height:auto}
+  .lockup i{font-style:normal;font-family:var(--display);font-weight:300;
+    font-size:1.4rem;line-height:1;opacity:.55}
+  .bt{font-family:var(--display);font-weight:300;font-size:2.3rem;line-height:1.08;
+    letter-spacing:-.015em;max-width:17ch;margin:0}
+
+  /* A — specimen: robot multiplied onto the cream panel, text in ink */
+  .b-a{background:#F5F2EB;color:#22222A}
+  .b-a .col{position:absolute;inset:0;display:flex;flex-direction:column;
+    justify-content:center;padding:0 56px;max-width:52%}
+  .b-a .kick{color:#9C7A00}
+  .b-a .bot{position:absolute;right:-40px;bottom:-70px;width:62%;
+    mix-blend-mode:multiply}
+
+  /* B — board: same trick on the CTA yellow */
+  .b-b{background:var(--acc);color:var(--on-acc)}
+  .b-b .col{position:absolute;inset:0;display:flex;flex-direction:column;
+    justify-content:center;padding:0 56px;max-width:52%}
+  .b-b .kick{color:rgba(12,12,14,.55)}
+  .b-b .bot{position:absolute;right:-40px;bottom:-70px;width:62%;
+    mix-blend-mode:multiply}
+
+  /* C — halftone: the robot becomes dots on the ground, like the site heroes */
+  .b-c{background:var(--ground);color:var(--fg)}
+  .b-c canvas{position:absolute;right:0;top:0;height:100%;width:58%}
+  .b-c .col{position:absolute;inset:0;display:flex;flex-direction:column;
+    justify-content:center;padding:0 56px;max-width:46%}
+  .b-c .kick{color:var(--acc)}
+  .b-c .stamp{position:absolute;left:0;bottom:0;font-family:var(--mono);
+    font-size:.5625rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);
+    background:var(--surface);border-top:1px solid var(--wire);
+    border-right:1px solid var(--wire);padding:5px 10px}
+
+  /* D — split: dark argument panel, photo kept natural behind a wire seam */
+  .b-d{background:var(--ground);color:var(--fg);display:grid;
+    grid-template-columns:46% 54%}
+  .b-d .col{display:flex;flex-direction:column;justify-content:center;
+    padding:0 48px;border-right:1px solid var(--wire)}
+  .b-d .kick{color:var(--acc)}
+  .b-d .ph{position:relative;background:#EDEDEF;overflow:hidden}
+  .b-d .ph img{position:absolute;right:-30px;bottom:-60px;width:112%}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="opt">
+    <div class="opt-lbl">A — Specimen · cream panel, robot multiplied in</div>
+    <div class="banner b-a">
+      <img class="bot" src="../ultra-case-study/assets/ultra-robot.png" alt="">
+      <div class="col">
+        <span class="kick">2026</span>
+        <div class="lockup">
+          <img class="sw" src="../brand/assets/SVG/shotwell-logo-horizontal-black.svg" alt="Shotwell">
+          <i aria-hidden="true">&times;</i>
+          <img class="ul" src="../ultra-logo.svg" alt="Ultra">
+        </div>
+        <h2 class="bt">Turning robot teleoperation data into reliable training data</h2>
+      </div>
+    </div>
+  </div>
+
+  <div class="opt">
+    <div class="opt-lbl">B — Board · CTA yellow, dark ink</div>
+    <div class="banner b-b">
+      <img class="bot" src="../ultra-case-study/assets/ultra-robot.png" alt="">
+      <div class="col">
+        <span class="kick">2026</span>
+        <div class="lockup">
+          <img class="sw" src="../brand/assets/SVG/shotwell-logo-horizontal-black.svg" alt="Shotwell">
+          <i aria-hidden="true">&times;</i>
+          <img class="ul" src="../ultra-logo.svg" alt="Ultra">
+        </div>
+        <h2 class="bt">Turning robot teleoperation data into reliable training data</h2>
+      </div>
+    </div>
+  </div>
+
+  <div class="opt">
+    <div class="opt-lbl">C — Halftone · robot as dots on the dark ground</div>
+    <div class="banner b-c">
+      <canvas id="ht"></canvas>
+      <div class="col">
+        <span class="kick">2026</span>
+        <div class="lockup">
+          <img class="sw" src="../brand/assets/SVG/shotwell-logo-horizontal-white.svg" alt="Shotwell">
+          <i aria-hidden="true">&times;</i>
+          <img class="ul" src="../ultra-logo-white.svg" alt="Ultra">
+        </div>
+        <h2 class="bt">Turning robot teleoperation data into reliable training data</h2>
+      </div>
+      <span class="stamp">ultra &middot; dual-arm platform</span>
+    </div>
+  </div>
+
+  <div class="opt">
+    <div class="opt-lbl">D — Split · argument panel + natural photo</div>
+    <div class="banner b-d">
+      <div class="col">
+        <span class="kick">2026</span>
+        <div class="lockup">
+          <img class="sw" src="../brand/assets/SVG/shotwell-logo-horizontal-white.svg" alt="Shotwell">
+          <i aria-hidden="true">&times;</i>
+          <img class="ul" src="../ultra-logo-white.svg" alt="Ultra">
+        </div>
+        <h2 class="bt">Turning robot teleoperation data into reliable training data</h2>
+      </div>
+      <div class="ph"><img src="../ultra-case-study/assets/ultra-robot.png" alt=""></div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { halftone } from './assets/halftone.js';
+import { init, dotStyle } from './assets/theme.js';
+init();
+var c=document.getElementById('ht'), img=new Image();
+img.onload=function(){
+  var r=c.getBoundingClientRect(), dpr=devicePixelRatio||1;
+  c.width=r.width*dpr; c.height=r.height*dpr;
+  var s=dotStyle();
+  halftone(c,img,{step:5.5*dpr,dot:s.dot,invert:s.invert,lo:.05,hi:.9,gamma:.7});
+};
+img.src='../ultra-case-study/assets/ultra-robot.png';
+addEventListener('themechange',function(){img.onload();});
+</script>
+</body>
+</html>
