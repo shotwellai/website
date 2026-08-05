@@ -1,6 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="38 100 450 450" role="img" aria-label="Shotwell">
   <title>Shotwell</title>
-  <g transform="translate(0,748) scale(0.1,-0.1)" fill="#2A2A32">
+  <style>.ink{fill:#2A2A32}@media (prefers-color-scheme: dark){.ink{fill:#F5F2EB}}</style>
+  <g class="ink" transform="translate(0,748) scale(0.1,-0.1)" fill="#2A2A32">
     <path d="M2511 6375 c-215 -60 -297 -209 -185 -334 30 -34 44 -58 44 -78 0
 -16 7 -39 16 -51 21 -31 22 -30 -81 -20 -206 21 -292 21 -312 -1 -10 -11 -23
 -26 -30 -33 -7 -7 -36 -31 -64 -53 -28 -22 -99 -83 -158 -136 -58 -52 -122
