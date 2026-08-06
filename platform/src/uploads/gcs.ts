@@ -110,8 +110,16 @@ export function resultObjectName(uploadId: string, fileName: string) {
     .join("/");
 }
 
-export function createResultReadStream(objectName: string) {
-  return storage.bucket(requireBucketName()).file(objectName).createReadStream();
+export async function getResultFileMetadata(objectName: string) {
+  const [metadata] = await storage.bucket(requireBucketName()).file(objectName).getMetadata();
+  return {
+    sizeBytes: Number(metadata.size ?? 0),
+    contentType: metadata.contentType ?? "application/octet-stream"
+  };
+}
+
+export function createResultReadStream(objectName: string, range?: { start: number; end: number }) {
+  return storage.bucket(requireBucketName()).file(objectName).createReadStream(range);
 }
 
 export function createUploadReadStream(objectName: string, range?: { start: number; end: number }) {

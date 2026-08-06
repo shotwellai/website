@@ -2271,6 +2271,15 @@ function renderResultMedia(upload: ResultPageUpload, episode: ResultEpisode, opt
   const href = options.mediaHref?.(file, upload) ?? `/uploads/${encodeURIComponent(upload.id)}/files/${encodeURIComponent(file.id)}`;
   const escapedHref = escapeHtml(href);
   const contentType = resultFileContentType(file);
+  if (file.originalName.toLowerCase().endsWith(".mcap")) {
+    const previewHref = `/uploads/${encodeURIComponent(upload.id)}/result-preview`;
+    return `<div class="result-media-frame">
+      <video data-result-video muted playsinline preload="metadata">
+        <source src="${escapeHtml(previewHref)}" type="video/mp4">
+      </video>
+    </div>`;
+  }
+
   if (contentType.startsWith("video/")) {
     return `<div class="result-media-frame">
       <video data-result-video muted playsinline preload="metadata">

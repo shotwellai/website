@@ -6,7 +6,7 @@ import { authStore, type User } from "../auth/store.js";
 import { config } from "../config.js";
 import { notifyContactSubmitted, notifyUploadSubmitted } from "../email/notifications.js";
 import { adminPage, appPage, messagePage, resultPage } from "../http/render.js";
-import { createGcsUploadSessions, createResultReadStream, createUploadReadStream, type NewUploadFileInput } from "../uploads/gcs.js";
+import { createGcsUploadSessions, createResultReadStream, createUploadReadStream, getResultFileMetadata, resultObjectName, type NewUploadFileInput } from "../uploads/gcs.js";
 import { parseUploadResultJson } from "../uploads/results.js";
 import { createUploadId, uploadStore } from "../uploads/store.js";
 
@@ -1341,6 +1341,56 @@ appRouter.get("/uploads/:uploadId/files/:fileId", async (req, res, next) => {
     }
 
     streamUploadFile(file, req, res, next);
+  } catch (error) {
+    next(error);
+  }
+});
+
+appRouter.get("/uploads/:uploadId/result-preview", async (req, res, next) => {
+  try {
+    const user = await getAppUser(req, res);
+    if (!user) {
+      return;
+    }
+
+    const upload = await getAccessibleUpload(user, req.params.uploadId);
+    if (!upload || upload.status !== "completed" || !upload.resultObjectName) {
+      res.status(404).type("text").send("Preview not found.");
+      return;
+    }
+
+    const objectName = resultObjectName(upload.id, "preview.mp4");
+    let metadata;
+    try {
+      metadata = await getResultFileMetadata(objectName);
+    } catch {
+      res.status(404).type("text").send("Preview not found.");
+      return;
+    }
+
+    const size = Math.max(0, Math.trunc(metadata.sizeBytes));
+    const parsedRange = parseRangeHeader(req.headers.range, size);
+    res.setHeader("Accept-Ranges", "bytes");
+    res.setHeader("Content-Type", "video/mp4");
+    res.setHeader("Content-Disposition", contentDispositionInline("preview.mp4"));
+
+    if (parsedRange === null) {
+      res.status(416).setHeader("Content-Range", `bytes */${size}`).end();
+      return;
+    }
+
+    const range = parsedRange ?? defaultMediaRange(size);
+    if (range) {
+      res.status(206);
+      res.setHeader("Content-Range", `bytes ${range.start}-${range.end}/${size}`);
+      res.setHeader("Content-Length", String(range.end - range.start + 1));
+    } else if (size > 0) {
+      res.setHeader("Content-Length", String(size));
+    }
+
+    const stream = createResultReadStream(objectName, range ?? undefined);
+    stream.on("error", next);
+    stream.pipe(res);
   } catch (error) {
     next(error);
   }
