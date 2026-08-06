@@ -64,6 +64,15 @@ function isShotwellAdmin(user: User) {
   return domain === "shotwell.ai";
 }
 
+async function getAccessibleUpload(user: User, uploadId: string) {
+  const ownedUpload = await uploadStore.getUserUpload(user.id, uploadId);
+  if (ownedUpload) {
+    return ownedUpload;
+  }
+
+  return isShotwellAdmin(user) ? adminStore.getUpload(uploadId) : null;
+}
+
 async function getAdminUser(req: Request, res: Response): Promise<User | null> {
   const user = await getAppUser(req, res);
   if (!user) {
@@ -765,7 +774,6 @@ document.addEventListener("DOMContentLoaded", () => {
         segmentEls[index].root.dataset.state = state;
         segmentEls[index].fill.style.transform = "scaleX(" + clamp(fill, 0, 1).toFixed(3) + ")";
         rowEls[index].dataset.active = String(state === "active");
-        rowEls[index].dataset.windowVisible = String(action.end >= windowStart && action.start <= windowEnd);
         rowEls[index].style.borderColor = state === "active" ? action.color : "";
 
         const zoomRoot = segmentEls[index].zoomRoot;
@@ -1190,39 +1198,7 @@ appRouter.get("/admin/uploads/:uploadId/result", async (req, res, next) => {
       return;
     }
 
-    if (!isUuid(req.params.uploadId)) {
-      res.status(404).type("html").send(messagePage("Result not found", "That upload result could not be found.", "/admin#uploads", "Back to admin"));
-      return;
-    }
-
-    const upload = await adminStore.getUpload(req.params.uploadId);
-    if (!upload || upload.status !== "completed" || !upload.resultObjectName) {
-      res
-        .status(404)
-        .type("html")
-        .send(messagePage("Results pending", "Results are not ready for this upload yet.", "/admin#uploads", "Back to admin"));
-      return;
-    }
-
-    let result;
-    try {
-      result = await readUploadResult(upload.resultObjectName);
-    } catch (error) {
-      console.error("Could not read admin result JSON.", error);
-      res
-        .status(500)
-        .type("html")
-        .send(messagePage("Result unavailable", "The result JSON could not be loaded.", "/admin#uploads", "Back to admin"));
-      return;
-    }
-
-    res.type("html").send(resultPage(user, upload, result, {
-      backHref: "/admin#uploads",
-      backLabel: "Admin",
-      jsonHref: `/admin/uploads/${encodeURIComponent(upload.id)}/results`,
-      mediaHref: (file) => `/admin/uploads/${encodeURIComponent(upload.id)}/files/${encodeURIComponent(file.id)}`,
-      eyebrow: "Admin result"
-    }));
+    res.redirect(308, `/uploads/${encodeURIComponent(req.params.uploadId)}/result`);
   } catch (error) {
     next(error);
   }
@@ -1235,27 +1211,7 @@ appRouter.get("/admin/uploads/:uploadId/results", async (req, res, next) => {
       return;
     }
 
-    if (!isUuid(req.params.uploadId)) {
-      res.status(404).type("html").send(messagePage("Result not found", "That upload result could not be found.", "/admin#uploads", "Back to admin"));
-      return;
-    }
-
-    const upload = await adminStore.getUpload(req.params.uploadId);
-    if (!upload || upload.status !== "completed" || !upload.resultObjectName) {
-      res
-        .status(404)
-        .type("html")
-        .send(messagePage("Results pending", "Results are not ready for this upload yet.", "/admin#uploads", "Back to admin"));
-      return;
-    }
-
-    const fileName = upload.resultFileName ?? "shotwell-results.json";
-    res.setHeader("Content-Type", upload.resultContentType ?? "application/json");
-    res.setHeader("Content-Disposition", contentDispositionAttachment(fileName));
-
-    const stream = createResultReadStream(upload.resultObjectName);
-    stream.on("error", next);
-    stream.pipe(res);
+    res.redirect(308, `/uploads/${encodeURIComponent(req.params.uploadId)}/results`);
   } catch (error) {
     next(error);
   }
@@ -1374,7 +1330,7 @@ appRouter.get("/uploads/:uploadId/files/:fileId", async (req, res, next) => {
       return;
     }
 
-    const upload = await uploadStore.getUserUpload(user.id, req.params.uploadId);
+    const upload = await getAccessibleUpload(user, req.params.uploadId);
     const file = upload?.files.find((item) => item.id === req.params.fileId);
     if (!upload || !file) {
       res
@@ -1424,7 +1380,7 @@ appRouter.get("/uploads/:uploadId/result", async (req, res, next) => {
       return;
     }
 
-    const upload = await uploadStore.getUserUpload(user.id, req.params.uploadId);
+    const upload = await getAccessibleUpload(user, req.params.uploadId);
     if (!upload || upload.status !== "completed" || !upload.resultObjectName) {
       res
         .status(404)
@@ -1458,7 +1414,7 @@ appRouter.get("/uploads/:uploadId/results", async (req, res, next) => {
       return;
     }
 
-    const upload = await uploadStore.getUserUpload(user.id, req.params.uploadId);
+    const upload = await getAccessibleUpload(user, req.params.uploadId);
     if (!upload || upload.status !== "completed" || !upload.resultObjectName) {
       res
         .status(404)

@@ -1742,10 +1742,6 @@ export function page(title: string, body: string, options: { navHtml?: string; b
       background: color-mix(in srgb, var(--color-text) 7%, var(--color-panel));
     }
 
-    .result-card-row[data-window-visible="false"] {
-      display: none;
-    }
-
     .result-card-row b {
       min-width: 0;
       flex: 1 1 auto;
@@ -2297,11 +2293,10 @@ function renderResultMedia(upload: ResultPageUpload, episode: ResultEpisode, opt
 }
 
 function resultActionsAttr(annotations: ResultAnnotation[]) {
-  let previousTimestamp = 0;
   const actions = annotations.map((annotation, index) => ({
     label: annotation.label,
-    start: previousTimestamp,
-    end: (previousTimestamp = annotation.timestamp),
+    start: annotation.start_time,
+    end: annotation.end_time,
     color: resultAnnotationColors[index % resultAnnotationColors.length]
   }));
 
@@ -2550,8 +2545,8 @@ function renderAdminUploads(uploads: AdminUploadSummary[]) {
       ? `<span>Result: ${escapeHtml(upload.resultFileName ?? upload.resultObjectName)}</span>`
       : "";
     const resultActions = upload.resultObjectName
-      ? `<a class="button compact" href="/admin/uploads/${escapeHtml(upload.id)}/result">View result</a>
-        <a class="button secondary compact" href="/admin/uploads/${escapeHtml(upload.id)}/results">Download JSON</a>`
+      ? `<a class="button compact" href="/uploads/${escapeHtml(upload.id)}/result">View result</a>
+        <a class="button secondary compact" href="/uploads/${escapeHtml(upload.id)}/results">Download JSON</a>`
       : "";
 
     return `<article class="admin-upload-card">
