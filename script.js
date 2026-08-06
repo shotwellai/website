@@ -498,7 +498,7 @@
   // Timeline actions (sequential), each a distinct color for strong contrast
   var ACTIONS = [
     { label: 'Pick up',           start: 0,  end: 1,  color: '#6E6E78', result: 'pass' },
-    { label: 'Straighten',        start: 1,  end: 7,  color: '#4A4A52', result: 'pass' },
+    { label: 'Straighten',        start: 1,  end: 7,  color: '#4E7CA8', result: 'pass' },
     { label: 'Fold right sleeve', start: 7,  end: 10, color: '#BF4D34', result: 'pass' },
     { label: 'Fold left sleeve',  start: 10, end: 15, color: '#D6A02E', result: 'fail' },
     { label: 'Fold up bottom',    start: 15, end: 16, color: '#8E8E96', result: 'pass' },

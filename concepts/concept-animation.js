@@ -1,7 +1,7 @@
 (function () {
   var DEFAULT_ACTIONS = [
     { label: "Pick up", start: 0, end: 1, color: "#6E6E78", result: "pass" },
-    { label: "Straighten", start: 1, end: 7, color: "#4A4A52", result: "pass" },
+    { label: "Straighten", start: 1, end: 7, color: "#4E7CA8", result: "pass" },
     { label: "Fold right sleeve", start: 7, end: 10, color: "#BF4D34", result: "pass" },
     { label: "Fold left sleeve", start: 10, end: 15, color: "#D6A02E", result: "fail" },
     { label: "Fold up bottom", start: 15, end: 16, color: "#8E8E96", result: "pass" },
@@ -36,7 +36,7 @@
   }
 
   function normalizeAction(action, index) {
-    var palette = ["#6E6E78", "#4A4A52", "#BF4D34", "#D6A02E", "#8E8E96", "#4E7CA8", "#9D5690", "#7E7E8A"];
+    var palette = ["#6E6E78", "#4E7CA8", "#BF4D34", "#D6A02E", "#8E8E96", "#4E7CA8", "#9D5690", "#7E7E8A"];
     return {
       label: action.label || "Action " + pad(index + 1),
       start: Number(action.start) || 0,

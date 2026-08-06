@@ -2250,7 +2250,7 @@ function secondsLabel(seconds: number) {
 
 const resultAnnotationColors = [
   "#6E6E78",
-  "#4A4A52",
+  "#4E7CA8",
   "#BF4D34",
   "#D6A02E",
   "#8E8E96",
