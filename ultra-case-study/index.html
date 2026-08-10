@@ -41,7 +41,8 @@
 <link rel="stylesheet" href="/concepts/concept-animation.css">
 <script>try{var t=localStorage.getItem('shotwell-sample-theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 <style>
-  [data-palette="board"]{--acc:#EFB702;--acc2:#3D82E8;--fail:#AF3261;--on-acc:#0C0C0E}
+  [data-palette="board"]{--acc:#EFB702;--acc2:#3D82E8;--fail:#AF3261;--on-acc:#0C0C0E;
+    --ink:color-mix(in srgb,var(--fg) 80%,transparent)}
 
   .brandbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;
     justify-content:space-between;gap:20px;padding:14px 40px;
@@ -59,19 +60,19 @@
   .cta small{font-size:.75em;font-weight:400;opacity:.75}
 
   /* ── press-card article ── */
-  .page{max-width:1080px;padding:28px 48px 110px}
+  .page{max-width:1200px;padding:28px 48px 110px}
   .card{position:relative;background:var(--surface);border:1px solid var(--wire);
     padding:64px 64px 56px;overflow:hidden}
   .card::before{content:"";position:absolute;top:0;right:76px;width:52px;height:132px;
     background:var(--acc)}
 
   /* partner lockup above the title, like the share card */
-  .xlogos{display:flex;align-items:center;gap:24px;margin:0 0 30px;flex-wrap:wrap}
+  .xlogos{display:flex;align-items:center;gap:clamp(12px,1.6vw,24px);margin:0 0 30px;flex-wrap:wrap}
   .xlogos img{display:block}
-  .xlogos .sw{height:40px;width:auto}
-  .xlogos .ul{width:216px;height:auto}
+  .xlogos .sw{height:clamp(26px,2.8vw,40px);width:auto}
+  .xlogos .ul{width:clamp(140px,15vw,216px);height:auto}
   .xlogos i{font-style:normal;font-family:var(--display);font-weight:300;
-    font-size:1.7rem;color:var(--dim);line-height:1}
+    font-size:clamp(1.1rem,1.8vw,1.7rem);color:var(--dim);line-height:1}
   .xlogos .ll{display:none}
   [data-theme="light"] .xlogos .ld{display:none}
   [data-theme="light"] .xlogos .ll{display:block}
@@ -87,7 +88,7 @@
   /* header split: the argument left, the machine right */
   .head{display:grid;grid-template-columns:1.02fr .98fr;margin:-64px -64px 12px;
     align-items:stretch}
-  .head-copy{padding:72px 44px 56px 64px;display:flex;flex-direction:column;
+  .head-copy{padding:72px 36px 56px 64px;display:flex;flex-direction:column;
     justify-content:center}
   .band{position:relative;min-height:460px;overflow:hidden}
   .band canvas{position:absolute;inset:0;width:100%;height:100%}
@@ -106,11 +107,11 @@
   .prose h2::before{content:attr(data-n);display:block;font-family:var(--mono);
     font-size:.625rem;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);
     margin-bottom:12px}
-  .prose p{margin-top:16px;color:var(--dim);font-weight:300;font-size:1.0625rem;
+  .prose p{margin-top:16px;color:var(--ink);font-weight:300;font-size:1.0625rem;
     line-height:1.72;max-width:78ch}
   .prose p b{font-weight:400;color:var(--fg)}
   .prose ul{margin:16px 0 0 2px;list-style:none;max-width:78ch}
-  .prose li{margin-top:9px;color:var(--dim);font-weight:300;font-size:1.0625rem;
+  .prose li{margin-top:9px;color:var(--ink);font-weight:300;font-size:1.0625rem;
     padding-left:20px;position:relative}
   .prose li::before{content:"—";position:absolute;left:0;color:var(--faint)}
 
