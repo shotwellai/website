@@ -46,6 +46,17 @@
   [data-palette="segmentation"]{--acc:#00C8DC;--acc2:#E5006E;--fail:#E5006E;--on-acc:#0A0D12}
   [data-palette="blueprint"]{--acc:#4B6BFF;--acc2:#9BA6C4;--fail:#FF5A6E;--on-acc:#0B0E17}
 
+  /* announcement banner: board yellow with the timeline grey chip */
+  .announce{display:flex;justify-content:center;align-items:center;gap:14px;
+    background:var(--acc);color:var(--on-acc);padding:10px 40px;
+    font-size:.8125rem;font-weight:500;text-decoration:none;flex-wrap:wrap;
+    text-align:center}
+  .announce .a-tag{font-family:var(--mono);font-size:.5625rem;letter-spacing:.18em;
+    text-transform:uppercase;background:#4A4A52;color:#F5F2EB;padding:3px 9px;flex:none}
+  .announce b{font-weight:600}
+  .announce u{text-decoration:underline;text-underline-offset:3px}
+  .announce:hover{filter:brightness(1.05)}
+
   .brandbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;
     justify-content:space-between;gap:20px;padding:14px 40px;
     background:color-mix(in srgb,var(--ground) 90%,transparent);backdrop-filter:blur(10px)}
@@ -287,6 +298,10 @@
 </head>
 <body>
 
+<a class="announce" href="/ultra-case-study/">
+  <span class="a-tag">Case study</span>
+  <span>Ultra supports <b>6&times; more operators</b> per engineer with Shotwell, without scaling the team to match.&ensp;<u>Read how &rarr;</u></span>
+</a>
 <div class="brandbar">
   <a href="/" data-theme-longpress><img id="mark" src="/brand/assets/SVG/shotwell-logo-horizontal-white.svg" alt="Shotwell"></a>
   <div class="navlinks">
