@@ -39,7 +39,7 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Outfit:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Manrope:wght@500;600&family=Outfit:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/tokens.css">
 <script>try{var t=localStorage.getItem('shotwell-sample-theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 <style>
@@ -256,11 +256,17 @@
     mix-blend-mode:screen;opacity:.55}
   .logos img.tall{height:42px}
   .logos img.tile{height:38px;filter:grayscale(1);mix-blend-mode:normal;opacity:.85}
+  .logos .trace-customer{gap:10px;text-decoration:none}
+  .logos .trace-customer img{height:36px}
+  .trace-wordmark{font-family:'Manrope',var(--body);font-size:2.1rem;
+    font-weight:600;letter-spacing:-.055em;line-height:1;color:var(--fg);opacity:.55}
+  .logos a:hover .trace-wordmark{opacity:1}
   .logos-more{margin-top:42px;text-align:center;font-family:var(--mono);
     font-size:.875rem;letter-spacing:.26em;text-transform:uppercase;color:var(--dim)}
   /* light ground can take the logos in their real colours, gently faded */
   [data-theme="light"] .logos img{filter:none;mix-blend-mode:multiply;opacity:.7}
   [data-theme="light"] .logos img.tile{mix-blend-mode:normal}
+  [data-theme="light"] .trace-wordmark{opacity:.7}
 
   .cta small{font-size:.75em;font-weight:400;opacity:.75}
   footer{padding:26px 0 60px;font-family:var(--mono);font-size:.625rem;
@@ -359,6 +365,7 @@
     <a href="https://www.ultra.tech/" target="_blank" rel="noopener"><img src="/ultra-logo.svg" alt="Ultra"></a>
     <a href="https://www.frontiermachines.ai/" target="_blank" rel="noopener"><img class="tall" src="/frontier-logo.svg" alt="Frontier Machines"></a>
     <a href="https://www.parametric.company/" target="_blank" rel="noopener"><img class="tile" src="/parametric-logo.png" alt="Parametric"></a>
+    <a class="trace-customer" href="https://www.tracelabs.ai" target="_blank" rel="noopener"><img src="/trace-logo.svg" alt="Trace"><span class="trace-wordmark">Trace</span></a>
   </div>
   <div class="logos-more">and more</div>
 
