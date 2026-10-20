@@ -897,6 +897,19 @@ const slips = (n, kind) => hash(n) < (kind === 'umi' ? 0.4 : 0.2);
 /* The egocentric runner stays in place and walks; the world scrolls past.
    A dashed playhead annotates each scene that passes it. Dropped boxes roll toward the runner;
    it jumps them by itself, or on Space / tap. A counter keeps the episodes seen since load. */
+let AC = null, muted = false;
+function beep(kind) {
+  if (muted) return;
+  try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return; }
+  const notes = { jump: [[520, 0.06], [780, 0.06]], double: [[780, 0.05], [1040, 0.06]], get: [[988, 0.05], [1319, 0.08]],
+                  combo: [[1319, 0.05], [1568, 0.05], [2093, 0.09]], fail: [[300, 0.1], [180, 0.18]], flip: [[660, 0.08], [880, 0.08], [660, 0.08]] }[kind];
+  let at = AC.currentTime;
+  for (const [f, d] of notes) {
+    const o = AC.createOscillator(), g = AC.createGain();
+    o.type = 'square'; o.frequency.value = f; g.gain.setValueAtTime(0.045, at); g.gain.exponentialRampToValueAtTime(0.001, at + d);
+    o.connect(g).connect(AC.destination); o.start(at); o.stop(at + d); at += d * 0.9;
+  }
+}
 STUDIES.runner = {
   init(s, r) {
     const small = document.createElement('canvas'); small.width = SCENE_W; small.height = SCENE_H;
@@ -906,13 +919,19 @@ STUDIES.runner = {
       clouds: Array.from({ length: 4 }, (_, i) => [i * 520 + r() * 200, 8 + r() * 40]), boxes: [], dropped: new Set(), lastT: null,
       game: prev.game || false, hi: prev.hi || 0, logo: null, calm0: null };
     for (const tone of ['black', 'white']) { const im = new Image(); im.src = `/brand/assets/SVG/shotwell-mark-${tone}.svg`; d['mark_' + tone] = im; }
+    s.canvas.__s = s;                                    // for tests
     if (!s.canvas.__keys) {
       s.canvas.__keys = true;
       const onLogo = (e) => {
         const cur = s.data, rc = s.canvas.getBoundingClientRect(), x = e.clientX - rc.left, y = e.clientY - rc.top, L = cur.logo;
         return L && x >= L[0] - 6 && x <= L[0] + L[2] + 6 && y >= L[1] - 6 && y <= L[1] + L[3] + 6;
       };
-      const press = () => { const g = s.data.run; if (!s.data.game || !g) return; if (g.over) { if (performance.now() - g.overAt > 400) s.data.run = newRun(); return; } if (g.jumpY === 0) { g.vy = 420; g.holding = true; } };
+      const press = () => {
+        const g = s.data.run; if (!s.data.game || !g) return;
+        if (g.over) { if (performance.now() - g.overAt > 400) s.data.run = newRun(); return; }
+        if (g.jumpY === 0) { g.vy = 420; g.holding = true; g.jumps = 1; beep('jump'); }
+        else if (g.jumps < 2) { g.vy = 380; g.holding = true; g.jumps = 2; beep('double'); }     // double jump
+      };
       const release = () => { const g = s.data.run; if (g) { g.holding = false; if (g.vy > 160) g.vy = 160; } };   // a tap is a hop; hold for height
       s.canvas.addEventListener('pointerdown', (e) => {
         const cur = s.data;
@@ -922,19 +941,33 @@ STUDIES.runner = {
       addEventListener('pointerup', release);
       s.canvas.addEventListener('pointermove', (e) => { s.canvas.style.cursor = onLogo(e) || s.data.game ? 'pointer' : ''; });
       const live = (e) => {
-        if (!s.data.game || e.code !== 'Space' || e.target.closest('input,textarea,button,a')) return false;
+        if (!s.data.game || !['Space', 'ArrowDown', 'KeyM'].includes(e.code) || e.target.closest('input,textarea,button,a')) return false;
         const rc = s.canvas.getBoundingClientRect(); return !(rc.bottom < 0 || rc.top > innerHeight);
       };
-      addEventListener('keydown', (e) => { if (live(e)) { e.preventDefault(); if (!e.repeat) press(); } });
-      addEventListener('keyup', (e) => { if (live(e)) release(); });
+      addEventListener('keydown', (e) => {
+        if (!live(e)) return; e.preventDefault();
+        const g = s.data.run;
+        if (e.code === 'ArrowDown') { if (g) g.duck = true; }
+        else if (e.code === 'KeyM') { if (!e.repeat) muted = !muted; }
+        else if (!e.repeat) press();
+      });
+      addEventListener('keyup', (e) => {
+        if (!live(e)) return;
+        if (e.code === 'ArrowDown') { const g = s.data.run; if (g) g.duck = false; } else if (e.code === 'Space') release();
+      });
     }
     if (d.game) d.run = prev.run || newRun();
     return d;
-    function newRun() { return { t: 0, speed: 150, score: 0, jumpY: 0, vy: 0, holding: false, items: [], pops: [], parts: [], next: 0.8, over: false, overAt: 0 }; }
+    function newRun() { return { t: 0, speed: 150, score: 0, jumpY: 0, vy: 0, jumps: 0, duck: false, holding: false, combo: 0, items: [], pops: [], parts: [], next: 0.8, over: false, overAt: 0, phase: 0, flipAt: -9 }; }
   },
   draw(ctx, s, t, c) {
     const d = s.data, dt = d.lastT == null ? 0 : Math.min(0.05, t - d.lastT); d.lastT = t;
     const g = d.game ? d.run : null;
+    if (g) {
+      const phase = Math.floor(g.score / 500) % 2;
+      if (phase !== g.phase) { g.phase = phase; g.flipAt = t; beep('flip'); }
+      if (phase) c = (c === DARK || c === FROST_D) ? FROST_L : FROST_D;
+    }
     ctx.fillStyle = c.ground; ctx.fillRect(0, 0, s.w, s.h);
     const k = s.w < 600 ? 3 : 4, spacing = (SCENE_W + 30) * k;
     const speed = g ? (g.over ? 0 : g.speed) : 34;
@@ -962,7 +995,7 @@ STUDIES.runner = {
       ctx.globalAlpha = g ? 1 : 0.7; ctx.drawImage(mark, mx, my, mw, mh); ctx.globalAlpha = 1;
       d.logo = [mx, my, mw, mh];
       if (g) {
-        ctx.fillStyle = `rgba(${c.ink},.6)`; ctx.fillText('JUMP: SPACE OR TAP · HOLD FOR HIGHER', mx + mw + 10, my + 4);
+        ctx.fillStyle = `rgba(${c.ink},.6)`; ctx.fillText(`SPACE: JUMP, AGAIN IN AIR · DOWN: DUCK · M: ${muted ? 'SOUND ON' : 'MUTE'}`, mx + mw + 10, my + 4);
         ctx.fillStyle = c.acc; ctx.fillRect(mx + mw + 10, my + 17, 7, 7); ctx.fillStyle = `rgba(${c.ink},.6)`; ctx.fillText('COLLECT', mx + mw + 21, my + 17);
         ctx.fillStyle = ink; ctx.fillRect(mx + mw + 90, my + 17, 7, 7); ctx.fillStyle = `rgba(${c.ink},.6)`; ctx.fillText('AVOID', mx + mw + 101, my + 17);
       }
@@ -1014,18 +1047,21 @@ STUDIES.runner = {
       g.next -= dt;
       if (g.next <= 0) {                                                                // spawn: a FAIL crate, or a run of yellow data
         const wx = shift + s.w + 30;
-        if (d.r() < 0.62) g.items.push({ type: 'crate', wx, h: d.r() < 0.35 ? 2 : 1 });
+        const roll = d.r(), touch = matchMedia('(hover: none)').matches;
+        if (g.t > 8 && roll < 0.22) g.items.push({ type: 'drone', wx, high: !touch && d.r() < 0.55 });   // high: duck under; low: jump over
+        else if (roll < 0.62) g.items.push({ type: 'crate', wx, h: d.r() < 0.35 ? 2 : 1 });
         else { const air = d.r() < 0.6; for (let i = 0; i < 3; i++) g.items.push({ type: 'gem', wx: wx + i * 9 * k, y: air ? gy - (16 + Math.sin(i / 2 * Math.PI) * 6) * k : gy - 6 * k }); }
         g.next = Math.max(0.55, 1.5 - g.t * 0.012) + d.r() * 0.7;
       }
       if (g.vy !== 0 || g.jumpY > 0) {
         g.jumpY = Math.max(0, g.jumpY + g.vy * dt);
         g.vy -= (g.holding && g.vy > 0 ? 520 : 1100) * dt;                               // lighter gravity while held on the way up
-        if (g.jumpY === 0) g.vy = 0;
+        if (g.jumpY === 0) { g.vy = 0; g.jumps = 0; }
       }
     }
     // the runner's box: torso and legs
-    const hb = { x0: runX + 8 * k, x1: runX + 17 * k, y0: gy - g.jumpY - 30 * k, y1: gy - g.jumpY };
+    const ducking = g.duck && g.jumpY === 0;
+    const hb = { x0: runX + 8 * k, x1: runX + 17 * k, y0: gy - g.jumpY - (ducking ? 17 : 30) * k, y1: gy - g.jumpY };
     g.items = g.items.filter(it => {
       const sx = Math.round(it.wx - shift);
       if (it.type === 'crate') {
@@ -1035,15 +1071,29 @@ STUDIES.runner = {
           box(sx, yy, w, ink, ink); ctx.fillStyle = c.ground;                            // a dark crate marked with an X
           for (let q = 1; q < 5; q++) { ctx.fillRect(sx + q * k, yy + q * k, k, k); ctx.fillRect(sx + (5 - q) * k, yy + q * k, k, k); }
         }
-        if (!g.over && sx < hb.x1 && sx + w > hb.x0 && hb.y1 > y + 2) { g.over = true; g.overAt = performance.now(); g.hitX = sx; }
+        if (!g.over && sx < hb.x1 && sx + w > hb.x0 && hb.y1 > y + 2) { g.over = true; g.overAt = performance.now(); g.combo = 0; beep('fail'); }
+      } else if (it.type === 'drone') {
+        // a small quadcopter: body, two arms, spinning rotors
+        const y = Math.round(it.high ? gy - 27 * k : gy - 9 * k) + Math.round(Math.sin(t * 5 + it.wx) * k);
+        const spin = (t * 20 | 0) % 2;
+        ctx.fillStyle = ink;
+        ctx.fillRect(sx + 2 * k, y + k, 6 * k, 3 * k);
+        ctx.fillRect(sx, y, 10 * k, k);
+        ctx.fillRect(sx + (spin ? 0 : k), y - k, 3 * k, k / 2 + 1); ctx.fillRect(sx + (spin ? 7 : 6) * k, y - k, 3 * k, k / 2 + 1);
+        ctx.fillStyle = c.ground; ctx.fillRect(sx + 4 * k, y + 2 * k, 2 * k, k);
+        const w = 10 * k, h = 4 * k;
+        if (!g.over && sx < hb.x1 && sx + w > hb.x0 && y < hb.y1 && y + h > hb.y0) { g.over = true; g.overAt = performance.now(); g.combo = 0; beep('fail'); }
       } else if (!it.got) {
         const w = 4 * k, y = Math.round(it.y + Math.sin(t * 6 + it.wx) * 2);
         box(sx, y, w, c.acc, ink);
         if (!g.over && sx < hb.x1 && sx + w > hb.x0 && y < hb.y1 && y + w > hb.y0) {
-          it.got = true; g.score += 25;
-          g.pops.push({ x: sx, y, a: 1 });
+          it.got = true; g.combo++;
+          const mult = Math.min(4, 1 + Math.floor((g.combo - 1) / 3)), pts = 25 * mult;
+          g.score += pts;
+          g.pops.push({ x: sx, y, a: 1, txt: '+' + pts, big: mult > 1 && (g.combo - 1) % 3 === 0 ? 'x' + mult : '' });
+          beep(mult > 1 && (g.combo - 1) % 3 === 0 ? 'combo' : 'get');
           for (let q = 0; q < 10; q++) g.parts.push({ x: sx + w / 2, y: y + w / 2, vx: (d.r() - 0.5) * 220, vy: -d.r() * 220, a: 1 });
-        }
+        } else if (!it.missed && sx + w < hb.x0 - 4) { it.missed = true; g.combo = 0; }      // a missed box breaks the combo
       }
       return sx > -80;
     });
@@ -1051,13 +1101,24 @@ STUDIES.runner = {
     for (const p of g.parts) { p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 500 * dt; p.a -= dt * 1.6; ctx.fillStyle = c.acc; if (p.a > 0) ctx.fillRect(Math.round(p.x), Math.round(p.y), k, k); }
     g.parts = g.parts.filter(p => p.a > 0);
     ctx.textAlign = 'center';
-    for (const p of g.pops) { p.y -= 30 * dt; p.a -= dt * 1.2; if (p.a > 0) { ctx.fillStyle = `rgba(${c.ink},${p.a.toFixed(2)})`; ctx.fillText('+25', p.x + 8, p.y - 12); } }
+    for (const p of g.pops) {
+      p.y -= 30 * dt; p.a -= dt * 1.2; if (p.a <= 0) continue;
+      ctx.fillStyle = `rgba(${c.ink},${p.a.toFixed(2)})`; ctx.fillText(p.txt, p.x + 8, p.y - 12);
+      if (p.big) { ctx.save(); ctx.font = '16px "Pokemon GB", monospace'; ctx.fillStyle = c.acc; ctx.fillText(p.big, p.x + 8, p.y - 34); ctx.restore(); }
+    }
+    // the combo meter
+    if (g.combo > 0) {
+      const mult = Math.min(4, 1 + Math.floor((g.combo - 1) / 3));
+      ctx.textAlign = 'right'; ctx.fillStyle = mult > 1 ? c.acc : `rgba(${c.ink},.6)`;
+      ctx.fillText(`COMBO ${g.combo}  x${mult}`, s.w - 16, 28); ctx.textAlign = 'center';
+    }
     g.pops = g.pops.filter(p => p.a > 0);
     // the runner (hands free in the game: yellow only means data to collect)
     const mc = d.me.getContext('2d'), M = pix(mc);
     mc.clearRect(0, 0, d.me.width, d.me.height);
     SCENES.egoRunner(M, mc, c, g.over || g.jumpY > 0 ? 0 : t * (1.2 + g.speed / 200), false);
-    ctx.drawImage(d.me, runX, gy - SCENE_H * k + k - g.jumpY, d.me.width * k, d.me.height * k);
+    const squash = ducking ? 0.6 : 1, dh = d.me.height * k * squash;
+    ctx.drawImage(d.me, runX, gy + k - SCENE_H * k * squash - g.jumpY, d.me.width * k * (ducking ? 1.15 : 1), dh);
     if (g.over) {
       const msg = 'FAIL · SPACE OR TAP TO RETRY', mw = ctx.measureText(msg).width + 24, mx = s.w / 2;
       ctx.fillStyle = ink; ctx.fillRect(mx - mw / 2, gy - 150, mw, 26); ctx.fillStyle = c.ground; ctx.fillText(msg, mx, gy - 141);

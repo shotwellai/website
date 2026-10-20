@@ -329,7 +329,7 @@ html[data-theme="dark"] body.board{--fail:#F2EFE8}
   <img class="f-mark" src="/brand/assets/SVG/shotwell-mark-black.svg" alt="Shotwell">
 </div><div class="wrap"><footer><span>Shotwell — annotations for robotics data</span><span>team@shotwell.ai</span></footer></div></section>
 <script type="module">
-import { mount, strip, getClip, currentSegment } from './art.js?v=1792456392';
+import { mount, strip, getClip, currentSegment } from './art.js?v=1792456711';
 const RULES = {
   'Pick up': [['One arm pick up', 'pass']], 'Straighten': [['No slipping', 'fail'], ['Shirt orientation', 'pass']],
   'Fold right sleeve': [['Right sleeve first', 'pass']], 'Fold left sleeve': [['Sleeve tucked in', 'fail']],
@@ -351,7 +351,7 @@ const onBoard = document.body.classList.contains('board');
 const FX = { envelope: 'dither', contours: 'dither' };
 document.querySelectorAll('canvas[data-art]').forEach((c, i) => mount(c, c.dataset.art, { rows: +c.dataset.rows || undefined, seed: 11 + i,
   palette: onBoard ? 'frost' : undefined, fx: onBoard ? FX[c.dataset.art] : undefined }));
-import { loopPair } from './art.js?v=1792456392';
+import { loopPair } from './art.js?v=1792456711';
 document.querySelectorAll('.loop').forEach(l => {
   const [a, b] = l.querySelectorAll('canvas'), [ca, cb] = l.querySelectorAll('.chip');
   loopPair(a, b); loopPair(ca, cb);
@@ -380,7 +380,7 @@ btn.addEventListener('click', () => {
   paint(); dispatchEvent(new Event('themechange'));
 });
 
-import { startBoard } from './board.js?v=1792456392';
+import { startBoard } from './board.js?v=1792456711';
 const cv = document.createElement('canvas'); cv.id = 'board'; cv.setAttribute('aria-hidden', 'true');
 const frost = document.createElement('div'); frost.className = 'frost';
 const center = document.createElement('div'); center.className = 'center';

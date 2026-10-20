@@ -273,7 +273,7 @@ section{padding:110px 0}
   <img class="f-mark" src="/brand/assets/SVG/shotwell-mark-black.svg" alt="Shotwell">
 </div><div class="wrap"><footer><span>Shotwell — annotations for robotics data</span><span>team@shotwell.ai</span></footer></div></section>
 <script type="module">
-import { mount, strip, getClip, currentSegment } from './art.js?v=1792456392';
+import { mount, strip, getClip, currentSegment } from './art.js?v=1792456711';
 const RULES = {
   'Pick up': [['One arm pick up', 'pass']], 'Straighten': [['No slipping', 'fail'], ['Shirt orientation', 'pass']],
   'Fold right sleeve': [['Right sleeve first', 'pass']], 'Fold left sleeve': [['Sleeve tucked in', 'fail']],
@@ -295,7 +295,7 @@ const onBoard = document.body.classList.contains('board');
 const FX = { envelope: 'dither', contours: 'dither' };
 document.querySelectorAll('canvas[data-art]').forEach((c, i) => mount(c, c.dataset.art, { rows: +c.dataset.rows || undefined, seed: 11 + i,
   palette: onBoard ? 'frost' : undefined, fx: onBoard ? FX[c.dataset.art] : undefined }));
-import { loopPair } from './art.js?v=1792456392';
+import { loopPair } from './art.js?v=1792456711';
 document.querySelectorAll('.loop').forEach(l => {
   const [a, b] = l.querySelectorAll('canvas'), [ca, cb] = l.querySelectorAll('.chip');
   loopPair(a, b); loopPair(ca, cb);
