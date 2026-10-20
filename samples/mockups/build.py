@@ -75,9 +75,11 @@ section{padding:110px 0}
 .logos{display:flex;align-items:center;justify-content:center;gap:64px;flex-wrap:wrap}
 .logos img{height:30px;width:auto;mix-blend-mode:multiply;opacity:.92}
 .logos img.tall{height:42px}.logos img.tile{height:38px}
-.logos .trace{display:inline-flex;align-items:center;gap:8px}
-.logos .trace img{height:30px}
-.logos .trace span{font-family:'Manrope',var(--body);font-size:1.75rem;font-weight:600;letter-spacing:-.055em;line-height:1;color:var(--ink);opacity:.8}
+.logos .trace,.logos .parametric{display:inline-flex;align-items:center;gap:8px}
+.logos .parametric img{height:30px;border-radius:7px}
+.logos .parametric span{font-family:'Geist',var(--body);font-size:1.6rem;font-weight:600;letter-spacing:-.035em;line-height:1;color:var(--ink)}
+.logos .trace img{height:34px}
+.logos .trace span{font-family:'Manrope',var(--body);font-size:2.1rem;font-weight:600;letter-spacing:-.055em;line-height:1;color:var(--ink);opacity:.8}
 [data-theme="dark"] .quote .who img{filter:invert(1) hue-rotate(180deg);mix-blend-mode:screen;opacity:.9}
 [data-theme="dark"] .logos img{filter:invert(1) hue-rotate(180deg);mix-blend-mode:screen;opacity:.9}
 
@@ -198,7 +200,7 @@ HEAD = """<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
 <meta name="description" content="{intro}">
 <link rel="icon" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Manrope:wght@600&family=Outfit:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Geist:wght@600&family=Manrope:wght@600&family=Outfit:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script>document.documentElement.dataset.theme=new URLSearchParams(location.search).get("theme")||localStorage.getItem("mock-theme")||"light";</script>
 <style>{css}{extra}</style></head><body class="{body}">
 <a class="announce" href="/ultra-case-study/"><span class="a-tag">Case study</span><span>Ultra supports <b>6× more operators</b> per engineer with Shotwell. <u>Read how →</u></span></a>
@@ -210,7 +212,7 @@ NAV = """<div class="brandbar">
     <button class="theme tbtn" type="button" aria-label="Toggle theme">☾</button>
     <a href="/ultra-case-study/">Blog</a>
     <a href="https://demo.shotwell.ai/">Demo</a>
-    <a class="ghostcta" href="#contact">Talk to us</a>
+    <a class="ghostcta" href="/contact/">Talk to us</a>
     <a class="cta" href="https://app.shotwell.ai/">Upload videos now <small>· 24 hr turnaround</small></a>
   </div>
 </div>
@@ -220,7 +222,8 @@ TRUSTED = """<div class="trusted"><div class="wrap">
   <div class="t-lbl">Trusted by</div>
   <div class="logos">
     <img src="/weave-logo.png" alt="Weave Robotics"><img src="/ultra-logo.svg" alt="Ultra">
-    <img class="tall" src="/frontier-logo.svg" alt="Frontier Machines"><img class="tile" src="/parametric-logo.png" alt="Parametric">
+    <img class="tall" src="/frontier-logo.svg" alt="Frontier Machines"><span class="parametric"><img src="/parametric-mark.svg" alt=""><span>Parametric</span></span>
+    <span class="trace"><img src="/trace-logo.svg" alt=""><span>Trace</span></span>
   </div>
   <div class="t-more">And more</div>
 </div></div>
@@ -699,3 +702,24 @@ for slug, (name, extra, body, content) in PAGES.items():
     (HERE / f"{slug}.html").write_text(html)
 (HERE / "index.html").write_text(INDEX)
 print("built", ", ".join(f"{s}.html" for s in PAGES), "+ index.html")
+
+# ── the homepage candidate: mockup E with the live site's head (SEO, analytics), assets under /assets/home ──
+# Written to home.html for review; copy it over /index.html to go live.
+import shutil
+SITE = HERE.parent.parent
+home = SITE / "assets" / "home"
+home.mkdir(parents=True, exist_ok=True)
+for name in ("art.js", "board.js"):
+    shutil.copy(HERE / name, home / name)
+shutil.copy(HERE / "fonts" / "pokemon-gb.ttf", home / "pokemon-gb.ttf")
+shutil.copy(HERE / "fonts" / "pokemon-gb-LICENSE.txt", home / "pokemon-gb-LICENSE.txt")
+html = (HERE / "e.html").read_text()
+head_start = html.index('<meta charset="utf-8">')
+head_end = html.index('<link rel="preconnect" href="https://fonts.googleapis.com">')
+html = html[:head_start] + (HERE / "live-head.html").read_text() + html[head_end:]
+html = html.replace("./art.js?v=", "/assets/home/art.js?v=").replace("./board.js?v=", "/assets/home/board.js?v=")
+html = html.replace("url('fonts/pokemon-gb.ttf')", "url('/assets/home/pokemon-gb.ttf')")
+html = html.replace('localStorage.getItem("mock-theme")||"light"', 'localStorage.getItem("shotwell-sample-theme")||(matchMedia("(prefers-color-scheme: light)").matches?"light":"dark")')
+html = html.replace("localStorage.setItem('mock-theme', next)", "localStorage.setItem('shotwell-sample-theme', next)")
+(HERE / "home.html").write_text(html)
+print("wrote samples/mockups/home.html + assets/home/")

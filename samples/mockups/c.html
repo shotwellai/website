@@ -4,7 +4,7 @@
 <meta name="description" content="The best understanding of your robotics data. Labels, annotations, and quality checks for robotics labs, deployment companies, and data vendors.">
 <link rel="icon" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Manrope:wght@600&family=Outfit:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Geist:wght@600&family=Manrope:wght@600&family=Outfit:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script>document.documentElement.dataset.theme=new URLSearchParams(location.search).get("theme")||localStorage.getItem("mock-theme")||"light";</script>
 <style>
 :root{--ground:#F5F2EB;--surface:#EDE9DF;--ink:#22222A;--dim:rgba(34,34,42,.66);--faint:rgba(34,34,42,.42);
@@ -73,9 +73,11 @@ section{padding:110px 0}
 .logos{display:flex;align-items:center;justify-content:center;gap:64px;flex-wrap:wrap}
 .logos img{height:30px;width:auto;mix-blend-mode:multiply;opacity:.92}
 .logos img.tall{height:42px}.logos img.tile{height:38px}
-.logos .trace{display:inline-flex;align-items:center;gap:8px}
-.logos .trace img{height:30px}
-.logos .trace span{font-family:'Manrope',var(--body);font-size:1.75rem;font-weight:600;letter-spacing:-.055em;line-height:1;color:var(--ink);opacity:.8}
+.logos .trace,.logos .parametric{display:inline-flex;align-items:center;gap:8px}
+.logos .parametric img{height:30px;border-radius:7px}
+.logos .parametric span{font-family:'Geist',var(--body);font-size:1.6rem;font-weight:600;letter-spacing:-.035em;line-height:1;color:var(--ink)}
+.logos .trace img{height:34px}
+.logos .trace span{font-family:'Manrope',var(--body);font-size:2.1rem;font-weight:600;letter-spacing:-.055em;line-height:1;color:var(--ink);opacity:.8}
 [data-theme="dark"] .quote .who img{filter:invert(1) hue-rotate(180deg);mix-blend-mode:screen;opacity:.9}
 [data-theme="dark"] .logos img{filter:invert(1) hue-rotate(180deg);mix-blend-mode:screen;opacity:.9}
 
@@ -213,7 +215,7 @@ section{padding:110px 0}
     <button class="theme tbtn" type="button" aria-label="Toggle theme">☾</button>
     <a href="/ultra-case-study/">Blog</a>
     <a href="https://demo.shotwell.ai/">Demo</a>
-    <a class="ghostcta" href="#contact">Talk to us</a>
+    <a class="ghostcta" href="/contact/">Talk to us</a>
     <a class="cta" href="https://app.shotwell.ai/">Upload videos now <small>· 24 hr turnaround</small></a>
   </div>
 </div>
@@ -228,7 +230,8 @@ section{padding:110px 0}
   <div class="t-lbl">Trusted by</div>
   <div class="logos">
     <img src="/weave-logo.png" alt="Weave Robotics"><img src="/ultra-logo.svg" alt="Ultra">
-    <img class="tall" src="/frontier-logo.svg" alt="Frontier Machines"><img class="tile" src="/parametric-logo.png" alt="Parametric">
+    <img class="tall" src="/frontier-logo.svg" alt="Frontier Machines"><span class="parametric"><img src="/parametric-mark.svg" alt=""><span>Parametric</span></span>
+    <span class="trace"><img src="/trace-logo.svg" alt=""><span>Trace</span></span>
   </div>
   <div class="t-more">And more</div>
 </div></div>
@@ -273,7 +276,7 @@ section{padding:110px 0}
   <img class="f-mark" src="/brand/assets/SVG/shotwell-mark-black.svg" alt="Shotwell">
 </div><div class="wrap"><footer><span>Shotwell — annotations for robotics data</span><span>team@shotwell.ai</span></footer></div></section>
 <script type="module">
-import { mount, strip, getClip, currentSegment } from './art.js?v=1792456711';
+import { mount, strip, getClip, currentSegment } from './art.js?v=1792458231';
 const RULES = {
   'Pick up': [['One arm pick up', 'pass']], 'Straighten': [['No slipping', 'fail'], ['Shirt orientation', 'pass']],
   'Fold right sleeve': [['Right sleeve first', 'pass']], 'Fold left sleeve': [['Sleeve tucked in', 'fail']],
@@ -295,7 +298,7 @@ const onBoard = document.body.classList.contains('board');
 const FX = { envelope: 'dither', contours: 'dither' };
 document.querySelectorAll('canvas[data-art]').forEach((c, i) => mount(c, c.dataset.art, { rows: +c.dataset.rows || undefined, seed: 11 + i,
   palette: onBoard ? 'frost' : undefined, fx: onBoard ? FX[c.dataset.art] : undefined }));
-import { loopPair } from './art.js?v=1792456711';
+import { loopPair } from './art.js?v=1792458231';
 document.querySelectorAll('.loop').forEach(l => {
   const [a, b] = l.querySelectorAll('canvas'), [ca, cb] = l.querySelectorAll('.chip');
   loopPair(a, b); loopPair(ca, cb);
