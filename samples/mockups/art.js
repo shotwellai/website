@@ -897,6 +897,36 @@ const slips = (n, kind) => hash(n) < (kind === 'umi' ? 0.4 : 0.2);
 /* The egocentric runner stays in place and walks; the world scrolls past.
    A dashed playhead annotates each scene that passes it. Dropped boxes roll toward the runner;
    it jumps them by itself, or on Space / tap. A counter keeps the episodes seen since load. */
+const GAME_API = (typeof window !== 'undefined' && window.SHOTWELL_GAME_API) || 'https://label.shotwell.ai';
+async function fetchBoard() {
+  try { const r = await fetch(GAME_API + '/api/game/leaderboard'); if (r.ok) return (await r.json()).top || []; } catch (e) {}
+  return null;
+}
+async function submitScore(initials, score, runMs) {
+  const r = await fetch(GAME_API + '/api/game/score', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ initials, score, run_ms: runMs }) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error || 'could not save');
+  return j;
+}
+// the three-letter entry: a small form over the strip, so it works with a phone keyboard too
+function initialsForm(s, onDone) {
+  const host = s.canvas.parentElement; host.style.position = 'relative';
+  const f = document.createElement('form'); f.className = 'hiscore';
+  f.innerHTML = '<label>NEW HIGH SCORE · YOUR 3 LETTERS</label><input maxlength="3" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Three letters"><button>SAVE</button><output></output>';
+  host.appendChild(f);
+  const inp = f.querySelector('input'), out = f.querySelector('output'), btn = f.querySelector('button');
+  inp.addEventListener('input', () => { inp.value = inp.value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3); });
+  f.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!/^[A-Z]{3}$/.test(inp.value)) { out.textContent = 'THREE LETTERS, A TO Z'; return; }
+    btn.disabled = true; out.textContent = 'SAVING…';
+    try { const res = await onDone(inp.value); f.remove(); return res; }
+    catch (err) { out.textContent = String(err.message || err).toUpperCase(); btn.disabled = false; }
+  });
+  setTimeout(() => inp.focus({ preventScroll: true }), 50);
+  return f;
+}
 let AC = null, muted = false;
 function beep(kind) {
   if (muted) return;
@@ -917,7 +947,7 @@ STUDIES.runner = {
     const prev = s.data || {};
     const d = { small, me, r, specks: Array.from({ length: 90 }, () => [r() * 2000, 1 + (r() * 6 | 0), 1 + (r() * 3 | 0)]),
       clouds: Array.from({ length: 4 }, (_, i) => [i * 520 + r() * 200, 8 + r() * 40]), boxes: [], dropped: new Set(), lastT: null,
-      game: prev.game || false, hi: prev.hi || 0, logo: null, calm0: null };
+      game: prev.game || false, hi: prev.hi || 0, logo: null, calm0: null, board: prev.board || null, form: prev.form || null };
     for (const tone of ['black', 'white']) { const im = new Image(); im.src = `/brand/assets/SVG/shotwell-mark-${tone}.svg`; d['mark_' + tone] = im; }
     s.canvas.__s = s;                                    // for tests
     if (!s.canvas.__keys) {
@@ -928,14 +958,14 @@ STUDIES.runner = {
       };
       const press = () => {
         const g = s.data.run; if (!s.data.game || !g) return;
-        if (g.over) { if (performance.now() - g.overAt > 400) s.data.run = newRun(); return; }
+        if (g.over) { if (s.data.form) return; if (performance.now() - g.overAt > 400) s.data.run = newRun(); return; }
         if (g.jumpY === 0) { g.vy = 420; g.holding = true; g.jumps = 1; beep('jump'); }
         else if (g.jumps < 2) { g.vy = 380; g.holding = true; g.jumps = 2; beep('double'); }     // double jump
       };
       const release = () => { const g = s.data.run; if (g) { g.holding = false; if (g.vy > 160) g.vy = 160; } };   // a tap is a hop; hold for height
       s.canvas.addEventListener('pointerdown', (e) => {
         const cur = s.data;
-        if (onLogo(e)) { cur.game = !cur.game; cur.run = cur.game ? newRun() : null; return; }
+        if (onLogo(e)) { cur.game = !cur.game; cur.run = cur.game ? newRun() : null; cur.form?.remove(); cur.form = null; if (cur.game) fetchBoard().then(b => { if (b) cur.board = b; }); return; }
         press();
       });
       addEventListener('pointerup', release);
@@ -1042,16 +1072,32 @@ STUDIES.runner = {
     }
 
     // ── the game ──
+    const endRun = () => {
+      const final = Math.floor(g.score), b = d.board || [];
+      g.final = final;
+      if (final > 0 && d.board && (b.length < 10 || final > b[b.length - 1].score) && !d.form) {
+        d.form = initialsForm(s, async (letters) => {
+          const res = await submitScore(letters, final, Math.round(g.t * 1000));
+          d.board = res.top; g.rank = res.rank; d.form = null; return res;
+        });
+      }
+    };
     if (!g.over) {
-      g.t += dt; g.speed = Math.min(340, 150 + g.t * 5);
+      g.t += dt; g.speed = g.t < 55 ? 150 + g.t * 6 : Math.min(760, 480 + (g.t - 55) * 4);   // after ~1 min it keeps speeding up, to 760
       g.next -= dt;
       if (g.next <= 0) {                                                                // spawn: a FAIL crate, or a run of yellow data
         const wx = shift + s.w + 30;
         const roll = d.r(), touch = matchMedia('(hover: none)').matches;
-        if (g.t > 8 && roll < 0.22) g.items.push({ type: 'drone', wx, high: !touch && d.r() < 0.55 });   // high: duck under; low: jump over
-        else if (roll < 0.62) g.items.push({ type: 'crate', wx, h: d.r() < 0.35 ? 2 : 1 });
+        const maxH = Math.min(4, 1 + Math.floor(g.t / 18));                              // stacks grow taller over time
+        const height = () => 1 + Math.floor(Math.pow(d.r(), 0.8) * maxH);
+        if (g.t > 8 && roll < Math.min(0.35, 0.18 + g.t * 0.003)) g.items.push({ type: 'drone', wx, high: !touch && d.r() < 0.55 });
+        else if (roll < 0.66) {
+          g.items.push({ type: 'crate', wx, h: height() });
+          if (g.t > 20 && d.r() < Math.min(0.5, 0.2 + g.t * 0.005))                        // a second stack close behind
+            g.items.push({ type: 'crate', wx: wx + (10 + d.r() * 8) * k, h: Math.max(1, height() - 1) });
+        }
         else { const air = d.r() < 0.6; for (let i = 0; i < 3; i++) g.items.push({ type: 'gem', wx: wx + i * 9 * k, y: air ? gy - (16 + Math.sin(i / 2 * Math.PI) * 6) * k : gy - 6 * k }); }
-        g.next = Math.max(0.55, 1.5 - g.t * 0.012) + d.r() * 0.7;
+        g.next = Math.max(0.38, 1.5 - g.t * 0.02) + d.r() * Math.max(0.25, 0.7 - g.t * 0.008);
       }
       if (g.vy !== 0 || g.jumpY > 0) {
         g.jumpY = Math.max(0, g.jumpY + g.vy * dt);
@@ -1071,7 +1117,7 @@ STUDIES.runner = {
           box(sx, yy, w, ink, ink); ctx.fillStyle = c.ground;                            // a dark crate marked with an X
           for (let q = 1; q < 5; q++) { ctx.fillRect(sx + q * k, yy + q * k, k, k); ctx.fillRect(sx + (5 - q) * k, yy + q * k, k, k); }
         }
-        if (!g.over && sx < hb.x1 && sx + w > hb.x0 && hb.y1 > y + 2) { g.over = true; g.overAt = performance.now(); g.combo = 0; beep('fail'); }
+        if (!g.over && sx < hb.x1 && sx + w > hb.x0 && hb.y1 > y + 2) { g.over = true; g.overAt = performance.now(); g.combo = 0; beep('fail'); endRun(); }
       } else if (it.type === 'drone') {
         // a small quadcopter: body, two arms, spinning rotors
         const y = Math.round(it.high ? gy - 27 * k : gy - 9 * k) + Math.round(Math.sin(t * 5 + it.wx) * k);
@@ -1082,7 +1128,7 @@ STUDIES.runner = {
         ctx.fillRect(sx + (spin ? 0 : k), y - k, 3 * k, k / 2 + 1); ctx.fillRect(sx + (spin ? 7 : 6) * k, y - k, 3 * k, k / 2 + 1);
         ctx.fillStyle = c.ground; ctx.fillRect(sx + 4 * k, y + 2 * k, 2 * k, k);
         const w = 10 * k, h = 4 * k;
-        if (!g.over && sx < hb.x1 && sx + w > hb.x0 && y < hb.y1 && y + h > hb.y0) { g.over = true; g.overAt = performance.now(); g.combo = 0; beep('fail'); }
+        if (!g.over && sx < hb.x1 && sx + w > hb.x0 && y < hb.y1 && y + h > hb.y0) { g.over = true; g.overAt = performance.now(); g.combo = 0; beep('fail'); endRun(); }
       } else if (!it.got) {
         const w = 4 * k, y = Math.round(it.y + Math.sin(t * 6 + it.wx) * 2);
         box(sx, y, w, c.acc, ink);
@@ -1120,8 +1166,20 @@ STUDIES.runner = {
     const squash = ducking ? 0.6 : 1, dh = d.me.height * k * squash;
     ctx.drawImage(d.me, runX, gy + k - SCENE_H * k * squash - g.jumpY, d.me.width * k * (ducking ? 1.15 : 1), dh);
     if (g.over) {
-      const msg = 'FAIL · SPACE OR TAP TO RETRY', mw = ctx.measureText(msg).width + 24, mx = s.w / 2;
+      const msg = d.form ? 'FAIL' : 'FAIL · SPACE OR TAP TO RETRY', mw = ctx.measureText(msg).width + 24, mx = s.w / 2;
       ctx.fillStyle = ink; ctx.fillRect(mx - mw / 2, gy - 150, mw, 26); ctx.fillStyle = c.ground; ctx.fillText(msg, mx, gy - 141);
+      if (d.board && d.board.length) {                                                  // the leaderboard, top 5
+        const bx = s.w - 190, by = 52, rows = d.board.slice(0, 5);
+        ctx.fillStyle = c.ground; ctx.fillRect(bx - 10, by - 8, 186, 22 + rows.length * 14);
+        ctx.fillStyle = ink; ctx.fillRect(bx - 10, by - 8, 186, 2); ctx.fillRect(bx - 10, by + 12 + rows.length * 14, 186, 2);
+        ctx.textAlign = 'left'; ctx.fillText('LEADERBOARD', bx, by);
+        rows.forEach((r, i) => {
+          ctx.fillStyle = g.rank === i + 1 ? c.acc : ink;
+          ctx.fillText(`${i + 1}. ${r.initials}`, bx, by + 16 + i * 14);
+          ctx.textAlign = 'right'; ctx.fillText(String(r.score).padStart(5, '0'), bx + 166, by + 16 + i * 14); ctx.textAlign = 'left';
+        });
+        ctx.textAlign = 'center';
+      }
     }
     ctx.textAlign = 'left';
   }

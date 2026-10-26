@@ -125,6 +125,14 @@ section{padding:110px 0}
 .data li{font-family:var(--mono);font-size:.8125rem;padding:6px 0;border-top:1px solid var(--wire);color:var(--dim)}
 .out{margin-top:20px;font-size:.9375rem}
 
+/* the runner game's three-letter high-score form */
+.runner{position:relative}
+.hiscore{position:absolute;left:50%;top:84px;transform:translateX(-50%);display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;
+  background:var(--ground);border:2px solid var(--ink);padding:12px 14px;font-family:'Pokemon GB',var(--mono);font-size:8px;color:var(--ink);z-index:3}
+.hiscore label{width:100%;text-align:center}
+.hiscore input{width:72px;font:16px 'Pokemon GB',var(--mono);letter-spacing:.2em;text-align:center;text-transform:uppercase;border:2px solid var(--ink);background:var(--ground);color:var(--ink);padding:4px}
+.hiscore button{font:8px 'Pokemon GB',var(--mono);background:var(--acc);color:#0C0C0E;border:0;padding:8px 10px;cursor:pointer}
+.hiscore output{width:100%;text-align:center;min-height:8px}
 /* data types: drawings in a row */
 .runner{margin:0 -40px}
 .runner canvas{display:block;width:100%;height:290px}
