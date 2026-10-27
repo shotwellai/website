@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shotwell-WGO-Bench | Draft | Shotwell</title>
+  <title>Shotwell-WGO-Bench: An annotation benchmark that accepts valid alternatives</title>
   <meta name="description" content="A draft introduction to Shotwell-WGO-Bench: evaluating dense video annotations without penalizing valid alternative segmentations and descriptions.">
   <meta name="robots" content="noindex, nofollow">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="Shotwell-WGO-Bench | Draft">
+  <meta property="og:title" content="Shotwell-WGO-Bench: An annotation benchmark that accepts valid alternatives">
   <meta property="og:description" content="Evaluating dense video annotations without penalizing valid alternatives.">
   <meta property="og:url" content="https://shotwell.ai/blog/shotwell-wgo-bench/">
   <meta property="og:site_name" content="Shotwell">
@@ -61,57 +61,83 @@
     .post-meta { display: flex; gap: 16px; font: 13px var(--mono); color: var(--dim); margin-bottom: 24px; }
     .draft { color: var(--accent); }
     h1 { font: 300 52px/1.12 var(--display); overflow-wrap: anywhere; }
+    .post-subtitle { margin: 14px 0 0; color: var(--dim); font: 300 24px/1.35 var(--body); }
     h2 { font: 400 30px/1.25 var(--display); margin: 52px 0 20px; }
     .prose { font-size: 18px; font-weight: 300; line-height: 1.8; }
     .prose p { margin-bottom: 24px; }
+    .pending-link { pointer-events: none; }
     .prose strong { font-weight: 500; }
     .prose ol { padding-left: 26px; margin: 28px 0; }
     .prose li { padding-left: 10px; margin-bottom: 28px; }
     .prose li::marker { font-family: var(--mono); font-size: 15px; color: var(--accent); }
     .comparison { margin: 40px 0 48px; }
-    .comparison-header { display: flex; justify-content: space-between; align-items: baseline; gap: 20px; margin-bottom: 16px; }
-    .comparison-index { display: block; margin-bottom: 7px; font: 12px var(--mono); color: var(--dim); }
-    .comparison h3 { font: 400 23px/1.3 var(--display); }
-    .comparison-score { flex: none; font: 12px/1.5 var(--mono); color: var(--dim); text-align: right; }
-    .comparison-score strong { color: var(--fg); font-size: 17px; font-weight: 500; }
+    .comparison-title { font: 400 23px/1.3 var(--display); margin: 0 0 14px; }
+    .comparison .comparison-note { margin: 16px 0 0; }
     .comparison video { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: contain; background: #050505; border: 1px solid var(--wire); border-radius: 4px; }
-    .comparison figcaption { margin-top: 18px; }
-    .comparison-summary { margin-bottom: 18px !important; font-size: 16px; line-height: 1.65; }
-    .timeline { --reference: #237e73; --astra: #ad710e; }
-    .timeline-ruler, .timeline-row { display: grid; grid-template-columns: 108px minmax(0, 1fr); gap: 14px; align-items: center; }
+    .comparison figcaption { margin-top: 12px; }
+    .timeline { --reference: #237e73; --shotwell-reference: #3989a3; --shotwell-reference-alt: #4b9cac; --astra: #b66a2c; --astra-alt: #b59425; --accepted: #53c386; --rejected: #ea6965; }
+    [data-theme="light"] .timeline { --shotwell-reference: #2982a0; --shotwell-reference-alt: #4198aa; --astra: #ed9a43; --astra-alt: #e8c33a; --accepted: #147b4b; --rejected: #be343b; }
+    .timeline-ruler, .timeline-row { display: grid; grid-template-columns: 108px minmax(0, 1fr); gap: 14px; align-items: start; }
     .timeline-ruler { margin: 0 0 7px; font: 11px var(--mono); color: var(--dim); }
     .timeline-ruler > span:last-child { display: flex; justify-content: space-between; }
-    .timeline-row { margin-bottom: 7px; }
-    .timeline-name { font: 12px/1.4 var(--mono); color: var(--fg); }
+    .timeline-row { margin-bottom: 4px; }
+    .timeline-name { margin-top: 6px; font: 12px/1.4 var(--mono); color: var(--fg); }
     .timeline-name::before { content: ''; display: inline-block; width: 8px; height: 8px; margin-right: 7px; background: var(--reference); }
     .timeline-row.astra .timeline-name::before { background: var(--astra); }
-    .timeline-track { position: relative; height: 36px; background: var(--surface); border: 1px solid var(--wire); }
+    .timeline-row.shotwell-reference { padding-top: 8px; border-top: 1px solid var(--wire); }
+    .timeline-row.shotwell-reference .timeline-name::before { background: var(--shotwell-reference); }
+    .timeline-plot { min-width: 0; }
+    .timeline-track { position: relative; height: 38px; background: var(--surface); border: 1px solid var(--wire); cursor: crosshair; touch-action: manipulation; }
+    .timeline-track:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
     .timeline-track::after { content: ''; position: absolute; z-index: 2; left: var(--playhead, 0%); top: -3px; bottom: -3px; width: 2px; background: var(--fg); pointer-events: none; opacity: .85; }
-    .timeline-segment { position: absolute; top: 3px; bottom: 3px; left: var(--from); width: calc(var(--to) - var(--from)); overflow: hidden; border: 0; border-radius: 2px; padding: 0; background: var(--reference); color: #fff; font: 12px var(--mono); white-space: nowrap; cursor: pointer; }
+    .timeline-segment { position: absolute; top: 3px; bottom: 3px; left: calc(var(--from) + 1px); width: calc(var(--to) - var(--from) - 2px); overflow: visible; border: 0; border-radius: 2px; padding: 0; background: var(--reference); color: transparent; font-size: 0; }
     .astra .timeline-segment { background: var(--astra); }
-    .timeline-segment:hover, .timeline-segment:focus-visible { filter: brightness(1.25); z-index: 3; }
-    .segment-list { margin-top: 16px; border-top: 1px solid var(--wire); }
-    .segment-line { display: grid; grid-template-columns: 60px 112px minmax(0, 1fr); gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px solid var(--wire); font-size: 14px; line-height: 1.45; }
-    .segment-line .who, .segment-line .when { font: 11px/1.5 var(--mono); }
-    .segment-line .who { color: var(--reference); }
-    .segment-line.astra .who { color: var(--astra); }
-    .segment-line .when { color: var(--dim); white-space: nowrap; }
-    .comparison-source { margin-top: 10px !important; color: var(--dim); font: 11px/1.6 var(--mono); }
-    .comparison-source a { color: inherit; text-underline-offset: 3px; }
-    .placeholder {
-      margin: 36px 0;
-      padding: 32px 24px;
-      min-height: 150px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      border: 1px dashed var(--wire-strong);
-      background: var(--surface);
-    }
-    .placeholder figcaption { font: 13px/1.7 var(--mono); color: var(--dim); }
-    .placeholder span { display: block; margin-top: 8px; }
-    .placeholder strong { color: var(--fg); font-weight: 500; }
+    .astra .timeline-segment:nth-child(even) { background: var(--astra-alt); }
+    .shotwell-reference .timeline-segment { background: var(--shotwell-reference); }
+    .shotwell-reference .timeline-segment:nth-child(even) { background: var(--shotwell-reference-alt); }
+    .timeline-segment[data-verdict]::after { position: absolute; z-index: 3; left: 50%; top: 50%; display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; color: #fff; font: 700 14px/1 var(--body); transform: translate(-50%, -50%); pointer-events: none; }
+    .timeline-segment[data-verdict="rejected"]::after { content: '\00D7'; background: var(--rejected); }
+    .timeline-segment[data-verdict="accepted"]::after { content: '\2713'; background: var(--accepted); }
+    .timeline-segment.is-current { filter: brightness(1.2); outline: 2px solid var(--fg); outline-offset: -2px; z-index: 1; }
+    .timeline-labels { position: relative; min-height: 22px; }
+    .timeline-label { position: absolute; top: 6px; visibility: hidden; width: max-content; max-width: 100%; padding: 1px 0; border: 0; background: transparent; color: var(--fg); text-align: center; font: 500 11px/1.3 var(--mono); cursor: pointer; }
+    .timeline-label::before { content: ''; position: absolute; top: -6px; left: var(--caret-x); transform: translateX(-50%); border-right: 4px solid transparent; border-bottom: 5px solid var(--reference); border-left: 4px solid transparent; }
+    .astra .timeline-label::before { border-bottom-color: var(--astra); }
+    .astra .timeline-label:nth-child(even)::before { border-bottom-color: var(--astra-alt); }
+    .shotwell-reference .timeline-label::before { border-bottom-color: var(--shotwell-reference); }
+    .shotwell-reference .timeline-label:nth-child(even)::before { border-bottom-color: var(--shotwell-reference-alt); }
+    .timeline-label:hover, .timeline-label:focus-visible { color: var(--fg); text-decoration: underline; text-underline-offset: 3px; }
+    .timeline-label.is-visible { visibility: visible; }
+    .score-results { --score-point: #75a8a8; --score-active: #e8b33a; --score-frontier: #75c8a9; margin: 36px 0 0; }
+    [data-theme="light"] .score-results { --score-point: #477f80; --score-active: #ac7116; --score-frontier: #17745d; }
+    .score-figure { margin: 0 0 44px; }
+    .score-figure figcaption { margin-bottom: 20px; font: 400 22px/1.3 var(--display); }
+    .score-figure figcaption span { display: block; margin-top: 4px; color: var(--dim); font: 12px/1.5 var(--mono); }
+    .score-plot-layout { display: grid; grid-template-columns: 16px 36px minmax(0, 1fr); gap: 6px 8px; }
+    .score-y-title { grid-column: 1; grid-row: 1; align-self: center; justify-self: center; writing-mode: vertical-rl; transform: rotate(180deg); color: var(--dim); font: 11px/1.4 var(--mono); }
+    .score-y-ticks { grid-column: 2; grid-row: 1; height: 340px; padding: 14px 0; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; }
+    .score-plot { grid-column: 3; grid-row: 1; position: relative; height: 340px; border: 1px solid var(--wire); background: var(--surface); }
+    .score-field { position: absolute; inset: 14px; }
+    .score-gridline { position: absolute; background: var(--wire); pointer-events: none; }
+    .score-gridline.vertical { top: 0; bottom: 0; width: 1px; left: var(--position); }
+    .score-gridline.horizontal { left: 0; right: 0; height: 1px; bottom: var(--position); }
+    .score-leaders { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    .score-leaders .score-frontier { fill: none; stroke: var(--score-frontier); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .score-leaders line { stroke: var(--wire-strong); stroke-width: 1; }
+    .score-leaders line.is-active { stroke: var(--score-active); stroke-width: 1.5; }
+    .score-label { position: absolute; z-index: 2; padding: 2px 3px; border: 0; background: var(--surface); color: var(--fg); text-align: center; font: 11px/1.35 var(--mono); white-space: nowrap; cursor: pointer; }
+    .score-label span, .score-label strong { display: block; }
+    .score-label strong { color: var(--score-active); font-weight: 500; font-variant-numeric: tabular-nums; }
+    .score-label.is-frontier strong { color: var(--score-frontier); }
+    .score-label-short { display: none !important; }
+    .score-label:hover, .score-label:focus-visible, .score-label.is-active { text-decoration: underline; text-underline-offset: 3px; }
+    .score-point { position: absolute; z-index: 3; width: 18px; height: 18px; padding: 0; border: 2px solid var(--surface); border-radius: 50%; background: var(--score-point); box-shadow: 0 0 0 1px var(--wire-strong); transform: translate(-50%, 50%); cursor: pointer; }
+    .score-point.is-frontier { background: var(--score-frontier); }
+    .score-point:hover, .score-point:focus-visible, .score-point.is-active { background: var(--score-active); box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--score-active); }
+    .score-tooltip { position: absolute; z-index: 4; width: max-content; max-width: min(220px, 100%); padding: 7px 9px; border: 1px solid var(--wire-strong); background: var(--surface); color: var(--fg); font: 11px/1.5 var(--mono); white-space: pre-line; pointer-events: none; }
+    .score-x-ticks, .score-y-ticks, .score-x-title { color: var(--dim); font: 11px/1.4 var(--mono); }
+    .score-x-ticks { grid-column: 3; display: flex; justify-content: space-between; margin: 0 14px; }
+    .score-x-title { grid-column: 3; text-align: center; margin-top: 2px; }
     .site-footer {
       border-top: 1px solid var(--wire);
       padding-top: 24px;
@@ -124,6 +150,7 @@
       color: var(--dim);
     }
     .site-footer a { text-underline-offset: 4px; }
+    .video-credit { flex-basis: 100%; font-size: 11px; }
     @media (max-width: 600px) {
       .brandbar { padding: 12px 20px; }
       .navlinks { gap: 12px; }
@@ -131,19 +158,21 @@
       .document { padding: 40px 20px; }
       .post-header { margin-bottom: 28px; padding-bottom: 24px; }
       h1 { font-size: 36px; }
+      .post-subtitle { font-size: 20px; }
       h2 { font-size: 26px; margin-top: 40px; }
+      .comparison-title { font-size: 20px; }
       .prose { font-size: 17px; line-height: 1.75; }
       .prose ol { padding-left: 22px; }
       .prose li { padding-left: 6px; }
-      .comparison-header { display: block; }
-      .comparison-score { margin-top: 8px; text-align: left; }
       .timeline-ruler, .timeline-row { grid-template-columns: 64px minmax(0, 1fr); gap: 8px; }
       .timeline-name { font-size: 10px; }
       .timeline-name::before { width: 6px; height: 6px; margin-right: 4px; }
-      .timeline-segment { font-size: 10px; }
-      .segment-line { grid-template-columns: 42px 90px minmax(0, 1fr); gap: 7px; font-size: 12px; }
-      .segment-line .who, .segment-line .when { font-size: 10px; }
-      .placeholder { padding: 24px 16px; }
+      .timeline-label { font-size: 10px; }
+      .timeline-segment[data-verdict]::after { width: 16px; height: 16px; font-size: 12px; }
+      .score-y-ticks, .score-plot { height: 260px; }
+      .score-label { font-size: 10px; }
+      .score-label-full { display: none !important; }
+      .score-label-short { display: block !important; }
     }
   </style>
 </head>
@@ -166,101 +195,16 @@
     <article aria-labelledby="post-title">
       <header class="post-header">
         <div class="post-meta"><span>Research</span><span class="draft">Draft</span></div>
-        <h1 id="post-title">Shotwell-<wbr>WGO-<wbr>Bench</h1>
+        <h1 id="post-title">Shotwell-WGO-Bench</h1>
+        <p class="post-subtitle">An annotation benchmark that accepts valid alternatives</p>
       </header>
 
       <div class="prose">
-        <p>VLMs are a practical way to produce dense language annotations for the large amounts of egocentric video used in robot-policy pretraining. There are several existing benchmarks that assess VLM annotation accuracy that are flawed because they penalize annotations that differ from the benchmark's reference set but are still valid annotations. Shotwell-WGO-Bench is designed to assess their accuracy in producing annotations without penalizing different valid ways of segmenting the same video.</p>
+        <p>VLMs are a practical way to produce dense language annotations for the large amounts of egocentric video used in robot-policy pretraining. There are several existing benchmarks that assess VLM annotation accuracy that are flawed because they penalize annotations that differ from the benchmark's reference set but are still valid annotations. Shotwell-WGO-Bench builds on <a href="https://huggingface.co/datasets/macrodata/WGO-Bench">WGO-Bench</a> by assessing accuracy in producing annotations without penalizing different valid ways of segmenting the same video.</p>
 
         <p>An annotation divides an episode into actions and describes each action in language. The tradeoffs between VLM approaches are accuracy, level of detail, and cost. Accuracy is particularly difficult to benchmark: annotators can choose different boundaries or group actions differently, yet produce equally valid accounts of what happened.</p>
 
-        <h2>The limits of a single reference timeline</h2>
-
-        <p>WGO-Bench and MicroAnnotationBench compare VLM annotations with human reference annotations. Both accommodate some variation through fixed timing tolerances and LLM judges that assess whether descriptions are semantically equivalent. However, both compare segmentation against just a single reference timeline. This can penalize logical alternative groupings of actions and understate annotation quality. Astra scores around 0.40 F1 score in published evaluations of both benchmarks. The examples below are from a fresh, independent Astra run on public WGO-Bench videos, not from those published evaluations. We compare its output with WGO-Bench's reference using its <a href="https://macrodata.co/blog/annotating-robot-video-subtasks">published temporal-IoU threshold of 0.75</a>.</p>
-
-        <figure class="comparison" data-clip-start="10.5" data-clip-end="21">
-          <div class="comparison-header">
-            <div><span class="comparison-index">01 / HOMER_1</span><h3>One pour, or several manipulations?</h3></div>
-            <div class="comparison-score"><strong>0.71</strong> best overlap / 0.75 required</div>
-          </div>
-          <video controls playsinline preload="metadata" poster="assets/homer-1-pour.jpg" aria-label="First-person video of a person handling two glasses and pouring water">
-            <source src="assets/homer-1-pour.mp4" type="video/mp4">
-            Your browser does not support video playback.
-          </video>
-          <figcaption>
-            <p class="comparison-summary">WGO's reference starts the wine-glass pour at 10.8s. Astra separately marks the person's handling of the pitcher and glasses before the pour itself. The narrower pour is visually reasonable, but its 0.71 overlap falls below WGO's 0.75 matching threshold.</p>
-            <div class="timeline" aria-label="Comparison of WGO and Astra action timelines from 10.5 to 21 seconds">
-              <div class="timeline-ruler"><span>Seconds</span><span><span>10.5</span><span>15.8</span><span>21.0</span></span></div>
-              <div class="timeline-row">
-                <span class="timeline-name">WGO</span>
-                <div class="timeline-track">
-                  <button class="timeline-segment" type="button" style="--from:2.79%;--to:97.26%" data-time="10.793" title="10.79–20.71: Pour water into the wine glass" aria-label="Play WGO reference: pour water into the wine glass, 10.79 to 20.71 seconds">Pour into wine glass</button>
-                </div>
-              </div>
-              <div class="timeline-row astra">
-                <span class="timeline-name">Astra</span>
-                <div class="timeline-track">
-                  <button class="timeline-segment" type="button" style="--from:0%;--to:9.52%" data-time="10.5" title="9.5–11.5: Lift the pitcher by its handle" aria-label="Play Astra: lift the pitcher, 9.5 to 11.5 seconds">1</button>
-                  <button class="timeline-segment" type="button" style="--from:9.52%;--to:19.05%" data-time="11.5" title="11.5–12.5: Pick up the tall glass" aria-label="Play Astra: pick up the tall glass, 11.5 to 12.5 seconds">2</button>
-                  <button class="timeline-segment" type="button" style="--from:19.05%;--to:23.81%" data-time="12.5" title="12.5–13.0: Set the tall glass farther left" aria-label="Play Astra: set down the tall glass, 12.5 to 13 seconds">3</button>
-                  <button class="timeline-segment" type="button" style="--from:23.81%;--to:28.57%" data-time="13" title="13.0–13.5: Pick up the wine glass" aria-label="Play Astra: pick up the wine glass, 13 to 13.5 seconds">4</button>
-                  <button class="timeline-segment" type="button" style="--from:28.57%;--to:95.24%" data-time="13.5" title="13.5–20.5: Pour from the pitcher into the wine glass" aria-label="Play Astra: pour into the wine glass, 13.5 to 20.5 seconds">Pour into wine glass</button>
-                  <button class="timeline-segment" type="button" style="--from:95.24%;--to:100%" data-time="20.5" title="20.5–21.0: Set down the wine glass" aria-label="Play Astra: set down the wine glass, 20.5 to 21 seconds">6</button>
-                </div>
-              </div>
-            </div>
-            <div class="segment-list" aria-label="Full segment descriptions">
-              <div class="segment-line"><span class="who">WGO</span><span class="when">10.8–20.7s</span><span>Pour water from the pitcher into the wine glass</span></div>
-              <div class="segment-line astra"><span class="who">Astra</span><span class="when">9.5–11.5s</span><span>Lift the pitcher by its handle</span></div>
-              <div class="segment-line astra"><span class="who">Astra</span><span class="when">11.5–12.5s</span><span>Pick up the tall glass</span></div>
-              <div class="segment-line astra"><span class="who">Astra</span><span class="when">12.5–13.0s</span><span>Set the tall glass farther left</span></div>
-              <div class="segment-line astra"><span class="who">Astra</span><span class="when">13.0–13.5s</span><span>Pick up the wine glass</span></div>
-              <div class="segment-line astra"><span class="who">Astra</span><span class="when">13.5–20.5s</span><span>Pour from the pitcher into the wine glass</span></div>
-              <div class="segment-line astra"><span class="who">Astra</span><span class="when">20.5–21.0s</span><span>Set down the wine glass</span></div>
-            </div>
-            <p class="comparison-source">Video excerpt and reference: <a href="https://huggingface.co/datasets/macrodata/WGO-Bench">WGO-Bench / HomER</a> (CC BY-NC-SA 4.0). Astra timeline: independent high-reasoning run. Video clip: 10.5–21.0s of the original episode.</p>
-          </figcaption>
-        </figure>
-
-        <figure class="comparison" data-clip-start="31.5" data-clip-end="44">
-          <div class="comparison-header">
-            <div><span class="comparison-index">02 / HOMER_2</span><h3>Wash the mug, or scrub then rinse?</h3></div>
-            <div class="comparison-score"><strong>0.45</strong> best overlap / 0.75 required</div>
-          </div>
-          <video controls playsinline preload="metadata" poster="assets/homer-2-wash.jpg" aria-label="First-person video of a person scrubbing and rinsing a glass mug">
-            <source src="assets/homer-2-wash.mp4" type="video/mp4">
-            Your browser does not support video playback.
-          </video>
-          <figcaption>
-            <p class="comparison-summary">WGO groups scrubbing and rinsing the glass mug into one wash segment. Astra splits the scrub, sponge release, and rinse. Both scrub and rinse are visible phases of the same task, yet neither Astra segment reaches 0.75 overlap with WGO's single wash interval.</p>
-            <div class="timeline" aria-label="Comparison of WGO and Astra action timelines from 31.5 to 44 seconds">
-              <div class="timeline-ruler"><span>Seconds</span><span><span>31.5</span><span>37.8</span><span>44.0</span></span></div>
-              <div class="timeline-row">
-                <span class="timeline-name">WGO</span>
-                <div class="timeline-track">
-                  <button class="timeline-segment" type="button" style="--from:2.4%;--to:97.6%" data-time="31.8" title="31.8–43.7: Wash the glass mug with a sponge under running water" aria-label="Play WGO reference: wash the glass mug, 31.8 to 43.7 seconds">Wash glass mug</button>
-                </div>
-              </div>
-              <div class="timeline-row astra">
-                <span class="timeline-name">Astra</span>
-                <div class="timeline-track">
-                  <button class="timeline-segment" type="button" style="--from:0%;--to:48%" data-time="31.5" title="31.0–37.5: Scrub the glass mug inside and outside" aria-label="Play Astra: scrub the glass mug, 31 to 37.5 seconds">Scrub mug</button>
-                  <button class="timeline-segment" type="button" style="--from:48%;--to:52%" data-time="37.5" title="37.5–38.0: Release the sponge into the sink" aria-label="Play Astra: release the sponge, 37.5 to 38 seconds">2</button>
-                  <button class="timeline-segment" type="button" style="--from:52%;--to:100%" data-time="38" title="38.0–44.5: Rinse the glass mug under running water" aria-label="Play Astra: rinse the glass mug, 38 to 44.5 seconds">Rinse mug</button>
-                </div>
-              </div>
-            </div>
-            <div class="segment-list" aria-label="Full segment descriptions">
-              <div class="segment-line"><span class="who">WGO</span><span class="when">31.8–43.7s</span><span>Wash the glass mug with a sponge under running water</span></div>
-              <div class="segment-line astra"><span class="who">Astra</span><span class="when">31.0–37.5s</span><span>Scrub the glass mug inside and outside</span></div>
-              <div class="segment-line astra"><span class="who">Astra</span><span class="when">37.5–38.0s</span><span>Release the sponge into the sink</span></div>
-              <div class="segment-line astra"><span class="who">Astra</span><span class="when">38.0–44.5s</span><span>Rinse the glass mug under running water</span></div>
-            </div>
-            <p class="comparison-source">Video excerpt and reference: <a href="https://huggingface.co/datasets/macrodata/WGO-Bench">WGO-Bench / HomER</a> (CC BY-NC-SA 4.0). Astra timeline: independent high-reasoning run. Video clip: 31.5–44.0s of the original episode.</p>
-          </figcaption>
-        </figure>
-
-        <h2>A benchmark that accepts valid alternatives</h2>
+        <h2>How we align annotation for better scoring</h2>
 
         <p>Shotwell-WGO-Bench eliminates these arbitrary penalties by restructuring WGO-Bench in three ways:</p>
 
@@ -270,21 +214,139 @@
           <li><strong>Multiple acceptable descriptions.</strong> For description grading, models receive fixed segments to describe. Each reference description provides required details and optional details for each segment. An LLM judge checks that required details are present and incorrect details are absent. The guide and explicit reference details leave less to the LLM judge's discretion.</li>
         </ol>
 
-        <p>The two clips above illustrate the kind of optional split this reference format can represent: glass handling before a pour, or scrubbing and rinsing as separate phases of washing. Those exact alternatives would need to be reviewed and added to the accepted reference set before claiming that Shotwell-WGO-Bench scores them as correct.</p>
+        <h2>The limits of a single reference timeline</h2>
 
-        <h2>Scoring</h2>
+        <p>WGO-Bench and MicroAnnotationBench compare VLM annotations with human reference annotations. Both compare segmentation against just a single reference timeline. This can penalize logical alternative groupings of actions and understate annotation quality. Astra scores around 0.40 F1 score in published evaluations of both benchmarks. Below, we show examples of our run of Astra on the WGO-Bench where Astra's segments are fully valid, but are marked as wrong by WGO-Bench due to the <a href="https://macrodata.co/blog/annotating-robot-video-subtasks">benchmark's IoU threshold of 0.75</a>.</p>
 
-        <p>We report segmentation and description F1 separately, then multiply them for the final score.</p>
+        <p>In the examples below, you can compare WGO-Bench and Shotwell-WGO-Bench to see how Astra was scored. In each of these examples, WGO marked Astra's annotations as incorrect, despite Astra being fully accurate. Shotwell-WGO-Bench is better able to assess Astra's annotations and marks Astra correctly.</p>
 
-        <figure class="placeholder">
-          <figcaption><strong>GRAPH</strong><span>Results to be added</span></figcaption>
+        <figure class="comparison" data-clip-start="140" data-clip-end="149.5">
+          <h3 class="comparison-title">One cleanup action, or three?</h3>
+          <video controls playsinline preload="metadata" poster="assets/homer-2-sponge.jpg" aria-label="First-person video of a person rinsing a sponge and washing their hands">
+            <source src="assets/homer-2-sponge.mp4" type="video/mp4">
+            Your browser does not support video playback.
+          </video>
+          <figcaption>
+            <div class="timeline" aria-label="Comparison of WGO and Shotwell-WGO action timelines from 140 to 149.5 seconds">
+              <div class="timeline-ruler"><span>Seconds</span><span><span>140.0</span><span>144.8</span><span>149.5</span></span></div>
+              <div class="timeline-row">
+                <span class="timeline-name">WGO Reference</span>
+                <div class="timeline-track">
+                  <span class="timeline-segment" style="--from:6.32%;--to:97.89%" data-time="140.6" data-end="149.3" title="140.6–149.3: Rinse and squeeze the sponge under running water and wash your hands"></span>
+                </div>
+              </div>
+              <div class="timeline-row astra">
+                <span class="timeline-name">Astra on WGO</span>
+                <div class="timeline-track">
+                  <span class="timeline-segment" style="--from:5.26%;--to:57.89%" data-time="140.5" data-end="145.5" data-verdict="rejected" title="140.5–145.5: Rinse and wring out the sponge"></span>
+                  <span class="timeline-segment" style="--from:57.89%;--to:68.42%" data-time="145.5" data-end="146.5" data-verdict="rejected" title="145.5–146.5: Put the sponge in the sink caddy"></span>
+                  <span class="timeline-segment" style="--from:68.42%;--to:100%" data-time="146.5" data-end="149.5" data-verdict="rejected" title="146.5–149.5: Rub and rinse both hands under running water"></span>
+                </div>
+              </div>
+              <div class="timeline-row shotwell-reference">
+                <span class="timeline-name">Shotwell-WGO Reference</span>
+                <div class="timeline-track">
+                  <span class="timeline-segment" style="--from:0%;--to:57.89%" data-time="140" data-end="145.5" title="140.0–145.5: Wring the sponge with both hands"></span>
+                  <span class="timeline-segment" style="--from:57.89%;--to:68.42%" data-time="145.5" data-end="146.5" title="145.5–146.5: Put the sponge in the caddy with the right hand"></span>
+                  <span class="timeline-segment" style="--from:68.42%;--to:100%" data-time="146.5" data-end="149.5" title="146.5–149.5: Wash both hands"></span>
+                </div>
+              </div>
+              <div class="timeline-row astra shotwell-astra">
+                <span class="timeline-name">Astra on Shotwell-WGO</span>
+                <div class="timeline-track">
+                  <span class="timeline-segment" style="--from:0%;--to:56.84%" data-time="140" data-end="145.4" data-verdict="accepted" title="140.0–145.4: Wring the sponge with both hands"></span>
+                  <span class="timeline-segment" style="--from:56.84%;--to:69.47%" data-time="145.4" data-end="146.6" data-verdict="accepted" title="145.4–146.6: Put the sponge in the caddy with the right hand"></span>
+                  <span class="timeline-segment" style="--from:69.47%;--to:100%" data-time="146.6" data-end="149.5" data-verdict="accepted" title="146.6–149.5: Wash both hands"></span>
+                </div>
+              </div>
+            </div>
+            <p class="comparison-note">WGO penalizes Astra for having split the segments, even though Astra annotates each segment perfectly. Because Shotwell-WGO is extremely precise on how to segment, Astra is marked correct in Shotwell-WGO.</p>
+          </figcaption>
         </figure>
+
+        <figure class="comparison" data-clip-start="10.5" data-clip-end="21">
+          <h3 class="comparison-title">Where does the pour begin?</h3>
+          <video controls playsinline preload="metadata" poster="assets/homer-1-pour.jpg" aria-label="First-person video of a person handling two glasses and pouring water">
+            <source src="assets/homer-1-pour.mp4" type="video/mp4">
+            Your browser does not support video playback.
+          </video>
+          <figcaption>
+            <div class="timeline" aria-label="Comparison of WGO and Shotwell-WGO action timelines from 10.5 to 21 seconds">
+              <div class="timeline-ruler"><span>Seconds</span><span><span>10.5</span><span>15.8</span><span>21.0</span></span></div>
+              <div class="timeline-row">
+                <span class="timeline-name">WGO Reference</span>
+                <div class="timeline-track">
+                  <span class="timeline-segment" style="--from:2.79%;--to:97.26%" data-time="10.793" data-end="20.712" title="10.79–20.71: Pour water into the wine glass"></span>
+                </div>
+              </div>
+              <div class="timeline-row astra">
+                <span class="timeline-name">Astra on WGO</span>
+                <div class="timeline-track">
+                  <span class="timeline-segment" style="--from:0%;--to:9.52%" data-time="10.5" data-end="11.5" data-verdict="rejected" title="9.5–11.5: Lift the pitcher by its handle"></span>
+                  <span class="timeline-segment" style="--from:9.52%;--to:23.81%" data-time="11.5" data-end="13" data-verdict="rejected" title="11.5–13.0: Move the tall glass left"></span>
+                  <span class="timeline-segment" style="--from:23.81%;--to:28.57%" data-time="13" data-end="13.5" data-verdict="rejected" title="13.0–13.5: Pick up the wine glass"></span>
+                  <span class="timeline-segment" style="--from:28.57%;--to:95.24%" data-time="13.5" data-end="20.5" data-verdict="rejected" title="13.5–20.5: Pour from the pitcher into the wine glass"></span>
+                </div>
+              </div>
+              <div class="timeline-row shotwell-reference">
+                <span class="timeline-name">Shotwell-WGO Reference</span>
+                <div class="timeline-track">
+                  <span class="timeline-segment" style="--from:0%;--to:23.81%" data-time="10.5" data-end="13" title="10.5–13.0: Pick the pitcher with the right hand and move a glass left with the left hand"></span>
+                  <span class="timeline-segment" style="--from:23.81%;--to:28.57%" data-time="13" data-end="13.5" title="13.0–13.5: Pick the wine glass with the left hand"></span>
+                  <span class="timeline-segment" style="--from:28.57%;--to:100%" data-time="13.5" data-end="21" title="13.5–21.0: Pour water into the wine glass with the pitcher in the right hand and hold the wine glass with the left hand"></span>
+                </div>
+              </div>
+              <div class="timeline-row astra shotwell-astra">
+                <span class="timeline-name">Astra on Shotwell-WGO</span>
+                <div class="timeline-track">
+                  <span class="timeline-segment" style="--from:0%;--to:9.52%" data-time="10.5" data-end="11.5" data-verdict="accepted" title="10.5–11.5: Pick the pitcher with the right hand"></span>
+                  <span class="timeline-segment" style="--from:9.52%;--to:23.81%" data-time="11.5" data-end="13" data-verdict="accepted" title="11.5–13.0: Move a glass left with the left hand"></span>
+                  <span class="timeline-segment" style="--from:23.81%;--to:29.52%" data-time="13" data-end="13.6" data-verdict="accepted" title="13.0–13.6: Pick the wine glass with the left hand"></span>
+                  <span class="timeline-segment" style="--from:29.52%;--to:100%" data-time="13.6" data-end="21" data-verdict="accepted" title="13.6–21.0: Pour water into the wine glass with the pitcher in the right hand and hold the wine glass with the left hand"></span>
+                </div>
+              </div>
+            </div>
+            <p class="comparison-note">Here WGO-Bench ignores some actions and penalizes Astra for mentioning them. Shotwell-WGO does not penalize and is correctly flexible here on grouping overlapping actions.</p>
+          </figcaption>
+        </figure>
+
+        <h2>Results</h2>
+
+        <p>We calculate segmentation and description F1 separately, then multiply them for the final score. The chart plots overall F1 score for each model against the cost to annotate an hour of video.</p>
+
+        <div class="score-results" aria-label="Draft benchmark results">
+          <figure class="score-figure">
+            <figcaption>Overall F1 vs. cost <span>Illustrative draft scores, not measured results.</span></figcaption>
+            <div class="score-plot-layout">
+              <div class="score-y-title">Overall F1</div>
+              <div class="score-y-ticks" aria-hidden="true"><span>1.0</span><span>0.75</span><span>0.50</span><span>0.25</span><span>0</span></div>
+              <div class="score-plot" role="group" aria-label="Model overall F1 by cost per video hour">
+                <div class="score-field" id="score-field">
+                  <svg class="score-leaders" id="score-leaders" aria-hidden="true"><polyline class="score-frontier" id="score-frontier"></polyline></svg>
+                  <span class="score-gridline vertical" style="--position: 25%"></span>
+                  <span class="score-gridline vertical" style="--position: 50%"></span>
+                  <span class="score-gridline vertical" style="--position: 75%"></span>
+                  <span class="score-gridline horizontal" style="--position: 25%"></span>
+                  <span class="score-gridline horizontal" style="--position: 50%"></span>
+                  <span class="score-gridline horizontal" style="--position: 75%"></span>
+                  <div class="score-tooltip" id="score-tooltip" role="tooltip" hidden></div>
+                </div>
+              </div>
+              <div class="score-x-ticks" aria-hidden="true"><span>$0.25</span><span>$2.50</span><span>$25</span></div>
+              <div class="score-x-title">Cost per video hour (USD, log scale)</div>
+            </div>
+          </figure>
+        </div>
+
+        <p>Here, the capabilities of stronger models, and the gap between them and weaker models, is shown much more strongly than the orginal WGO-Bench. In the original benchmark, smaller models that were clearly weaker (such as FLORA) scored close to Astra and beat Sol due to the noisiness of the scoring approach. Shotwell-WGO results correlate much more strongly with the generally accepted visual abilities of these models. The Pareto frontier of cost/quality routes along the latest GPT models.</p>
+        <p>You can view the benchmark videos and reference annotations <a href="./episodes/">here</a> and view the annotation guide <a class="pending-link" href="#" aria-disabled="true" tabindex="-1">here</a>.</p>
       </div>
     </article>
 
     <footer class="site-footer">
       <a href="/">Shotwell</a>
       <span><a href="/privacy/">Privacy</a> &middot; <a href="mailto:team@shotwell.ai">team@shotwell.ai</a></span>
+      <small class="video-credit">Video excerpts from <a href="https://huggingface.co/datasets/macrodata/WGO-Bench">WGO-Bench / HomER</a> (CC BY-NC-SA 4.0), trimmed from the original episodes.</small>
     </footer>
   </main>
 
@@ -292,23 +354,263 @@
     import { init } from '/assets/theme.js';
     init();
 
+    const draftScores = [
+      { model: 'GPT-6 Astra', short: 'Astra', cost: 20, lane: 'above', segmentation: 0.92, description: 0.92 },
+      { model: 'GPT-6.1 Sol', short: 'Sol', cost: 2.50, lane: 'below', segmentation: 0.84, description: 0.85 },
+      { model: 'GPT-6 Luna', short: 'Luna', cost: 0.35, lane: 'below', segmentation: 0.74, description: 0.71 },
+      { model: 'Gemini 4 Argon', short: 'Argon', cost: 5.50, lane: 'above', segmentation: 0.80, description: 0.78 },
+      { model: 'Claude Opus 5.5', short: 'Opus', cost: 10, lane: 'below', segmentation: 0.81, description: 0.80 },
+      { model: 'Qwen3.8-Max (0902)', short: 'Qwen', cost: 1.20, lane: 'below', segmentation: 0.70, description: 0.68 },
+    ];
+    const costPosition = (cost) => Math.max(0, Math.min(1, Math.log(cost / 0.25) / Math.log(25 / 0.25)));
+    const overallScore = (score) => score.segmentation * score.description;
+    let bestScore = -Infinity;
+    const frontierScores = [...draftScores].sort((a, b) => a.cost - b.cost).filter((score) => {
+      const value = overallScore(score);
+      if (value <= bestScore) return false;
+      bestScore = value;
+      return true;
+    });
+    const scoreField = document.querySelector('#score-field');
+    const leaders = document.querySelector('#score-leaders');
+    const frontier = document.querySelector('#score-frontier');
+    const tooltip = document.querySelector('#score-tooltip');
+    const points = new Map();
+    const labels = new Map();
+    const lines = new Map();
+    let selectedModel = null;
+    let activeModel = null;
+    const positionTooltip = (score) => {
+      const x = costPosition(score.cost) * scoreField.clientWidth;
+      const y = (1 - overallScore(score)) * scoreField.clientHeight;
+      const left = x + tooltip.offsetWidth + 16 <= scoreField.clientWidth ? x + 16 : x - tooltip.offsetWidth - 16;
+      const top = y + tooltip.offsetHeight + 16 <= scoreField.clientHeight ? y + 16 : y - tooltip.offsetHeight - 16;
+      tooltip.style.left = `${Math.max(0, Math.min(scoreField.clientWidth - tooltip.offsetWidth, left))}px`;
+      tooltip.style.top = `${Math.max(0, Math.min(scoreField.clientHeight - tooltip.offsetHeight, top))}px`;
+    };
+    const showScore = (model) => {
+      const score = draftScores.find((item) => item.model === model);
+      activeModel = score?.model || null;
+      tooltip.hidden = !score;
+      if (score) {
+        tooltip.textContent = `${score.model}\nSegmentation F1 ${score.segmentation.toFixed(2)} · Description F1 ${score.description.toFixed(2)}\n$${score.cost.toFixed(2)} per video hour`;
+        positionTooltip(score);
+      }
+      points.forEach((point, name) => point.classList.toggle('is-active', name === model));
+      labels.forEach((label, name) => label.classList.toggle('is-active', name === model));
+      lines.forEach((line, name) => line.classList.toggle('is-active', name === model));
+    };
+    const selectScore = (model) => {
+      selectedModel = selectedModel === model ? null : model;
+      showScore(selectedModel);
+    };
+    draftScores.forEach((score) => {
+      const point = document.createElement('button');
+      point.type = 'button';
+      point.className = 'score-point';
+      point.classList.toggle('is-frontier', frontierScores.includes(score));
+      point.style.left = `${costPosition(score.cost) * 100}%`;
+      point.style.bottom = `${overallScore(score) * 100}%`;
+      point.setAttribute('aria-label', `${score.model}: segmentation F1 ${score.segmentation.toFixed(2)}, description F1 ${score.description.toFixed(2)}, overall F1 ${overallScore(score).toFixed(2)}, cost $${score.cost.toFixed(2)} per video hour`);
+      const label = document.createElement('button');
+      label.type = 'button';
+      label.className = 'score-label';
+      label.classList.toggle('is-frontier', frontierScores.includes(score));
+      label.setAttribute('aria-label', point.getAttribute('aria-label'));
+      const fullName = document.createElement('span');
+      fullName.className = 'score-label-full';
+      fullName.textContent = score.model;
+      const shortName = document.createElement('span');
+      shortName.className = 'score-label-short';
+      shortName.textContent = score.short;
+      const value = document.createElement('strong');
+      value.textContent = overallScore(score).toFixed(2);
+      label.append(fullName, shortName, value);
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      [point, label].forEach((target) => {
+        target.addEventListener('mouseenter', () => showScore(score.model));
+        target.addEventListener('mouseleave', () => showScore(selectedModel));
+        target.addEventListener('focus', () => showScore(score.model));
+        target.addEventListener('blur', () => showScore(selectedModel));
+        target.addEventListener('click', () => selectScore(score.model));
+      });
+      leaders.append(line);
+      scoreField.append(point);
+      scoreField.append(label);
+      points.set(score.model, point);
+      labels.set(score.model, label);
+      lines.set(score.model, line);
+    });
+    const positionLabels = () => {
+      const width = scoreField.clientWidth;
+      const height = scoreField.clientHeight;
+      leaders.setAttribute('viewBox', `0 0 ${width} ${height}`);
+      frontier.setAttribute('points', frontierScores.map((score) => `${costPosition(score.cost) * width},${(1 - overallScore(score)) * height}`).join(' '));
+      draftScores.forEach((score) => {
+        const label = labels.get(score.model);
+        const x = costPosition(score.cost) * width;
+        const y = (1 - overallScore(score)) * height;
+        const left = Math.max(0, Math.min(width - label.offsetWidth, x - label.offsetWidth / 2));
+        const preferredTop = score.lane === 'above' ? y - label.offsetHeight - 17 : y + 17;
+        const top = Math.max(0, Math.min(height - label.offsetHeight, preferredTop));
+        label.style.left = `${left}px`;
+        label.style.top = `${top}px`;
+        const line = lines.get(score.model);
+        line.setAttribute('x1', x);
+        line.setAttribute('y1', y + (score.lane === 'above' ? -10 : 10));
+        line.setAttribute('x2', left + label.offsetWidth / 2);
+        line.setAttribute('y2', top + (score.lane === 'above' ? label.offsetHeight : 0));
+      });
+      if (activeModel) positionTooltip(draftScores.find((score) => score.model === activeModel));
+    };
+    positionLabels();
+    new ResizeObserver(positionLabels).observe(scoreField);
+    showScore(null);
+
     document.querySelectorAll('.comparison').forEach((comparison) => {
       const video = comparison.querySelector('video');
       const clipStart = Number(comparison.dataset.clipStart);
       const clipLength = Number(comparison.dataset.clipEnd) - clipStart;
       const tracks = comparison.querySelectorAll('.timeline-track');
-      const updatePlayhead = () => {
-        const position = `${Math.min(100, Math.max(0, video.currentTime / clipLength * 100))}%`;
-        tracks.forEach((track) => track.style.setProperty('--playhead', position));
+      const rows = [...comparison.querySelectorAll('.timeline-row')];
+      let preview = null;
+      let previewFrame = 0;
+      const seekTo = (time) => {
+        const nextTime = Math.min(clipLength, Math.max(0, time - clipStart));
+        if (preview) {
+          cancelAnimationFrame(previewFrame);
+          previewFrame = 0;
+          preview.restoreTime = nextTime;
+          preview.time = nextTime;
+        }
+        video.currentTime = nextTime;
+        updatePlayhead();
       };
-      video.addEventListener('timeupdate', updatePlayhead);
-      video.addEventListener('seeked', updatePlayhead);
-      comparison.querySelectorAll('.timeline-segment').forEach((segment) => {
-        segment.addEventListener('click', () => {
-          video.currentTime = Math.min(clipLength, Math.max(0, Number(segment.dataset.time) - clipStart));
-          video.play().catch(() => {});
+      const previewAt = (event, track) => {
+        if (event.pointerType === 'touch' || !video.paused) return;
+        if (!preview) {
+          preview = { restoreTime: video.currentTime, time: video.currentTime };
+        }
+        const bounds = track.getBoundingClientRect();
+        preview.time = Math.min(clipLength, Math.max(0, (event.clientX - bounds.left) / bounds.width * clipLength));
+        updatePlayhead();
+        cancelAnimationFrame(previewFrame);
+        previewFrame = requestAnimationFrame(() => {
+          previewFrame = 0;
+          if (preview) video.currentTime = preview.time;
+        });
+      };
+      const endPreview = () => {
+        if (!preview) return;
+        cancelAnimationFrame(previewFrame);
+        previewFrame = 0;
+        const { restoreTime } = preview;
+        preview = null;
+        video.currentTime = restoreTime;
+        updatePlayhead();
+      };
+
+      rows.forEach((row) => {
+        const track = row.querySelector('.timeline-track');
+        const plot = document.createElement('div');
+        plot.className = 'timeline-plot';
+        track.replaceWith(plot);
+        plot.append(track);
+        const labels = document.createElement('div');
+        labels.className = 'timeline-labels';
+        plot.append(labels);
+
+        track.tabIndex = 0;
+        track.setAttribute('role', 'slider');
+        track.setAttribute('aria-label', `Seek ${row.querySelector('.timeline-name').textContent} video`);
+        track.setAttribute('aria-valuemin', '0');
+        track.setAttribute('aria-valuemax', String(clipLength));
+        track.addEventListener('pointerenter', (event) => previewAt(event, track));
+        track.addEventListener('pointermove', (event) => previewAt(event, track));
+        track.addEventListener('pointerleave', endPreview);
+        track.addEventListener('pointercancel', endPreview);
+        track.addEventListener('click', (event) => {
+          const bounds = track.getBoundingClientRect();
+          seekTo(clipStart + (event.clientX - bounds.left) / bounds.width * clipLength);
+        });
+        track.addEventListener('keydown', (event) => {
+          const delta = event.key === 'ArrowLeft' ? -.25 : event.key === 'ArrowRight' ? .25 : 0;
+          if (!delta && event.key !== 'Home' && event.key !== 'End') return;
+          event.preventDefault();
+          seekTo(clipStart + (event.key === 'Home' ? 0 : event.key === 'End' ? clipLength : video.currentTime + delta));
+        });
+
+        row.querySelectorAll('.timeline-segment').forEach((segment) => {
+          const label = document.createElement('button');
+          label.type = 'button';
+          label.className = 'timeline-label';
+          const [range, description] = segment.title.split(': ');
+          label.textContent = description;
+          const verdict = segment.dataset.verdict ? ` ${segment.dataset.verdict} by this benchmark.` : '';
+          label.setAttribute('aria-label', `${description}, ${range} seconds.${verdict} Seek to segment.`);
+          label.addEventListener('click', () => seekTo(Number(segment.dataset.time)));
+          labels.append(label);
+          segment._label = label;
+          segment.removeAttribute('title');
         });
       });
+
+      const positionLabels = () => {
+        rows.forEach((row) => {
+          const labels = row.querySelector('.timeline-labels');
+          const labelsLeft = labels.getBoundingClientRect().left;
+          const labelsWidth = labels.clientWidth;
+          let tallest = 0;
+          row.querySelectorAll('.timeline-segment').forEach((segment) => {
+            const label = segment._label;
+            const bar = segment.getBoundingClientRect();
+            const midpoint = bar.left + bar.width / 2 - labelsLeft;
+            const left = Math.max(0, Math.min(labelsWidth - label.offsetWidth, midpoint - label.offsetWidth / 2));
+            label.style.left = `${left}px`;
+            label.style.setProperty('--caret-x', `${Math.max(4, Math.min(label.offsetWidth - 4, midpoint - left))}px`);
+            tallest = Math.max(tallest, label.offsetHeight);
+          });
+          labels.style.height = `${Math.max(22, tallest + 7)}px`;
+        });
+      };
+
+      const updatePlayhead = () => {
+        const currentTime = preview?.time ?? video.currentTime;
+        const position = `${Math.min(100, Math.max(0, currentTime / clipLength * 100))}%`;
+        tracks.forEach((track) => {
+          track.style.setProperty('--playhead', position);
+          track.setAttribute('aria-valuenow', currentTime.toFixed(2));
+        });
+        const time = clipStart + currentTime;
+        comparison.querySelectorAll('.timeline-segment').forEach((segment) => {
+          const current = time >= Number(segment.dataset.time) && time < Number(segment.dataset.end);
+          segment.classList.toggle('is-current', current);
+        });
+        rows.forEach((row) => {
+          const segments = [...row.querySelectorAll('.timeline-segment')];
+          const distanceTo = (segment) => Math.max(
+            Number(segment.dataset.time) - time,
+            time - Number(segment.dataset.end),
+            0
+          );
+          const visible = segments.find((segment) => segment.classList.contains('is-current'))
+            || segments.reduce((nearest, segment) =>
+              !nearest || distanceTo(segment) < distanceTo(nearest) ? segment : nearest, null);
+          segments.forEach((segment) => {
+            const shown = segment === visible;
+            segment._label.classList.toggle('is-visible', shown);
+            segment._label.tabIndex = shown ? 0 : -1;
+            segment._label.setAttribute('aria-hidden', String(!shown));
+          });
+        });
+      };
+      video.addEventListener('play', endPreview);
+      video.addEventListener('timeupdate', updatePlayhead);
+      video.addEventListener('seeked', updatePlayhead);
+      positionLabels();
+      updatePlayhead();
+      window.addEventListener('resize', positionLabels);
+      document.fonts.ready.then(positionLabels);
     });
   </script>
 </body>
