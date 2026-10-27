@@ -1,20 +1,27 @@
 (() => {
-  const data = window.SHOTWELL_WGO_REFERENCE;
-  const episodes = data?.episodes || [];
-  const byId = new Map(episodes.map((episode) => [episode.id, episode]));
+  const episodes = window.SHOTWELL_WGO_REFERENCE?.episodes || [];
+  const byId = new Map(episodes.map((item) => [item.id, item]));
   const $ = (selector) => document.querySelector(selector);
   const video = $('#episode-video');
-  const episodeSelect = $('#episode-select');
-  const search = $('#segment-search');
-  const segmentList = $('#segment-list');
-  const track = $('#boundary-track');
-  const markers = $('#boundary-markers');
-  const selectedRange = $('#selected-range');
-  const playhead = $('#playhead');
+  const pauseAtMajorBoundaries = $('#pause-major-boundaries');
+  const episodeList = $('#episode-list');
+  const zoomTrack = $('#zoom-track');
+  const fullTrack = $('#full-track');
+  const zoomSeconds = 60;
   let episode = null;
   let selectedIndex = 0;
   let pendingSeek = null;
+  let zoomStart = 0;
+  let lastPlaybackTime = 0;
+  let pausedBoundary = null;
 
+  const clamp = (value, minimum, maximum) => Math.max(minimum, Math.min(maximum, value));
+  const make = (tag, className, value) => {
+    const element = document.createElement(tag);
+    if (className) element.className = className;
+    if (value != null) element.textContent = value;
+    return element;
+  };
   const formatTime = (seconds, precise = true) => {
     const units = Math.round(seconds * (precise ? 100 : 1));
     const perMinute = precise ? 6000 : 60;
@@ -25,195 +32,247 @@
       : `${minutes}:${String(remainder).padStart(2, '0')}`;
   };
   const rangeText = (start, end) => `${formatTime(start)}–${formatTime(end)}`;
-  const position = (time) => `${Math.max(0, Math.min(100, time / episode.duration * 100))}%`;
-  const make = (tag, className, value) => {
-    const element = document.createElement(tag);
-    if (className) element.className = className;
-    if (value != null) element.textContent = value;
-    return element;
-  };
-
-  function updateTime(time = video.currentTime || 0) {
-    if (!episode) return;
-    playhead.style.left = position(time);
-    $('#playback-time').textContent = `${formatTime(time)} / ${formatTime(episode.duration)}`;
-  }
-
-  function seek(time) {
-    const target = Math.max(0, Math.min(episode.duration, time));
-    if (video.readyState >= 1) video.currentTime = target;
-    else pendingSeek = target;
-    updateTime(target);
-  }
+  const percent = (time, start, duration) => `${clamp((time - start) / duration, 0, 1) * 100}%`;
+  const zoomLength = () => Math.min(zoomSeconds, episode.duration);
 
   function boundaryDescription(boundary) {
     const type = boundary.type === 'minor' ? 'Optional split' : 'Major boundary';
     return `${type} at ${formatTime(boundary.time)}; acceptable ${rangeText(boundary.minimum, boundary.maximum)}`;
   }
 
-  function renderBoundaries() {
-    markers.replaceChildren();
+  function renderBands(container, start, duration) {
+    const end = start + duration;
+    const fragment = document.createDocumentFragment();
+    episode.segments.forEach((segment, index) => {
+      const left = Math.max(segment.start, start);
+      const right = Math.min(segment.end, end);
+      if (right <= left) return;
+      const band = make('span', 'timeline-segment-band');
+      band.style.left = percent(left, start, duration);
+      band.style.width = `${(right - left) / duration * 100}%`;
+      band.dataset.index = index;
+      band.title = `${rangeText(segment.start, segment.end)}: ${segment.required[0]}`;
+      fragment.append(band);
+    });
+    container.replaceChildren(fragment);
+  }
+
+  function renderBoundaries(container, start, duration) {
+    const end = start + duration;
+    const fragment = document.createDocumentFragment();
     episode.boundaries.forEach((boundary) => {
       if (boundary.time <= 0 || boundary.time >= episode.duration) return;
-      const span = make('span', `boundary-window ${boundary.type === 'minor' ? 'minor' : ''}`);
-      span.style.left = position(boundary.minimum);
-      span.style.width = `${Math.max(0, (boundary.maximum - boundary.minimum) / episode.duration * 100)}%`;
-      markers.append(span);
-      const point = make('button', `boundary-marker ${boundary.type === 'minor' ? 'minor' : ''}`);
+      const left = Math.max(boundary.minimum, start);
+      const right = Math.min(boundary.maximum, end);
+      const minor = boundary.type === 'minor';
+      if (right > left) {
+        const window = make('span', `boundary-window${minor ? ' minor' : ''}`);
+        window.style.left = percent(left, start, duration);
+        window.style.width = `${(right - left) / duration * 100}%`;
+        fragment.append(window);
+      }
+      if (boundary.time < start || boundary.time > end) return;
+      const point = make('button', `boundary-marker${minor ? ' minor' : ''}`);
       point.type = 'button';
-      point.style.left = position(boundary.time);
+      point.style.left = percent(boundary.time, start, duration);
       point.title = boundaryDescription(boundary);
       point.setAttribute('aria-label', boundaryDescription(boundary));
       point.addEventListener('click', (event) => {
         event.stopPropagation();
         seek(boundary.time);
-        selectAtTime(boundary.time);
       });
-      markers.append(point);
+      fragment.append(point);
     });
+    container.replaceChildren(fragment);
+  }
+
+  function updateSelection() {
+    const segment = episode.segments[selectedIndex];
+    const setRange = (element, start, duration) => {
+      const left = Math.max(segment.start, start);
+      const right = Math.min(segment.end, start + duration);
+      element.style.left = percent(left, start, duration);
+      element.style.width = `${Math.max(0, right - left) / duration * 100}%`;
+    };
+    setRange($('#full-selected-range'), 0, episode.duration);
+    setRange($('#zoom-selected-range'), zoomStart, zoomLength());
+  }
+
+  function renderDetail() {
+    const segment = episode.segments[selectedIndex];
+    $('#required-list').replaceChildren(...segment.required.map((detail) => make('li', '', detail)));
+    $('#optional-list').replaceChildren(...segment.optional.map((detail) => make('li', '', detail)));
+    $('#optional-empty').hidden = segment.optional.length > 0;
+    updateSelection();
+  }
+
+  function selectAtTime(time) {
+    let index = episode.segments.findIndex((segment, i) =>
+      time >= segment.start && (time < segment.end || i === episode.segments.length - 1 && time <= segment.end));
+    if (index < 0) {
+      index = episode.segments.reduce((best, segment, i) => {
+        const gap = Math.max(segment.start - time, time - segment.end, 0);
+        const bestSegment = episode.segments[best];
+        const bestGap = Math.max(bestSegment.start - time, time - bestSegment.end, 0);
+        return gap < bestGap ? i : best;
+      }, 0);
+    }
+    if (index !== selectedIndex) {
+      selectedIndex = index;
+      renderDetail();
+    }
+  }
+
+  function renderZoom(time, force = false) {
+    const length = zoomLength();
+    const start = clamp(time - length / 2, 0, episode.duration - length);
+    if (!force && Math.abs(start - zoomStart) < .05) return;
+    zoomStart = start;
+    renderBands($('#zoom-segments'), start, length);
+    renderBoundaries($('#zoom-markers'), start, length);
+    updateSelection();
+    $('#zoom-label').textContent = `${formatTime(start, false)}–${formatTime(start + length, false)}`;
+    const x0 = start / episode.duration * 1000;
+    const x1 = (start + length) / episode.duration * 1000;
+    $('#fan-area').setAttribute('points', `0,0 1000,0 ${x1},28 ${x0},28`);
+    $('#full-window').style.left = percent(start, 0, episode.duration);
+    $('#full-window').style.width = `${length / episode.duration * 100}%`;
+  }
+
+  function syncTime(time) {
+    if (!episode) return;
+    const detailTime = pausedBoundary !== null && video.paused && Math.abs(time - pausedBoundary) < .02
+      ? Math.max(0, pausedBoundary - .001) : time;
+    selectAtTime(detailTime);
+    renderZoom(time);
+    $('#zoom-playhead').style.left = percent(time, zoomStart, zoomLength());
+    $('#full-playhead').style.left = percent(time, 0, episode.duration);
+    [zoomTrack, fullTrack].forEach((track) => {
+      track.setAttribute('aria-valuenow', String(time));
+      track.setAttribute('aria-valuetext', `${formatTime(time)} of ${formatTime(episode.duration)}`);
+    });
+  }
+
+  function seek(time) {
+    const target = clamp(time, 0, episode.duration);
+    pausedBoundary = null;
+    lastPlaybackTime = target;
+    if (video.readyState >= 1) video.currentTime = target;
+    else pendingSeek = target;
+    syncTime(target);
+  }
+
+  function renderEpisodeList() {
+    const fragment = document.createDocumentFragment();
+    episodes.forEach((item, index) => {
+      const row = make('button', 'episode-row');
+      row.type = 'button';
+      row.dataset.episode = item.id;
+      row.setAttribute('aria-label', `${item.sourceId}, ${item.task || 'reference episode'}, ${formatTime(item.duration, false)}`);
+      const title = make('span', 'episode-row-title');
+      title.append(make('span', '', `${index + 1}. ${item.sourceId}`),
+        make('span', '', formatTime(item.duration, false)));
+      row.append(title, make('span', 'episode-row-task', item.task || item.id));
+      row.addEventListener('click', () => showEpisode(item.id));
+      fragment.append(row);
+    });
+    episodeList.replaceChildren(fragment);
+  }
+
+  function showEpisode(id) {
+    episode = byId.get(id) || episodes[0];
+    if (!episode) return;
+    video.pause();
+    video.src = episode.videoUrl;
+    video.load();
+    pendingSeek = null;
+    lastPlaybackTime = 0;
+    pausedBoundary = null;
+    selectedIndex = 0;
+    zoomStart = 0;
+    $('#episode-id').textContent = episode.id;
+    $('#episode-task').textContent = episode.task || episode.sourceId;
+    $('#episode-duration').textContent = formatTime(episode.duration);
+    episodeList.querySelectorAll('.episode-row').forEach((row) => {
+      const active = row.dataset.episode === episode.id;
+      row.classList.toggle('is-selected', active);
+      if (active) row.setAttribute('aria-current', 'page');
+      else row.removeAttribute('aria-current');
+    });
+    renderBands($('#full-segments'), 0, episode.duration);
+    renderBoundaries($('#full-markers'), 0, episode.duration);
     const ruler = $('#time-ruler');
     ruler.replaceChildren();
     for (let step = 0; step <= 4; step += 1) {
       ruler.append(make('span', '', formatTime(episode.duration * step / 4, false)));
     }
-  }
-
-  function segmentMatches(segment, query) {
-    if (!query) return true;
-    return [...segment.required, ...segment.optional, rangeText(segment.start, segment.end)]
-      .join(' ').toLowerCase().includes(query);
-  }
-
-  function renderSegments() {
-    const query = search.value.trim().toLowerCase();
-    const fragment = document.createDocumentFragment();
-    let count = 0;
-    episode.segments.forEach((segment, index) => {
-      if (!segmentMatches(segment, query)) return;
-      count += 1;
-      const row = make('button', `segment-row${index === selectedIndex ? ' is-selected' : ''}`);
-      row.type = 'button';
-      row.dataset.index = index;
-      row.setAttribute('aria-label', `Segment ${index + 1}, ${rangeText(segment.start, segment.end)}. ${segment.required[0]}`);
-      if (index === selectedIndex) row.setAttribute('aria-current', 'true');
-      row.append(make('span', 'segment-number', String(index + 1).padStart(2, '0')));
-      const body = make('span', 'segment-body');
-      body.append(make('span', 'segment-text', segment.required[0]));
-      const optional = segment.optional.length ? ` · ${segment.optional.length} optional` : '';
-      body.append(make('span', 'segment-meta', `${rangeText(segment.start, segment.end)}${optional}`));
-      row.append(body);
-      row.addEventListener('click', () => selectSegment(index, true));
-      fragment.append(row);
-    });
-    segmentList.replaceChildren(fragment);
-    if (!count) segmentList.append(make('p', 'segment-empty', 'No matching segments.'));
-    $('#segment-count').textContent = `${count} / ${episode.segments.length}`;
-  }
-
-  function boundaryWindow(id, recordedTime) {
-    const boundary = episode.boundaries.find((item) => item.id === id);
-    if (!boundary) return `Recorded ${formatTime(recordedTime)}`;
-    const type = boundary.type === 'minor' ? 'optional split' : 'major';
-    return `${rangeText(boundary.minimum, boundary.maximum)} · ${type}`;
-  }
-
-  function renderDetail() {
-    const segment = episode.segments[selectedIndex];
-    $('#detail-index').textContent = `SEGMENT ${selectedIndex + 1} / ${episode.segments.length}`;
-    $('#detail-time').textContent = rangeText(segment.start, segment.end);
-    $('#previous-segment').disabled = selectedIndex === 0;
-    $('#next-segment').disabled = selectedIndex === episode.segments.length - 1;
-    const windows = $('#boundary-windows');
-    windows.replaceChildren();
-    [['Start window', segment.startBoundaryId, segment.start],
-      ['End window', segment.endBoundaryId, segment.end]].forEach(([label, id, time]) => {
-      const item = make('span');
-      item.append(make('strong', '', `${label}: `), document.createTextNode(boundaryWindow(id, time)));
-      windows.append(item);
-    });
-    const required = $('#required-list');
-    required.replaceChildren(...segment.required.map((detail) => make('li', '', detail)));
-    const optional = $('#optional-list');
-    optional.replaceChildren(...segment.optional.map((detail) => make('li', '', detail)));
-    $('#optional-group').hidden = segment.optional.length === 0;
-    selectedRange.style.left = position(segment.start);
-    selectedRange.style.width = `${Math.max(0, (segment.end - segment.start) / episode.duration * 100)}%`;
-    segmentList.querySelectorAll('.segment-row').forEach((row) => {
-      const active = Number(row.dataset.index) === selectedIndex;
-      row.classList.toggle('is-selected', active);
-      if (active) row.setAttribute('aria-current', 'true');
-      else row.removeAttribute('aria-current');
-    });
-  }
-
-  function selectSegment(index, shouldSeek = false) {
-    selectedIndex = Math.max(0, Math.min(episode.segments.length - 1, index));
+    [zoomTrack, fullTrack].forEach((track) => track.setAttribute('aria-valuemax', String(episode.duration)));
     renderDetail();
-    if (shouldSeek) seek(episode.segments[selectedIndex].start);
-    const row = segmentList.querySelector(`.segment-row[data-index="${selectedIndex}"]`);
-    if (row) row.scrollIntoView({ block: 'nearest' });
-  }
-
-  function selectAtTime(time) {
-    const current = episode.segments[selectedIndex];
-    if (current && time >= current.start && time < current.end) return;
-    const index = episode.segments.findIndex((segment) => time >= segment.start && time < segment.end);
-    if (index >= 0) selectSegment(index);
-  }
-
-  function showEpisode(id, initialIndex = 0) {
-    episode = byId.get(id) || episodes[0];
-    if (!episode) return;
-    episodeSelect.value = episode.id;
-    $('#episode-id').textContent = episode.id;
-    $('#episode-task').textContent = episode.task || episode.sourceId;
-    $('#episode-duration').textContent = formatTime(episode.duration);
-    search.value = '';
-    video.pause();
-    video.src = episode.videoUrl;
-    video.load();
-    pendingSeek = null;
-    selectedIndex = Math.max(0, Math.min(episode.segments.length - 1, initialIndex));
-    renderBoundaries();
-    renderSegments();
-    renderDetail();
-    updateTime(0);
+    renderZoom(0, true);
+    syncTime(0);
     const url = new URL(location.href);
     url.searchParams.set('episode', episode.id);
     history.replaceState(null, '', url);
   }
 
-  const themeButton = $('#theme-toggle');
-  themeButton.addEventListener('click', () => {
+  function togglePlayback() {
+    if (video.paused) video.play().catch(() => {});
+    else video.pause();
+  }
+
+  function onTimeUpdate() {
+    if (!episode) return;
+    const time = video.currentTime;
+    if (pauseAtMajorBoundaries.checked && !video.paused && time > lastPlaybackTime + .001) {
+      const boundary = episode.boundaries.find((item) => item.type !== 'minor'
+        && item.time > lastPlaybackTime + .02 && item.time <= time + .01
+        && item.time < episode.duration - .01);
+      if (boundary) {
+        video.pause();
+        video.currentTime = boundary.time;
+        lastPlaybackTime = boundary.time;
+        pausedBoundary = boundary.time;
+        syncTime(boundary.time);
+        return;
+      }
+    }
+    lastPlaybackTime = time;
+    syncTime(time);
+  }
+
+  $('#theme-toggle').addEventListener('click', () => {
     const theme = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
     document.documentElement.dataset.theme = theme;
     try { localStorage.setItem('shotwell-sample-theme', theme); } catch (e) {}
-    themeButton.textContent = theme === 'light' ? '\u263e' : '\u263c';
+    $('#theme-toggle').textContent = theme === 'light' ? '\u263e' : '\u263c';
   });
-  themeButton.textContent = document.documentElement.dataset.theme === 'light' ? '\u263e' : '\u263c';
+  $('#theme-toggle').textContent = document.documentElement.dataset.theme === 'light' ? '\u263e' : '\u263c';
 
   if (!episodes.length) {
-    $('#collection-summary').textContent = 'No complete reference episodes are available yet.';
+    episodeList.append(make('p', 'episode-empty', 'No complete reference episodes are available yet.'));
+    $('.episode-stage').hidden = true;
     return;
   }
-  const totalSegments = episodes.reduce((sum, item) => sum + item.segments.length, 0);
-  $('#collection-summary').textContent = `${episodes.length} reviewed episodes · ${totalSegments} acceptable segments`;
-  episodes.forEach((item) => {
-    const option = make('option', '', `${item.sourceId} · ${item.task || item.id}`);
-    option.value = item.id;
-    episodeSelect.append(option);
+  renderEpisodeList();
+  showEpisode(new URLSearchParams(location.search).get('episode'));
+  [zoomTrack, fullTrack].forEach((track) => {
+    track.addEventListener('click', (event) => {
+      const rect = track.getBoundingClientRect();
+      const fraction = clamp((event.clientX - rect.left) / rect.width, 0, 1);
+      seek(track === zoomTrack ? zoomStart + fraction * zoomLength() : fraction * episode.duration);
+    });
+    track.addEventListener('keydown', (event) => {
+      const delta = event.key === 'ArrowLeft' ? -1 : event.key === 'ArrowRight' ? 1 : 0;
+      if (!delta && event.key !== 'Home' && event.key !== 'End') return;
+      event.preventDefault();
+      seek(event.key === 'Home' ? 0 : event.key === 'End' ? episode.duration : video.currentTime + delta);
+    });
   });
-  const selectedFromUrl = new URLSearchParams(location.search).get('episode');
-  showEpisode(selectedFromUrl);
-  episodeSelect.addEventListener('change', () => showEpisode(episodeSelect.value));
-  search.addEventListener('input', renderSegments);
-  $('#previous-segment').addEventListener('click', () => selectSegment(selectedIndex - 1, true));
-  $('#next-segment').addEventListener('click', () => selectSegment(selectedIndex + 1, true));
-  track.addEventListener('click', (event) => {
-    const rect = track.getBoundingClientRect();
-    const time = Math.max(0, Math.min(episode.duration, (event.clientX - rect.left) / rect.width * episode.duration));
-    seek(time);
-    selectAtTime(time);
+  document.addEventListener('keydown', (event) => {
+    if (event.code !== 'Space' || event.repeat || event.altKey || event.ctrlKey || event.metaKey) return;
+    if (event.target.closest('button, input, select, textarea, [contenteditable="true"]')) return;
+    event.preventDefault();
+    togglePlayback();
   });
   video.addEventListener('loadedmetadata', () => {
     if (pendingSeek !== null) {
@@ -221,8 +280,10 @@
       pendingSeek = null;
     }
   });
-  video.addEventListener('timeupdate', () => {
-    updateTime();
-    selectAtTime(video.currentTime);
+  video.addEventListener('seeking', () => { lastPlaybackTime = video.currentTime; });
+  video.addEventListener('timeupdate', onTimeUpdate);
+  video.addEventListener('play', () => {
+    pausedBoundary = null;
+    syncTime(video.currentTime);
   });
 })();

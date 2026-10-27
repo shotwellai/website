@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shotwell-WGO-Bench: An annotation benchmark that accepts valid alternatives</title>
-  <meta name="description" content="A draft introduction to Shotwell-WGO-Bench: evaluating dense video annotations without penalizing valid alternative segmentations and descriptions.">
+  <meta name="description" content="Shotwell-WGO-Bench evaluates dense video annotations without penalizing valid alternative segmentations and descriptions.">
   <meta name="robots" content="noindex, nofollow">
   <meta property="og:type" content="article">
   <meta property="og:title" content="Shotwell-WGO-Bench: An annotation benchmark that accepts valid alternatives">
@@ -59,12 +59,13 @@
     .document { max-width: 808px; margin: 0 auto; padding: 72px 24px 64px; }
     .post-header { margin-bottom: 40px; padding-bottom: 32px; border-bottom: 1px solid var(--wire); }
     .post-meta { display: flex; gap: 16px; font: 13px var(--mono); color: var(--dim); margin-bottom: 24px; }
-    .draft { color: var(--accent); }
     h1 { font: 300 52px/1.12 var(--display); overflow-wrap: anywhere; }
     .post-subtitle { margin: 14px 0 0; color: var(--dim); font: 300 24px/1.35 var(--body); }
     h2 { font: 400 30px/1.25 var(--display); margin: 52px 0 20px; }
     .prose { font-size: 18px; font-weight: 300; line-height: 1.8; }
     .prose p { margin-bottom: 24px; }
+    .prose .tldr { font-weight: 400; line-height: 1.6; }
+    .tldr strong { color: var(--accent); }
     .pending-link { pointer-events: none; }
     .prose strong { font-weight: 500; }
     .prose ol { padding-left: 26px; margin: 28px 0; }
@@ -122,7 +123,7 @@
     .score-gridline.vertical { top: 0; bottom: 0; width: 1px; left: var(--position); }
     .score-gridline.horizontal { left: 0; right: 0; height: 1px; bottom: var(--position); }
     .score-leaders { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-    .score-leaders .score-frontier { fill: none; stroke: var(--score-frontier); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .score-leaders .score-frontier { fill: none; stroke: var(--score-frontier); stroke-width: 2; stroke-dasharray: 6 5; stroke-linecap: round; stroke-linejoin: round; }
     .score-leaders line { stroke: var(--wire-strong); stroke-width: 1; }
     .score-leaders line.is-active { stroke: var(--score-active); stroke-width: 1.5; }
     .score-label { position: absolute; z-index: 2; padding: 2px 3px; border: 0; background: var(--surface); color: var(--fg); text-align: center; font: 11px/1.35 var(--mono); white-space: nowrap; cursor: pointer; }
@@ -150,7 +151,6 @@
       color: var(--dim);
     }
     .site-footer a { text-underline-offset: 4px; }
-    .video-credit { flex-basis: 100%; font-size: 11px; }
     @media (max-width: 600px) {
       .brandbar { padding: 12px 20px; }
       .navlinks { gap: 12px; }
@@ -194,12 +194,14 @@
   <main class="document" id="post">
     <article aria-labelledby="post-title">
       <header class="post-header">
-        <div class="post-meta"><span>Research</span><span class="draft">Draft</span></div>
+        <div class="post-meta"><span>Research</span></div>
         <h1 id="post-title">Shotwell-WGO-Bench</h1>
         <p class="post-subtitle">An annotation benchmark that accepts valid alternatives</p>
       </header>
 
       <div class="prose">
+        <p class="tldr"><strong>TL;DR:</strong> Shotwell-WGO-Bench assesses how well models segment and describe video. It improves WGO-Bench's scoring - which penalizes valid annotations because it scores against a single reference annotation - by providing multiple references that together accept all correct ways to annotate a clip.</p>
+
         <p>VLMs are a practical way to produce dense language annotations for the large amounts of egocentric video used in robot-policy pretraining. There are several existing benchmarks that assess VLM annotation accuracy that are flawed because they penalize annotations that differ from the benchmark's reference set but are still valid annotations. Shotwell-WGO-Bench builds on <a href="https://huggingface.co/datasets/macrodata/WGO-Bench">WGO-Bench</a> by assessing accuracy in producing annotations without penalizing different valid ways of segmenting the same video.</p>
 
         <p>An annotation divides an episode into actions and describes each action in language. The tradeoffs between VLM approaches are accuracy, level of detail, and cost. Accuracy is particularly difficult to benchmark: annotators can choose different boundaries or group actions differently, yet produce equally valid accounts of what happened.</p>
@@ -216,9 +218,9 @@
 
         <h2>The limits of a single reference timeline</h2>
 
-        <p>WGO-Bench and MicroAnnotationBench compare VLM annotations with human reference annotations. Both compare segmentation against just a single reference timeline. This can penalize logical alternative groupings of actions and understate annotation quality. Astra scores around 0.40 F1 score in published evaluations of both benchmarks. Below, we show examples of our run of Astra on the WGO-Bench where Astra's segments are fully valid, but are marked as wrong by WGO-Bench due to the <a href="https://macrodata.co/blog/annotating-robot-video-subtasks">benchmark's IoU threshold of 0.75</a>.</p>
+        <p>WGO-Bench and MicroAnnotationBench compare VLM annotations with human reference annotations. Both compare segmentation against just a single reference timeline. This can penalize logical alternative groupings of actions and understate annotation quality. Astra scores around 0.40 F1 score in published evaluations of both benchmarks. Below, we show examples of our run of Astra on the WGO-Bench where valid alternative groupings are marked wrong due to the <a href="https://macrodata.co/blog/annotating-robot-video-subtasks">benchmark's IoU threshold of 0.75</a>.</p>
 
-        <p>In the examples below, you can compare WGO-Bench and Shotwell-WGO-Bench to see how Astra was scored. In each of these examples, WGO marked Astra's annotations as incorrect, despite Astra being fully accurate. Shotwell-WGO-Bench is better able to assess Astra's annotations and marks Astra correctly.</p>
+        <p>In the examples below, you can compare WGO-Bench and Shotwell-WGO-Bench to see how Astra was scored. Shotwell-WGO-Bench accepts valid alternative groupings while still rejecting a boundary that ends too early.</p>
 
         <figure class="comparison" data-clip-start="140" data-clip-end="149.5">
           <h3 class="comparison-title">One cleanup action, or three?</h3>
@@ -292,8 +294,8 @@
                 <span class="timeline-name">Shotwell-WGO Reference</span>
                 <div class="timeline-track">
                   <span class="timeline-segment" style="--from:0%;--to:23.81%" data-time="10.5" data-end="13" title="10.5–13.0: Pick the pitcher with the right hand and move a glass left with the left hand"></span>
-                  <span class="timeline-segment" style="--from:23.81%;--to:28.57%" data-time="13" data-end="13.5" title="13.0–13.5: Pick the wine glass with the left hand"></span>
-                  <span class="timeline-segment" style="--from:28.57%;--to:100%" data-time="13.5" data-end="21" title="13.5–21.0: Pour water into the wine glass with the pitcher in the right hand and hold the wine glass with the left hand"></span>
+                  <span class="timeline-segment" style="--from:23.81%;--to:47.62%" data-time="13" data-end="15.5" title="13.0–15.5: Pick the wine glass with the left hand"></span>
+                  <span class="timeline-segment" style="--from:47.62%;--to:100%" data-time="15.5" data-end="21" title="15.5–21.0: Pour water into the wine glass with the pitcher in the right hand and hold the wine glass with the left hand"></span>
                 </div>
               </div>
               <div class="timeline-row astra shotwell-astra">
@@ -301,12 +303,12 @@
                 <div class="timeline-track">
                   <span class="timeline-segment" style="--from:0%;--to:9.52%" data-time="10.5" data-end="11.5" data-verdict="accepted" title="10.5–11.5: Pick the pitcher with the right hand"></span>
                   <span class="timeline-segment" style="--from:9.52%;--to:23.81%" data-time="11.5" data-end="13" data-verdict="accepted" title="11.5–13.0: Move a glass left with the left hand"></span>
-                  <span class="timeline-segment" style="--from:23.81%;--to:29.52%" data-time="13" data-end="13.6" data-verdict="accepted" title="13.0–13.6: Pick the wine glass with the left hand"></span>
+                  <span class="timeline-segment" style="--from:23.81%;--to:29.52%" data-time="13" data-end="13.6" data-verdict="rejected" title="13.0–13.6: Pick the wine glass with the left hand"></span>
                   <span class="timeline-segment" style="--from:29.52%;--to:100%" data-time="13.6" data-end="21" data-verdict="accepted" title="13.6–21.0: Pour water into the wine glass with the pitcher in the right hand and hold the wine glass with the left hand"></span>
                 </div>
               </div>
             </div>
-            <p class="comparison-note">Here WGO-Bench ignores some actions and penalizes Astra for mentioning them. Shotwell-WGO does not penalize and is correctly flexible here on grouping overlapping actions.</p>
+            <p class="comparison-note">WGO-Bench ignores some actions and penalizes Astra for mentioning them. Shotwell-WGO accepts the valid handling actions, but marks Astra's wine-glass pickup wrong because it ends too early.</p>
           </figcaption>
         </figure>
 
@@ -314,9 +316,9 @@
 
         <p>We calculate segmentation and description F1 separately, then multiply them for the final score. The chart plots overall F1 score for each model against the cost to annotate an hour of video.</p>
 
-        <div class="score-results" aria-label="Draft benchmark results">
+        <div class="score-results" aria-label="Example benchmark score comparison">
           <figure class="score-figure">
-            <figcaption>Overall F1 vs. cost <span>Illustrative draft scores, not measured results.</span></figcaption>
+            <figcaption>Overall F1 vs. cost <span>Example scores</span></figcaption>
             <div class="score-plot-layout">
               <div class="score-y-title">Overall F1</div>
               <div class="score-y-ticks" aria-hidden="true"><span>1.0</span><span>0.75</span><span>0.50</span><span>0.25</span><span>0</span></div>
@@ -346,7 +348,6 @@
     <footer class="site-footer">
       <a href="/">Shotwell</a>
       <span><a href="/privacy/">Privacy</a> &middot; <a href="mailto:team@shotwell.ai">team@shotwell.ai</a></span>
-      <small class="video-credit">Video excerpts from <a href="https://huggingface.co/datasets/macrodata/WGO-Bench">WGO-Bench / HomER</a> (CC BY-NC-SA 4.0), trimmed from the original episodes.</small>
     </footer>
   </main>
 
@@ -354,7 +355,7 @@
     import { init } from '/assets/theme.js';
     init();
 
-    const draftScores = [
+    const exampleScores = [
       { model: 'GPT-6 Astra', short: 'Astra', cost: 20, lane: 'above', segmentation: 0.92, description: 0.92 },
       { model: 'GPT-6.1 Sol', short: 'Sol', cost: 2.50, lane: 'below', segmentation: 0.84, description: 0.85 },
       { model: 'GPT-6 Luna', short: 'Luna', cost: 0.35, lane: 'below', segmentation: 0.74, description: 0.71 },
@@ -365,7 +366,7 @@
     const costPosition = (cost) => Math.max(0, Math.min(1, Math.log(cost / 0.25) / Math.log(25 / 0.25)));
     const overallScore = (score) => score.segmentation * score.description;
     let bestScore = -Infinity;
-    const frontierScores = [...draftScores].sort((a, b) => a.cost - b.cost).filter((score) => {
+    const frontierScores = [...exampleScores].sort((a, b) => a.cost - b.cost).filter((score) => {
       const value = overallScore(score);
       if (value <= bestScore) return false;
       bestScore = value;
@@ -389,7 +390,7 @@
       tooltip.style.top = `${Math.max(0, Math.min(scoreField.clientHeight - tooltip.offsetHeight, top))}px`;
     };
     const showScore = (model) => {
-      const score = draftScores.find((item) => item.model === model);
+      const score = exampleScores.find((item) => item.model === model);
       activeModel = score?.model || null;
       tooltip.hidden = !score;
       if (score) {
@@ -404,7 +405,7 @@
       selectedModel = selectedModel === model ? null : model;
       showScore(selectedModel);
     };
-    draftScores.forEach((score) => {
+    exampleScores.forEach((score) => {
       const point = document.createElement('button');
       point.type = 'button';
       point.className = 'score-point';
@@ -446,7 +447,7 @@
       const height = scoreField.clientHeight;
       leaders.setAttribute('viewBox', `0 0 ${width} ${height}`);
       frontier.setAttribute('points', frontierScores.map((score) => `${costPosition(score.cost) * width},${(1 - overallScore(score)) * height}`).join(' '));
-      draftScores.forEach((score) => {
+      exampleScores.forEach((score) => {
         const label = labels.get(score.model);
         const x = costPosition(score.cost) * width;
         const y = (1 - overallScore(score)) * height;
@@ -461,7 +462,7 @@
         line.setAttribute('x2', left + label.offsetWidth / 2);
         line.setAttribute('y2', top + (score.lane === 'above' ? label.offsetHeight : 0));
       });
-      if (activeModel) positionTooltip(draftScores.find((score) => score.model === activeModel));
+      if (activeModel) positionTooltip(exampleScores.find((score) => score.model === activeModel));
     };
     positionLabels();
     new ResizeObserver(positionLabels).observe(scoreField);

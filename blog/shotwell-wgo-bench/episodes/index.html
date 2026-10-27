@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <meta name="description" content="Browse reviewed Shotwell-WGO-Bench reference segments and their required and optional details.">
-  <title>Reference annotations | Shotwell-WGO-Bench</title>
+  <title>Shotwell-WGO-Bench Reference Annotations</title>
   <link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,73 +36,70 @@
 
   <main class="reference-main" id="reference-main">
     <header class="reference-heading">
-      <div>
-        <p class="eyebrow">SHOTWELL-WGO-BENCH / GOLDEN REFERENCE</p>
-        <h1>Reference annotations</h1>
-        <p class="heading-meta" id="collection-summary"></p>
-      </div>
-      <div class="episode-control">
-        <label for="episode-select">Episode</label>
-        <select id="episode-select" aria-label="Episode"></select>
-      </div>
+      <h1>Shotwell-WGO-Bench Reference Annotations</h1>
+      <a class="download-csv" href="./shotwell-wgo-bench-reference-annotations.csv" download>Download CSV</a>
     </header>
 
-    <section class="episode-stage" aria-label="Episode video and timeline">
-      <div class="episode-ident">
-        <div>
-          <p class="episode-id" id="episode-id"></p>
-          <h2 id="episode-task"></h2>
-        </div>
-        <span class="episode-duration" id="episode-duration"></span>
-      </div>
-      <video id="episode-video" controls playsinline preload="metadata" aria-label="Selected episode video"></video>
-      <div class="timeline-toolbar">
-        <div class="timeline-title"><span>Boundaries</span><span id="playback-time">0:00 / 0:00</span></div>
-        <div class="boundary-legend" aria-label="Boundary types"><span class="legend-major">Major</span><span class="legend-minor">Optional split</span></div>
-      </div>
-      <div id="boundary-track" class="boundary-track" aria-label="Episode boundary timeline">
-        <div id="selected-range" class="selected-range"></div>
-        <div id="boundary-markers" class="boundary-markers"></div>
-        <div id="playhead" class="playhead"></div>
-      </div>
-      <div class="time-ruler" id="time-ruler" aria-hidden="true"></div>
-    </section>
+    <div class="reference-layout">
+      <aside class="episode-sidebar" aria-label="Episodes">
+        <h2>Episodes</h2>
+        <nav id="episode-list" class="episode-list" aria-label="Reference episodes"></nav>
+      </aside>
 
-    <section class="workspace" aria-label="Reference segments">
-      <div class="segment-pane">
-        <div class="pane-heading">
-          <h2>Acceptable segments</h2>
-          <span id="segment-count"></span>
-        </div>
-        <label class="search-label" for="segment-search">Find a segment</label>
-        <input id="segment-search" type="search" placeholder="Search details or time" autocomplete="off">
-        <div id="segment-list" class="segment-list"></div>
-      </div>
-      <div class="detail-pane" id="segment-detail" aria-live="polite">
-        <div class="detail-topline">
-          <span id="detail-index"></span>
-          <div class="detail-navigation">
-            <button id="previous-segment" type="button" aria-label="Previous segment" title="Previous segment">&#8592;</button>
-            <button id="next-segment" type="button" aria-label="Next segment" title="Next segment">&#8594;</button>
+      <section class="episode-stage" aria-label="Episode video and timeline">
+        <div class="episode-ident">
+          <div>
+            <p class="episode-id" id="episode-id"></p>
+            <h2 id="episode-task"></h2>
           </div>
+          <span class="episode-duration" id="episode-duration"></span>
         </div>
-        <h2 id="detail-time"></h2>
-        <div class="boundary-windows" id="boundary-windows"></div>
-        <div class="detail-group required-group">
-          <h3>Required details</h3>
-          <ul id="required-list"></ul>
-        </div>
-        <div class="detail-group optional-group" id="optional-group">
-          <h3>Optional details</h3>
-          <ul id="optional-list"></ul>
-        </div>
-      </div>
-    </section>
+        <video id="episode-video" controls playsinline preload="metadata" aria-label="Selected episode video"></video>
 
-    <footer class="reference-footer">
-      <p>Reviewed reference snapshot from job 690. Segment intervals reflect the reviewed detail records; boundary windows reflect the current editor state.</p>
-      <p>Video source: <a href="https://huggingface.co/datasets/macrodata/WGO-Bench">WGO-Bench / HomER</a> (CC BY-NC-SA 4.0).</p>
-    </footer>
+        <section class="current-detail" id="segment-detail" aria-live="polite" aria-label="Current segment details">
+          <div class="detail-columns">
+            <div class="detail-group required-group">
+              <h4>Required details</h4>
+              <ul id="required-list"></ul>
+            </div>
+            <div class="detail-group optional-group" id="optional-group">
+              <h4>Optional details</h4>
+              <ul id="optional-list"></ul>
+              <p id="optional-empty" class="detail-empty">None</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="timeline" aria-label="Episode boundary timeline">
+          <div class="timeline-toolbar">
+            <h3>Timeline</h3>
+            <div class="boundary-legend" aria-label="Boundary types"><span class="legend-major">Major</span><span class="legend-minor">Optional split</span></div>
+          </div>
+          <div class="zoom-control-row">
+            <span class="zoom-label" id="zoom-label"></span>
+            <label class="pause-boundaries"><input id="pause-major-boundaries" type="checkbox" checked>Pause at major boundaries</label>
+          </div>
+          <div id="zoom-track" class="timeline-track zoom-track" role="slider" tabindex="0" aria-label="Seek within one-minute timeline" aria-valuemin="0">
+            <div id="zoom-segments" class="timeline-segments"></div>
+            <div id="zoom-selected-range" class="selected-range"></div>
+            <div id="zoom-markers" class="boundary-markers"></div>
+            <div id="zoom-playhead" class="playhead"></div>
+          </div>
+          <svg id="timeline-fan" class="timeline-fan" viewBox="0 0 1000 28" preserveAspectRatio="none" aria-hidden="true">
+            <polygon id="fan-area" points="0,0 1000,0 1000,28 0,28"></polygon>
+          </svg>
+          <div id="full-track" class="timeline-track full-track" role="slider" tabindex="0" aria-label="Seek within full episode timeline" aria-valuemin="0">
+            <div id="full-segments" class="timeline-segments"></div>
+            <div id="full-selected-range" class="selected-range"></div>
+            <div id="full-markers" class="boundary-markers"></div>
+            <div id="full-window" class="full-window"></div>
+            <div id="full-playhead" class="playhead"></div>
+          </div>
+          <div class="time-ruler" id="time-ruler" aria-hidden="true"></div>
+        </section>
+      </section>
+    </div>
+
   </main>
 </body>
 </html>

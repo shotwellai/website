@@ -2069,7 +2069,7 @@ export function loginPage(input: {
       </section>
       <section class="panel login-panel">
         <h1>Sign in to start uploading.</h1>
-        <p>Login with your company email. Get 2 hours of robot video annotated for free, with 24 hour turnaround time. <a class="zdr-link" href="/privacy">Zero Data Retention.</a></p>
+        <p>Login with your company email. Get 2 hours of robot video annotated for free, with 24 hour turnaround time. <a class="zdr-link" href="/privacy">Zero Data Retention for app uploads.</a></p>
         ${input.error ? `<div class="notice">${escapeHtml(input.error)}</div>` : ""}
         <div class="auth-actions">${googleButton}</div>
         <div class="divider">or</div>
@@ -2093,36 +2093,37 @@ export function privacyPolicyPage() {
     `<main class="policy-main">
       <section class="panel policy-panel">
         <span class="eyebrow">Privacy Policy</span>
-        <h1>Zero Data Retention.</h1>
+        <h1>Zero Data Retention for App Uploads.</h1>
         <p>Last updated: July 30, 2026</p>
         <section class="policy-section">
           <h2>Summary</h2>
-          <p>Shotwell processes robot episode files, prompts, and generated annotations only to provide the annotation service requested by you. We do not retain uploaded customer data after processing and delivery, and we do not use it to train models.</p>
+          <p>This zero-data-retention commitment applies only to content uploaded through the Shotwell app website at app.shotwell.ai. Shotwell processes that content only to provide the annotation service requested by you, then does not retain it after processing and delivery or use it to train models.</p>
         </section>
         <section class="policy-section">
-          <h2>Customer Data</h2>
-          <p>Customer Data means robot episode files, raw video files, MCAP files, prompts, instructions, metadata included with an upload, generated labels, quality reports, and other output artifacts produced for that upload.</p>
+          <h2>App-Uploaded Content</h2>
+          <p>App-Uploaded Content means robot episode files, raw video files, MCAP files, prompts, instructions, metadata included with an upload, generated labels, quality reports, and other output artifacts produced for an upload submitted through the app website.</p>
+          <p>This policy does not extend to materials or information sent to Shotwell through other channels, products, integrations, or customer arrangements. It also does not mean that all information Shotwell may receive from a customer is subject to zero retention.</p>
         </section>
         <section class="policy-section">
           <h2>Zero Retention Commitment</h2>
           <ul>
-            <li>We use Customer Data only to process your upload and produce your requested annotation results.</li>
-            <li>We delete Customer Data after processing and delivery. Any transient copies exist only while the requested job is running or results are being transmitted to you.</li>
-            <li>We do not use Customer Data to train, fine-tune, improve, evaluate, or benchmark any model.</li>
-            <li>We do not sell, rent, disclose, or share Customer Data with third parties for advertising, model training, or unrelated analytics.</li>
+            <li>We use App-Uploaded Content only to process your app upload and produce your requested annotation results.</li>
+            <li>We delete App-Uploaded Content after processing and delivery. Any transient copies exist only while the requested job is running or results are being transmitted to you.</li>
+            <li>We do not use App-Uploaded Content to train, fine-tune, improve, evaluate, or benchmark any model.</li>
+            <li>We do not sell, rent, disclose, or share App-Uploaded Content with third parties for advertising, model training, or unrelated analytics.</li>
           </ul>
         </section>
         <section class="policy-section">
           <h2>Operational Data</h2>
-          <p>We may retain limited account, authentication, billing, security, and service log information as needed to operate the service, prevent abuse, debug failures, satisfy legal obligations, and maintain business records. Operational Data does not include your uploaded robot episode content or annotation outputs.</p>
+          <p>We may retain limited account, authentication, billing, security, and service log information as needed to operate the service, prevent abuse, debug failures, satisfy legal obligations, and maintain business records. Operational Data is outside this app-upload zero-data-retention commitment and may include information about your use of the service, but does not include App-Uploaded Content.</p>
         </section>
         <section class="policy-section">
           <h2>Vendors</h2>
-          <p>We may use infrastructure and service providers to host, secure, transmit, or process uploads on our behalf. They are permitted to process Customer Data only as needed to provide Shotwell's service and not for their own model training or advertising purposes.</p>
+          <p>We may use infrastructure and service providers to host, secure, transmit, or process app uploads on our behalf. They are permitted to process App-Uploaded Content only as needed to provide Shotwell's service and not for their own model training or advertising purposes.</p>
         </section>
         <section class="policy-section">
           <h2>Deletion</h2>
-          <p>You can request deletion of Customer Data, account records, or related operational records by contacting Shotwell. We will delete eligible records from active systems unless we are required to keep them for security, legal, compliance, or dispute-resolution reasons.</p>
+          <p>You can request deletion of App-Uploaded Content, account records, or related operational records by contacting Shotwell. We will delete eligible records from active systems unless we are required to keep them for security, legal, compliance, or dispute-resolution reasons.</p>
         </section>
         <section class="policy-section">
           <h2>Contact</h2>
@@ -2701,7 +2702,7 @@ Also keep track of "Retry" and "Fail" attributes for each step. "Retry" means mu
     "Shotwell App",
     `<main class="app-main">
       <section class="app-intro">
-        <p>Try out our service for free with up to 2 hours of robot data. We'll annotate it and send it back within 24 hours. <a class="zdr-link" href="/privacy">Zero Data Retention.</a></p>
+        <p>Try out our service for free with up to 2 hours of robot data. We'll annotate it and send it back within 24 hours. <a class="zdr-link" href="/privacy">Zero Data Retention for app uploads.</a></p>
       </section>
 
       <section class="workspace-grid">
