@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shotwell-WGO-Bench | Draft | Shotwell</title>
+  <meta name="description" content="A draft introduction to Shotwell-WGO-Bench: evaluating dense video annotations without penalizing valid alternative segmentations and descriptions.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Shotwell-WGO-Bench | Draft">
+  <meta property="og:description" content="Evaluating dense video annotations without penalizing valid alternatives.">
+  <meta property="og:url" content="https://shotwell.ai/blog/shotwell-wgo-bench/">
+  <meta property="og:site_name" content="Shotwell">
+  <meta property="og:image" content="https://shotwell.ai/og-default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://shotwell.ai/blog/shotwell-wgo-bench/">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Outfit:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/tokens.css">
+  <script>
+    try {
+      document.documentElement.dataset.theme = localStorage.getItem('shotwell-sample-theme') ||
+        (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    } catch (e) {}
+  </script>
+  <style>
+    :root { --accent: #EFB702; }
+    [data-theme="light"] { --accent: #795900; }
+    body { letter-spacing: 0; }
+    .brandbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 18px 40px;
+      border-bottom: 1px solid var(--wire);
+    }
+    .brandbar img { width: auto; height: 24px; }
+    .logo-light { display: none; }
+    [data-theme="light"] .logo-light { display: block; }
+    [data-theme="light"] .logo-dark { display: none; }
+    .navlinks { display: flex; gap: 26px; align-items: center; }
+    .navlinks a { font-size: 14px; color: var(--dim); text-decoration: none; }
+    .navlinks a:hover { color: var(--fg); }
+    .theme-toggle {
+      width: 40px;
+      height: 40px;
+      border: 0;
+      background: none;
+      color: var(--fg);
+      font-size: 20px;
+      cursor: pointer;
+    }
+    .skip-link { position: absolute; left: 20px; top: -100px; }
+    .skip-link:focus { top: 12px; padding: 12px; background: var(--surface); z-index: 2; }
+    .document { max-width: 808px; margin: 0 auto; padding: 72px 24px 64px; }
+    .post-header { margin-bottom: 40px; padding-bottom: 32px; border-bottom: 1px solid var(--wire); }
+    .post-meta { display: flex; gap: 16px; font: 13px var(--mono); color: var(--dim); margin-bottom: 24px; }
+    .draft { color: var(--accent); }
+    h1 { font: 300 52px/1.12 var(--display); overflow-wrap: anywhere; }
+    h2 { font: 400 30px/1.25 var(--display); margin: 52px 0 20px; }
+    .prose { font-size: 18px; font-weight: 300; line-height: 1.8; }
+    .prose p { margin-bottom: 24px; }
+    .prose strong { font-weight: 500; }
+    .prose ol { padding-left: 26px; margin: 28px 0; }
+    .prose li { padding-left: 10px; margin-bottom: 28px; }
+    .prose li::marker { font-family: var(--mono); font-size: 15px; color: var(--accent); }
+    .placeholder {
+      margin: 36px 0;
+      padding: 32px 24px;
+      min-height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      border: 1px dashed var(--wire-strong);
+      background: var(--surface);
+    }
+    .placeholder figcaption { font: 13px/1.7 var(--mono); color: var(--dim); }
+    .placeholder span { display: block; margin-top: 8px; }
+    .placeholder strong { color: var(--fg); font-weight: 500; }
+    .site-footer {
+      border-top: 1px solid var(--wire);
+      padding-top: 24px;
+      margin-top: 64px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 16px;
+      font: 13px/1.6 var(--mono);
+      color: var(--dim);
+    }
+    .site-footer a { text-underline-offset: 4px; }
+    @media (max-width: 600px) {
+      .brandbar { padding: 12px 20px; }
+      .navlinks { gap: 12px; }
+      .navlinks a { display: none; }
+      .document { padding: 40px 20px; }
+      .post-header { margin-bottom: 28px; padding-bottom: 24px; }
+      h1 { font-size: 36px; }
+      h2 { font-size: 26px; margin-top: 40px; }
+      .prose { font-size: 17px; line-height: 1.75; }
+      .prose ol { padding-left: 22px; }
+      .prose li { padding-left: 6px; }
+      .placeholder { padding: 24px 16px; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#post">Skip to article</a>
+  <header class="brandbar">
+    <a href="/" aria-label="Shotwell home" data-theme-longpress>
+      <img class="logo-dark" src="/brand/assets/SVG/shotwell-logo-horizontal-white.svg" alt="Shotwell">
+      <img class="logo-light" src="/brand/assets/SVG/shotwell-logo-horizontal-black.svg" alt="Shotwell">
+    </a>
+    <nav class="navlinks" aria-label="Main navigation">
+      <a href="/ultra-case-study/">Blog</a>
+      <a href="https://demo.shotwell.ai/">Demo</a>
+      <a href="/contact/">Talk to us</a>
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme" title="Toggle light and dark mode">&#9788;</button>
+    </nav>
+  </header>
+
+  <main class="document" id="post">
+    <article aria-labelledby="post-title">
+      <header class="post-header">
+        <div class="post-meta"><span>Research</span><span class="draft">Draft</span></div>
+        <h1 id="post-title">Shotwell-<wbr>WGO-<wbr>Bench</h1>
+      </header>
+
+      <div class="prose">
+        <p>VLMs are a practical way to produce dense language annotations for the large amounts of egocentric video used in robot-policy pretraining. There are several existing benchmarks that assess VLM annotation accuracy that are flawed because they penalize annotations that differ from the benchmark's reference set but are still valid annotations. Shotwell-WGO-Bench is designed to assess their accuracy in producing annotations without penalizing different valid ways of segmenting the same video.</p>
+
+        <p>An annotation divides an episode into actions and describes each action in language. The tradeoffs between VLM approaches are accuracy, level of detail, and cost. Accuracy is particularly difficult to benchmark: annotators can choose different boundaries or group actions differently, yet produce equally valid accounts of what happened.</p>
+
+        <h2>The limits of a single reference timeline</h2>
+
+        <p>WGO-Bench and MicroAnnotationBench compare VLM annotations with human reference annotations. Both accommodate some variation through fixed timing tolerances and LLM judges that assess whether descriptions are semantically equivalent. However, both compare segmentation against just a single reference timeline. This can penalize logical alternative groupings of actions and understate annotation quality. Astra scores around 0.40 F1 score in published evaluations of both benchmarks. Below are WGO-Bench examples where Astra is marked incorrect despite producing what we consider a valid annotation.</p>
+
+        <figure class="placeholder">
+          <figcaption><strong>EXAMPLES HERE</strong><span>Valid Astra annotations penalized by WGO-Bench</span></figcaption>
+        </figure>
+
+        <h2>A benchmark that accepts valid alternatives</h2>
+
+        <p>Shotwell-WGO-Bench eliminates these arbitrary penalties by restructuring WGO-Bench in three ways:</p>
+
+        <ol>
+          <li><strong>An extremely detailed annotation guide.</strong> It specifies which actions merit their own segment, exactly where boundaries should fall, and the format and level of detail expected in each description. This makes model outputs very consistent before grading begins. Shotwell-WGO-Bench also demands a much higher level of detail in outputs that spotlights the limits of weaker models.</li>
+          <li><strong>Multiple acceptable segmentations.</strong> Even with a precise guide, there is a range of timestamps where an action boundary can be placed, and some actions can reasonably be grouped or split. The reference annotations include acceptable ranges for each individual boundary, rather than one fixed tolerance for every boundary. They also include optional sub-boundaries where splitting an action is valid. Every valid possible segmentation logic for an episode is captured.</li>
+          <li><strong>Multiple acceptable descriptions.</strong> For description grading, models receive fixed segments to describe. Each reference description provides required details and optional details for each segment. An LLM judge checks that required details are present and incorrect details are absent. The guide and explicit reference details leave less to the LLM judge's discretion.</li>
+        </ol>
+
+        <p>Here are examples of different annotations that Shotwell-WGO-Bench accepts for the same video, but that WGO-Bench would penalize.</p>
+
+        <figure class="placeholder">
+          <figcaption><strong>EXAMPLES HERE</strong><span>Different valid annotations of the same video</span></figcaption>
+        </figure>
+
+        <h2>Scoring</h2>
+
+        <p>We report segmentation and description F1 separately, then multiply them for the final score.</p>
+
+        <figure class="placeholder">
+          <figcaption><strong>GRAPH</strong><span>Results to be added</span></figcaption>
+        </figure>
+      </div>
+    </article>
+
+    <footer class="site-footer">
+      <a href="/">Shotwell</a>
+      <span><a href="/privacy/">Privacy</a> &middot; <a href="mailto:team@shotwell.ai">team@shotwell.ai</a></span>
+    </footer>
+  </main>
+
+  <script type="module">
+    import { init } from '/assets/theme.js';
+    init();
+  </script>
+</body>
+</html>
