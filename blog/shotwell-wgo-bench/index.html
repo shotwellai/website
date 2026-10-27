@@ -68,6 +68,36 @@
     .prose ol { padding-left: 26px; margin: 28px 0; }
     .prose li { padding-left: 10px; margin-bottom: 28px; }
     .prose li::marker { font-family: var(--mono); font-size: 15px; color: var(--accent); }
+    .comparison { margin: 40px 0 48px; }
+    .comparison-header { display: flex; justify-content: space-between; align-items: baseline; gap: 20px; margin-bottom: 16px; }
+    .comparison-index { display: block; margin-bottom: 7px; font: 12px var(--mono); color: var(--dim); }
+    .comparison h3 { font: 400 23px/1.3 var(--display); }
+    .comparison-score { flex: none; font: 12px/1.5 var(--mono); color: var(--dim); text-align: right; }
+    .comparison-score strong { color: var(--fg); font-size: 17px; font-weight: 500; }
+    .comparison video { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: contain; background: #050505; border: 1px solid var(--wire); border-radius: 4px; }
+    .comparison figcaption { margin-top: 18px; }
+    .comparison-summary { margin-bottom: 18px !important; font-size: 16px; line-height: 1.65; }
+    .timeline { --reference: #237e73; --astra: #ad710e; }
+    .timeline-ruler, .timeline-row { display: grid; grid-template-columns: 108px minmax(0, 1fr); gap: 14px; align-items: center; }
+    .timeline-ruler { margin: 0 0 7px; font: 11px var(--mono); color: var(--dim); }
+    .timeline-ruler > span:last-child { display: flex; justify-content: space-between; }
+    .timeline-row { margin-bottom: 7px; }
+    .timeline-name { font: 12px/1.4 var(--mono); color: var(--fg); }
+    .timeline-name::before { content: ''; display: inline-block; width: 8px; height: 8px; margin-right: 7px; background: var(--reference); }
+    .timeline-row.astra .timeline-name::before { background: var(--astra); }
+    .timeline-track { position: relative; height: 36px; background: var(--surface); border: 1px solid var(--wire); }
+    .timeline-track::after { content: ''; position: absolute; z-index: 2; left: var(--playhead, 0%); top: -3px; bottom: -3px; width: 2px; background: var(--fg); pointer-events: none; opacity: .85; }
+    .timeline-segment { position: absolute; top: 3px; bottom: 3px; left: var(--from); width: calc(var(--to) - var(--from)); overflow: hidden; border: 0; border-radius: 2px; padding: 0; background: var(--reference); color: #fff; font: 12px var(--mono); white-space: nowrap; cursor: pointer; }
+    .astra .timeline-segment { background: var(--astra); }
+    .timeline-segment:hover, .timeline-segment:focus-visible { filter: brightness(1.25); z-index: 3; }
+    .segment-list { margin-top: 16px; border-top: 1px solid var(--wire); }
+    .segment-line { display: grid; grid-template-columns: 60px 112px minmax(0, 1fr); gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px solid var(--wire); font-size: 14px; line-height: 1.45; }
+    .segment-line .who, .segment-line .when { font: 11px/1.5 var(--mono); }
+    .segment-line .who { color: var(--reference); }
+    .segment-line.astra .who { color: var(--astra); }
+    .segment-line .when { color: var(--dim); white-space: nowrap; }
+    .comparison-source { margin-top: 10px !important; color: var(--dim); font: 11px/1.6 var(--mono); }
+    .comparison-source a { color: inherit; text-underline-offset: 3px; }
     .placeholder {
       margin: 36px 0;
       padding: 32px 24px;
@@ -105,6 +135,14 @@
       .prose { font-size: 17px; line-height: 1.75; }
       .prose ol { padding-left: 22px; }
       .prose li { padding-left: 6px; }
+      .comparison-header { display: block; }
+      .comparison-score { margin-top: 8px; text-align: left; }
+      .timeline-ruler, .timeline-row { grid-template-columns: 64px minmax(0, 1fr); gap: 8px; }
+      .timeline-name { font-size: 10px; }
+      .timeline-name::before { width: 6px; height: 6px; margin-right: 4px; }
+      .timeline-segment { font-size: 10px; }
+      .segment-line { grid-template-columns: 42px 90px minmax(0, 1fr); gap: 7px; font-size: 12px; }
+      .segment-line .who, .segment-line .when { font-size: 10px; }
       .placeholder { padding: 24px 16px; }
     }
   </style>
@@ -138,10 +176,88 @@
 
         <h2>The limits of a single reference timeline</h2>
 
-        <p>WGO-Bench and MicroAnnotationBench compare VLM annotations with human reference annotations. Both accommodate some variation through fixed timing tolerances and LLM judges that assess whether descriptions are semantically equivalent. However, both compare segmentation against just a single reference timeline. This can penalize logical alternative groupings of actions and understate annotation quality. Astra scores around 0.40 F1 score in published evaluations of both benchmarks. Below are WGO-Bench examples where Astra is marked incorrect despite producing what we consider a valid annotation.</p>
+        <p>WGO-Bench and MicroAnnotationBench compare VLM annotations with human reference annotations. Both accommodate some variation through fixed timing tolerances and LLM judges that assess whether descriptions are semantically equivalent. However, both compare segmentation against just a single reference timeline. This can penalize logical alternative groupings of actions and understate annotation quality. Astra scores around 0.40 F1 score in published evaluations of both benchmarks. The examples below are from a fresh, independent Astra run on public WGO-Bench videos, not from those published evaluations. We compare its output with WGO-Bench's reference using its <a href="https://macrodata.co/blog/annotating-robot-video-subtasks">published temporal-IoU threshold of 0.75</a>.</p>
 
-        <figure class="placeholder">
-          <figcaption><strong>EXAMPLES HERE</strong><span>Valid Astra annotations penalized by WGO-Bench</span></figcaption>
+        <figure class="comparison" data-clip-start="10.5" data-clip-end="21">
+          <div class="comparison-header">
+            <div><span class="comparison-index">01 / HOMER_1</span><h3>One pour, or several manipulations?</h3></div>
+            <div class="comparison-score"><strong>0.71</strong> best overlap / 0.75 required</div>
+          </div>
+          <video controls playsinline preload="metadata" poster="assets/homer-1-pour.jpg" aria-label="First-person video of a person handling two glasses and pouring water">
+            <source src="assets/homer-1-pour.mp4" type="video/mp4">
+            Your browser does not support video playback.
+          </video>
+          <figcaption>
+            <p class="comparison-summary">WGO's reference starts the wine-glass pour at 10.8s. Astra separately marks the person's handling of the pitcher and glasses before the pour itself. The narrower pour is visually reasonable, but its 0.71 overlap falls below WGO's 0.75 matching threshold.</p>
+            <div class="timeline" aria-label="Comparison of WGO and Astra action timelines from 10.5 to 21 seconds">
+              <div class="timeline-ruler"><span>Seconds</span><span><span>10.5</span><span>15.8</span><span>21.0</span></span></div>
+              <div class="timeline-row">
+                <span class="timeline-name">WGO</span>
+                <div class="timeline-track">
+                  <button class="timeline-segment" type="button" style="--from:2.79%;--to:97.26%" data-time="10.793" title="10.79–20.71: Pour water into the wine glass" aria-label="Play WGO reference: pour water into the wine glass, 10.79 to 20.71 seconds">Pour into wine glass</button>
+                </div>
+              </div>
+              <div class="timeline-row astra">
+                <span class="timeline-name">Astra</span>
+                <div class="timeline-track">
+                  <button class="timeline-segment" type="button" style="--from:0%;--to:9.52%" data-time="10.5" title="9.5–11.5: Lift the pitcher by its handle" aria-label="Play Astra: lift the pitcher, 9.5 to 11.5 seconds">1</button>
+                  <button class="timeline-segment" type="button" style="--from:9.52%;--to:19.05%" data-time="11.5" title="11.5–12.5: Pick up the tall glass" aria-label="Play Astra: pick up the tall glass, 11.5 to 12.5 seconds">2</button>
+                  <button class="timeline-segment" type="button" style="--from:19.05%;--to:23.81%" data-time="12.5" title="12.5–13.0: Set the tall glass farther left" aria-label="Play Astra: set down the tall glass, 12.5 to 13 seconds">3</button>
+                  <button class="timeline-segment" type="button" style="--from:23.81%;--to:28.57%" data-time="13" title="13.0–13.5: Pick up the wine glass" aria-label="Play Astra: pick up the wine glass, 13 to 13.5 seconds">4</button>
+                  <button class="timeline-segment" type="button" style="--from:28.57%;--to:95.24%" data-time="13.5" title="13.5–20.5: Pour from the pitcher into the wine glass" aria-label="Play Astra: pour into the wine glass, 13.5 to 20.5 seconds">Pour into wine glass</button>
+                  <button class="timeline-segment" type="button" style="--from:95.24%;--to:100%" data-time="20.5" title="20.5–21.0: Set down the wine glass" aria-label="Play Astra: set down the wine glass, 20.5 to 21 seconds">6</button>
+                </div>
+              </div>
+            </div>
+            <div class="segment-list" aria-label="Full segment descriptions">
+              <div class="segment-line"><span class="who">WGO</span><span class="when">10.8–20.7s</span><span>Pour water from the pitcher into the wine glass</span></div>
+              <div class="segment-line astra"><span class="who">Astra</span><span class="when">9.5–11.5s</span><span>Lift the pitcher by its handle</span></div>
+              <div class="segment-line astra"><span class="who">Astra</span><span class="when">11.5–12.5s</span><span>Pick up the tall glass</span></div>
+              <div class="segment-line astra"><span class="who">Astra</span><span class="when">12.5–13.0s</span><span>Set the tall glass farther left</span></div>
+              <div class="segment-line astra"><span class="who">Astra</span><span class="when">13.0–13.5s</span><span>Pick up the wine glass</span></div>
+              <div class="segment-line astra"><span class="who">Astra</span><span class="when">13.5–20.5s</span><span>Pour from the pitcher into the wine glass</span></div>
+              <div class="segment-line astra"><span class="who">Astra</span><span class="when">20.5–21.0s</span><span>Set down the wine glass</span></div>
+            </div>
+            <p class="comparison-source">Video excerpt and reference: <a href="https://huggingface.co/datasets/macrodata/WGO-Bench">WGO-Bench / HomER</a> (CC BY-NC-SA 4.0). Astra timeline: independent high-reasoning run. Video clip: 10.5–21.0s of the original episode.</p>
+          </figcaption>
+        </figure>
+
+        <figure class="comparison" data-clip-start="31.5" data-clip-end="44">
+          <div class="comparison-header">
+            <div><span class="comparison-index">02 / HOMER_2</span><h3>Wash the mug, or scrub then rinse?</h3></div>
+            <div class="comparison-score"><strong>0.45</strong> best overlap / 0.75 required</div>
+          </div>
+          <video controls playsinline preload="metadata" poster="assets/homer-2-wash.jpg" aria-label="First-person video of a person scrubbing and rinsing a glass mug">
+            <source src="assets/homer-2-wash.mp4" type="video/mp4">
+            Your browser does not support video playback.
+          </video>
+          <figcaption>
+            <p class="comparison-summary">WGO groups scrubbing and rinsing the glass mug into one wash segment. Astra splits the scrub, sponge release, and rinse. Both scrub and rinse are visible phases of the same task, yet neither Astra segment reaches 0.75 overlap with WGO's single wash interval.</p>
+            <div class="timeline" aria-label="Comparison of WGO and Astra action timelines from 31.5 to 44 seconds">
+              <div class="timeline-ruler"><span>Seconds</span><span><span>31.5</span><span>37.8</span><span>44.0</span></span></div>
+              <div class="timeline-row">
+                <span class="timeline-name">WGO</span>
+                <div class="timeline-track">
+                  <button class="timeline-segment" type="button" style="--from:2.4%;--to:97.6%" data-time="31.8" title="31.8–43.7: Wash the glass mug with a sponge under running water" aria-label="Play WGO reference: wash the glass mug, 31.8 to 43.7 seconds">Wash glass mug</button>
+                </div>
+              </div>
+              <div class="timeline-row astra">
+                <span class="timeline-name">Astra</span>
+                <div class="timeline-track">
+                  <button class="timeline-segment" type="button" style="--from:0%;--to:48%" data-time="31.5" title="31.0–37.5: Scrub the glass mug inside and outside" aria-label="Play Astra: scrub the glass mug, 31 to 37.5 seconds">Scrub mug</button>
+                  <button class="timeline-segment" type="button" style="--from:48%;--to:52%" data-time="37.5" title="37.5–38.0: Release the sponge into the sink" aria-label="Play Astra: release the sponge, 37.5 to 38 seconds">2</button>
+                  <button class="timeline-segment" type="button" style="--from:52%;--to:100%" data-time="38" title="38.0–44.5: Rinse the glass mug under running water" aria-label="Play Astra: rinse the glass mug, 38 to 44.5 seconds">Rinse mug</button>
+                </div>
+              </div>
+            </div>
+            <div class="segment-list" aria-label="Full segment descriptions">
+              <div class="segment-line"><span class="who">WGO</span><span class="when">31.8–43.7s</span><span>Wash the glass mug with a sponge under running water</span></div>
+              <div class="segment-line astra"><span class="who">Astra</span><span class="when">31.0–37.5s</span><span>Scrub the glass mug inside and outside</span></div>
+              <div class="segment-line astra"><span class="who">Astra</span><span class="when">37.5–38.0s</span><span>Release the sponge into the sink</span></div>
+              <div class="segment-line astra"><span class="who">Astra</span><span class="when">38.0–44.5s</span><span>Rinse the glass mug under running water</span></div>
+            </div>
+            <p class="comparison-source">Video excerpt and reference: <a href="https://huggingface.co/datasets/macrodata/WGO-Bench">WGO-Bench / HomER</a> (CC BY-NC-SA 4.0). Astra timeline: independent high-reasoning run. Video clip: 31.5–44.0s of the original episode.</p>
+          </figcaption>
         </figure>
 
         <h2>A benchmark that accepts valid alternatives</h2>
@@ -154,11 +270,7 @@
           <li><strong>Multiple acceptable descriptions.</strong> For description grading, models receive fixed segments to describe. Each reference description provides required details and optional details for each segment. An LLM judge checks that required details are present and incorrect details are absent. The guide and explicit reference details leave less to the LLM judge's discretion.</li>
         </ol>
 
-        <p>Here are examples of different annotations that Shotwell-WGO-Bench accepts for the same video, but that WGO-Bench would penalize.</p>
-
-        <figure class="placeholder">
-          <figcaption><strong>EXAMPLES HERE</strong><span>Different valid annotations of the same video</span></figcaption>
-        </figure>
+        <p>The two clips above illustrate the kind of optional split this reference format can represent: glass handling before a pour, or scrubbing and rinsing as separate phases of washing. Those exact alternatives would need to be reviewed and added to the accepted reference set before claiming that Shotwell-WGO-Bench scores them as correct.</p>
 
         <h2>Scoring</h2>
 
@@ -179,6 +291,25 @@
   <script type="module">
     import { init } from '/assets/theme.js';
     init();
+
+    document.querySelectorAll('.comparison').forEach((comparison) => {
+      const video = comparison.querySelector('video');
+      const clipStart = Number(comparison.dataset.clipStart);
+      const clipLength = Number(comparison.dataset.clipEnd) - clipStart;
+      const tracks = comparison.querySelectorAll('.timeline-track');
+      const updatePlayhead = () => {
+        const position = `${Math.min(100, Math.max(0, video.currentTime / clipLength * 100))}%`;
+        tracks.forEach((track) => track.style.setProperty('--playhead', position));
+      };
+      video.addEventListener('timeupdate', updatePlayhead);
+      video.addEventListener('seeked', updatePlayhead);
+      comparison.querySelectorAll('.timeline-segment').forEach((segment) => {
+        segment.addEventListener('click', () => {
+          video.currentTime = Math.min(clipLength, Math.max(0, Number(segment.dataset.time) - clipStart));
+          video.play().catch(() => {});
+        });
+      });
+    });
   </script>
 </body>
 </html>
