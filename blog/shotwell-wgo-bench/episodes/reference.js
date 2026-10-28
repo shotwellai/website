@@ -12,8 +12,8 @@
   let selectedIndex = 0;
   let pendingSeek = null;
   let zoomStart = 0;
-  let lastPlaybackTime = 0;
   let pausedBoundary = null;
+  let boundaryPauseTimer = null;
 
   const clamp = (value, minimum, maximum) => Math.max(minimum, Math.min(maximum, value));
   const make = (tag, className, value) => {
@@ -36,7 +36,7 @@
   const zoomLength = () => Math.min(zoomSeconds, episode.duration);
 
   function boundaryDescription(boundary) {
-    const type = boundary.type === 'minor' ? 'Optional split' : 'Major boundary';
+    const type = boundary.type === 'minor' ? 'Optional boundary' : 'Required boundary';
     return `${type} at ${formatTime(boundary.time)}; acceptable ${rangeText(boundary.minimum, boundary.maximum)}`;
   }
 
@@ -141,7 +141,7 @@
 
   function syncTime(time) {
     if (!episode) return;
-    const detailTime = pausedBoundary !== null && video.paused && Math.abs(time - pausedBoundary) < .02
+    const detailTime = pausedBoundary !== null && video.paused && Math.abs(time - pausedBoundary) < .25
       ? Math.max(0, pausedBoundary - .001) : time;
     selectAtTime(detailTime);
     renderZoom(time);
@@ -155,11 +155,39 @@
 
   function seek(time) {
     const target = clamp(time, 0, episode.duration);
+    clearBoundaryPauseTimer();
     pausedBoundary = null;
-    lastPlaybackTime = target;
     if (video.readyState >= 1) video.currentTime = target;
     else pendingSeek = target;
     syncTime(target);
+  }
+
+  function clearBoundaryPauseTimer() {
+    if (boundaryPauseTimer !== null) clearTimeout(boundaryPauseTimer);
+    boundaryPauseTimer = null;
+  }
+
+  function scheduleBoundaryPause() {
+    clearBoundaryPauseTimer();
+    if (!episode || !pauseAtMajorBoundaries.checked || video.paused || video.seeking || video.readyState < 2 || video.playbackRate <= 0) return;
+    const boundary = episode.boundaries.find((item) => item.type !== 'minor'
+      && item.time > video.currentTime + .02 && item.time < episode.duration - .01);
+    if (!boundary) return;
+    const lead = Math.min(.25, video.playbackRate * .12);
+    const delay = Math.max(0, (boundary.time - video.currentTime - lead) / video.playbackRate * 1000);
+    boundaryPauseTimer = setTimeout(() => {
+      boundaryPauseTimer = null;
+      if (video.paused || video.seeking || !pauseAtMajorBoundaries.checked || !episode.boundaries.includes(boundary)) return;
+      const remaining = boundary.time - video.currentTime;
+      if (remaining > lead) {
+        scheduleBoundaryPause();
+        return;
+      }
+      video.pause();
+      pausedBoundary = boundary.time;
+      if (remaining > 0) video.currentTime = boundary.time;
+      syncTime(video.currentTime);
+    }, delay);
   }
 
   function renderEpisodeList() {
@@ -182,11 +210,11 @@
   function showEpisode(id) {
     episode = byId.get(id) || episodes[0];
     if (!episode) return;
+    clearBoundaryPauseTimer();
     video.pause();
     video.src = episode.videoUrl;
     video.load();
     pendingSeek = null;
-    lastPlaybackTime = 0;
     pausedBoundary = null;
     selectedIndex = 0;
     zoomStart = 0;
@@ -222,22 +250,7 @@
 
   function onTimeUpdate() {
     if (!episode) return;
-    const time = video.currentTime;
-    if (pauseAtMajorBoundaries.checked && !video.paused && time > lastPlaybackTime + .001) {
-      const boundary = episode.boundaries.find((item) => item.type !== 'minor'
-        && item.time > lastPlaybackTime + .02 && item.time <= time + .01
-        && item.time < episode.duration - .01);
-      if (boundary) {
-        video.pause();
-        video.currentTime = boundary.time;
-        lastPlaybackTime = boundary.time;
-        pausedBoundary = boundary.time;
-        syncTime(boundary.time);
-        return;
-      }
-    }
-    lastPlaybackTime = time;
-    syncTime(time);
+    syncTime(video.currentTime);
   }
 
   $('#theme-toggle').addEventListener('click', () => {
@@ -280,10 +293,19 @@
       pendingSeek = null;
     }
   });
-  video.addEventListener('seeking', () => { lastPlaybackTime = video.currentTime; });
+  video.addEventListener('seeking', () => {
+    clearBoundaryPauseTimer();
+    if (pausedBoundary !== null && Math.abs(video.currentTime - pausedBoundary) > .02) pausedBoundary = null;
+  });
+  video.addEventListener('seeked', scheduleBoundaryPause);
   video.addEventListener('timeupdate', onTimeUpdate);
   video.addEventListener('play', () => {
     pausedBoundary = null;
     syncTime(video.currentTime);
   });
+  video.addEventListener('playing', scheduleBoundaryPause);
+  video.addEventListener('waiting', clearBoundaryPauseTimer);
+  video.addEventListener('pause', clearBoundaryPauseTimer);
+  video.addEventListener('ratechange', scheduleBoundaryPause);
+  pauseAtMajorBoundaries.addEventListener('change', scheduleBoundaryPause);
 })();
