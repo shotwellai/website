@@ -166,7 +166,8 @@
       .prose { font-size: 17px; line-height: 1.75; }
       .prose ol { padding-left: 22px; }
       .prose li { padding-left: 6px; }
-      .timeline-ruler, .timeline-row { grid-template-columns: 64px minmax(0, 1fr); gap: 8px; }
+      .timeline { overflow-x: auto; }
+      .timeline-ruler, .timeline-row { grid-template-columns: 64px minmax(0, 1fr); gap: 8px; min-width: 580px; }
       .timeline-name { font-size: 10px; }
       .timeline-name::before { width: 6px; height: 6px; margin-right: 4px; }
       .timeline-label { font-size: 10px; }
@@ -213,107 +214,120 @@
 
         <h2>How we align annotation for better scoring</h2>
 
-        <p>Shotwell-WGO-Bench eliminates these arbitrary penalties by restructuring WGO-Bench in three ways:</p>
+        <p>Shotwell-WGO-Bench reduces these arbitrary penalties by restructuring WGO-Bench in four ways:</p>
 
         <ol>
           <li><strong>An extremely detailed annotation guide.</strong> It specifies which actions merit their own segment, exactly where boundaries should fall, and the format and level of detail expected in each description. This makes model outputs very consistent before grading begins. Shotwell-WGO-Bench also demands a much higher level of detail in outputs that spotlights the limits of weaker models.</li>
           <li><strong>Multiple acceptable segmentations.</strong> Even with a precise guide, there is a range of timestamps where an action boundary can be placed, and some actions can reasonably be grouped or split. The reference annotations include acceptable ranges for each individual boundary, rather than one fixed tolerance for every boundary. They also include optional sub-boundaries where splitting an action is valid. Every valid possible segmentation logic for an episode is captured.</li>
           <li><strong>Multiple acceptable descriptions.</strong> For description grading, models receive fixed segments to describe. Each reference description provides required details and optional details for each segment. An LLM judge checks that every required action is present with the right verb, object, and hands. It allows compatible specificity and slight generalizations, but rejects contradictions and independent actions without reference support. The guide and explicit reference details leave less to the LLM judge's discretion.</li>
+          <li><strong>Curated episodes with clearer actions.</strong> We select clips where action boundaries and descriptions can be judged with relatively little ambiguity, limiting cases where equally careful annotators would disagree. This makes scores easier to interpret, while narrowing the range of activities the benchmark covers.</li>
         </ol>
 
         <h2>The limits of a single reference timeline</h2>
 
         <p>WGO-Bench and MicroAnnotationBench compare VLM annotations with human reference annotations. Both compare segmentation against just a single reference timeline. This can penalize logical alternative groupings of actions and understate annotation quality. Astra scores around 0.40 F1 score in published evaluations of both benchmarks. Below, we show examples of our run of Astra on the WGO-Bench where valid alternative groupings are marked wrong due to the <a href="https://macrodata.co/blog/annotating-robot-video-subtasks">benchmark's IoU threshold of 0.75</a>.</p>
 
-        <p>In the examples below, you can compare WGO-Bench and Shotwell-WGO-Bench to see how Astra was scored. Shotwell-WGO-Bench accepts valid alternative groupings while still rejecting a boundary that ends too early.</p>
+        <p>In the examples below, you can compare WGO-Bench and Shotwell-WGO-Bench against the same Astra output from our latest 8-fps run. Shotwell-WGO-Bench accepts more valid boundaries while still rejecting extra or early splits. The markers show segmentation-boundary matches, not description judgments.</p>
 
-        <figure class="comparison" data-clip-start="140" data-clip-end="149.5">
-          <h3 class="comparison-title">One cleanup action, or three?</h3>
+        <figure class="comparison" data-clip-start="140" data-clip-end="150.125">
+          <h3 class="comparison-title">One cleanup action, or several?</h3>
           <video controls playsinline preload="metadata" poster="assets/homer-2-sponge.jpg" aria-label="First-person video of a person rinsing a sponge and washing their hands">
             <source src="assets/homer-2-sponge.mp4" type="video/mp4">
             Your browser does not support video playback.
           </video>
           <figcaption>
-            <div class="timeline" aria-label="Comparison of WGO and Shotwell-WGO action timelines from 140 to 149.5 seconds">
-              <div class="timeline-ruler"><span>Seconds</span><span><span>140.0</span><span>144.8</span><span>149.5</span></span></div>
+            <div class="timeline" aria-label="Comparison of WGO and Shotwell-WGO action timelines from 140 to 150.125 seconds">
+              <div class="timeline-ruler"><span>Seconds</span><span><span>140.0</span><span>145.1</span><span>150.1</span></span></div>
               <div class="timeline-row">
                 <span class="timeline-name">WGO Reference</span>
                 <div class="timeline-track">
-                  <span class="timeline-segment" style="--from:6.32%;--to:97.89%" data-time="140.6" data-end="149.3" title="140.6–149.3: Rinse and squeeze the sponge under running water and wash your hands"></span>
+                  <span class="timeline-segment" style="--from:5.93%;--to:91.85%" data-time="140.6" data-end="149.3" title="140.6–149.3: Rinse and squeeze the sponge under running water and wash your hands"></span>
                 </div>
               </div>
               <div class="timeline-row astra">
                 <span class="timeline-name">Astra on WGO</span>
                 <div class="timeline-track">
-                  <span class="timeline-segment" style="--from:5.26%;--to:57.89%" data-time="140.5" data-end="145.5" data-verdict="rejected" title="140.5–145.5: Rinse and wring out the sponge"></span>
-                  <span class="timeline-segment" style="--from:57.89%;--to:68.42%" data-time="145.5" data-end="146.5" data-verdict="rejected" title="145.5–146.5: Put the sponge in the sink caddy"></span>
-                  <span class="timeline-segment" style="--from:68.42%;--to:100%" data-time="146.5" data-end="149.5" data-verdict="rejected" title="146.5–149.5: Rub and rinse both hands under running water"></span>
+                  <span class="timeline-segment" style="--from:0%;--to:7.41%" data-time="140" data-end="140.75" data-verdict="rejected" title="140.0–140.75: Scrub the sink with the sponge with the right hand"></span>
+                  <span class="timeline-segment" style="--from:7.41%;--to:38.27%" data-time="140.75" data-end="143.875" data-verdict="rejected" title="140.75–143.875: Squeeze the sponge with both hands"></span>
+                  <span class="timeline-segment" style="--from:38.27%;--to:51.85%" data-time="143.875" data-end="145.25" data-verdict="rejected" title="143.875–145.25: Squeeze the sponge with the right hand"></span>
+                  <span class="timeline-segment" style="--from:51.85%;--to:64.20%" data-time="145.25" data-end="146.5" data-verdict="rejected" title="145.25–146.5: Place the sponge in the basket with the right hand"></span>
+                  <span class="timeline-segment" style="--from:64.20%;--to:100%" data-time="146.5" data-end="150.125" data-verdict="rejected" title="146.5–150.125: Rub the hands together with both hands"></span>
                 </div>
               </div>
               <div class="timeline-row shotwell-reference">
                 <span class="timeline-name">Shotwell-WGO Reference</span>
                 <div class="timeline-track">
-                  <span class="timeline-segment" style="--from:0%;--to:57.89%" data-time="140" data-end="145.5" title="140.0–145.5: Wring the sponge with both hands"></span>
-                  <span class="timeline-segment" style="--from:57.89%;--to:68.42%" data-time="145.5" data-end="146.5" title="145.5–146.5: Put the sponge in the caddy with the right hand"></span>
-                  <span class="timeline-segment" style="--from:68.42%;--to:100%" data-time="146.5" data-end="149.5" title="146.5–149.5: Wash both hands"></span>
+                  <span class="timeline-segment" style="--from:0%;--to:7.90%" data-time="140" data-end="140.8" title="140.0–140.8: Scrub the sink and gather food scraps with the sponge in the right hand"></span>
+                  <span class="timeline-segment" style="--from:7.90%;--to:53.83%" data-time="140.8" data-end="145.45" title="140.8–145.45: Squeeze the sponge with both hands or the right hand"></span>
+                  <span class="timeline-segment" style="--from:53.83%;--to:64.69%" data-time="145.45" data-end="146.55" title="145.45–146.55: Put the sponge in the basket with the right hand"></span>
+                  <span class="timeline-segment" style="--from:64.69%;--to:98.57%" data-time="146.55" data-end="149.98" title="146.55–149.98: Rub or wash both hands"></span>
+                  <span class="timeline-segment" style="--from:98.57%;--to:100%" data-time="149.98" data-end="150.125" title="From 149.98s: Turn off the faucet with the right hand"></span>
                 </div>
               </div>
               <div class="timeline-row astra shotwell-astra">
                 <span class="timeline-name">Astra on Shotwell-WGO</span>
                 <div class="timeline-track">
-                  <span class="timeline-segment" style="--from:0%;--to:56.84%" data-time="140" data-end="145.4" data-verdict="accepted" title="140.0–145.4: Wring the sponge with both hands"></span>
-                  <span class="timeline-segment" style="--from:56.84%;--to:69.47%" data-time="145.4" data-end="146.6" data-verdict="accepted" title="145.4–146.6: Put the sponge in the caddy with the right hand"></span>
-                  <span class="timeline-segment" style="--from:69.47%;--to:100%" data-time="146.6" data-end="149.5" data-verdict="accepted" title="146.6–149.5: Wash both hands"></span>
+                  <span class="timeline-segment" style="--from:0%;--to:7.41%" data-time="140" data-end="140.75" data-verdict="accepted" title="140.0–140.75: Scrub the sink with the sponge with the right hand"></span>
+                  <span class="timeline-segment" style="--from:7.41%;--to:38.27%" data-time="140.75" data-end="143.875" data-verdict="rejected" title="140.75–143.875: Squeeze the sponge with both hands"></span>
+                  <span class="timeline-segment" style="--from:38.27%;--to:51.85%" data-time="143.875" data-end="145.25" data-verdict="accepted" title="143.875–145.25: Squeeze the sponge with the right hand"></span>
+                  <span class="timeline-segment" style="--from:51.85%;--to:64.20%" data-time="145.25" data-end="146.5" data-verdict="accepted" title="145.25–146.5: Place the sponge in the basket with the right hand"></span>
+                  <span class="timeline-segment" style="--from:64.20%;--to:100%" data-time="146.5" data-end="150.125" data-verdict="accepted" title="146.5–150.125: Rub the hands together with both hands"></span>
                 </div>
               </div>
             </div>
-            <p class="comparison-note">WGO penalizes Astra for having split the segments, even though Astra annotates each segment perfectly. Because Shotwell-WGO is extremely precise on how to segment, Astra is marked correct in Shotwell-WGO.</p>
+            <p class="comparison-note">Astra's latest run separates squeezing the sponge, placing it in the basket, and rubbing both hands. WGO's one long reference rejects every split. Shotwell-WGO matches four of Astra's five boundaries here, but rejects the extra split at 143.875s.</p>
           </figcaption>
         </figure>
 
-        <figure class="comparison" data-clip-start="10.5" data-clip-end="21">
+        <figure class="comparison" data-clip-start="9" data-clip-end="21.88">
           <h3 class="comparison-title">Where does the pour begin?</h3>
           <video controls playsinline preload="metadata" poster="assets/homer-1-pour.jpg" aria-label="First-person video of a person handling two glasses and pouring water">
             <source src="assets/homer-1-pour.mp4" type="video/mp4">
             Your browser does not support video playback.
           </video>
           <figcaption>
-            <div class="timeline" aria-label="Comparison of WGO and Shotwell-WGO action timelines from 10.5 to 21 seconds">
-              <div class="timeline-ruler"><span>Seconds</span><span><span>10.5</span><span>15.8</span><span>21.0</span></span></div>
+            <div class="timeline" aria-label="Comparison of WGO and Shotwell-WGO action timelines from 9 to 21.88 seconds">
+              <div class="timeline-ruler"><span>Seconds</span><span><span>9.0</span><span>15.4</span><span>21.9</span></span></div>
               <div class="timeline-row">
                 <span class="timeline-name">WGO Reference</span>
                 <div class="timeline-track">
-                  <span class="timeline-segment" style="--from:2.79%;--to:97.26%" data-time="10.793" data-end="20.712" title="10.79–20.71: Pour water into the wine glass"></span>
+                  <span class="timeline-segment" style="--from:13.92%;--to:90.93%" data-time="10.793" data-end="20.712" title="10.79–20.71: Pour water into the wine glass"></span>
                 </div>
               </div>
               <div class="timeline-row astra">
                 <span class="timeline-name">Astra on WGO</span>
                 <div class="timeline-track">
-                  <span class="timeline-segment" style="--from:0%;--to:9.52%" data-time="10.5" data-end="11.5" data-verdict="rejected" title="9.5–11.5: Lift the pitcher by its handle"></span>
-                  <span class="timeline-segment" style="--from:9.52%;--to:23.81%" data-time="11.5" data-end="13" data-verdict="rejected" title="11.5–13.0: Move the tall glass left"></span>
-                  <span class="timeline-segment" style="--from:23.81%;--to:28.57%" data-time="13" data-end="13.5" data-verdict="rejected" title="13.0–13.5: Pick up the wine glass"></span>
-                  <span class="timeline-segment" style="--from:28.57%;--to:95.24%" data-time="13.5" data-end="20.5" data-verdict="rejected" title="13.5–20.5: Pour from the pitcher into the wine glass"></span>
+                  <span class="timeline-segment" style="--from:0%;--to:10.68%" data-time="9" data-end="10.375" data-verdict="rejected" title="9.0–10.375: Pick up the pitcher with the right hand"></span>
+                  <span class="timeline-segment" style="--from:10.68%;--to:27.17%" data-time="10.375" data-end="12.5" data-verdict="rejected" title="10.375–12.5: Pick up the tumbler with the left hand and hold the pitcher in the right hand"></span>
+                  <span class="timeline-segment" style="--from:27.17%;--to:32.03%" data-time="12.5" data-end="13.125" data-verdict="rejected" title="12.5–13.125: Place the tumbler on the table with the left hand and hold the pitcher in the right hand"></span>
+                  <span class="timeline-segment" style="--from:32.03%;--to:37.85%" data-time="13.125" data-end="13.875" data-verdict="rejected" title="13.125–13.875: Pick up the wine glass with the left hand and hold the pitcher in the right hand"></span>
+                  <span class="timeline-segment" style="--from:37.85%;--to:89.29%" data-time="13.875" data-end="20.5" data-verdict="rejected" title="13.875–20.5: Pour water from the pitcher into the wine glass with the right hand and hold the wine glass in the left hand"></span>
+                  <span class="timeline-segment" style="--from:89.29%;--to:100%" data-time="20.5" data-end="21.88" data-verdict="rejected" title="20.5–21.88: Place the pitcher on the table with the right hand"></span>
                 </div>
               </div>
               <div class="timeline-row shotwell-reference">
                 <span class="timeline-name">Shotwell-WGO Reference</span>
                 <div class="timeline-track">
-                  <span class="timeline-segment" style="--from:0%;--to:23.81%" data-time="10.5" data-end="13" title="10.5–13.0: Pick the pitcher with the right hand and move a glass left with the left hand"></span>
-                  <span class="timeline-segment" style="--from:23.81%;--to:47.62%" data-time="13" data-end="15.5" title="13.0–15.5: Pick the wine glass with the left hand"></span>
-                  <span class="timeline-segment" style="--from:47.62%;--to:100%" data-time="15.5" data-end="21" title="15.5–21.0: Pour water into the wine glass with the pitcher in the right hand and hold the wine glass with the left hand"></span>
+                  <span class="timeline-segment" style="--from:0%;--to:22.52%" data-time="9" data-end="11.9" title="9.0–11.9: Pick up the pitcher with the right hand"></span>
+                  <span class="timeline-segment" style="--from:22.52%;--to:32.28%" data-time="11.9" data-end="13.158144" title="11.9–13.16: Slide or push a glass left with the left hand and hold the pitcher in the right hand"></span>
+                  <span class="timeline-segment" style="--from:32.28%;--to:44.64%" data-time="13.158144" data-end="14.75" title="13.16–14.75: Pull the glass with the left hand and hold the pitcher in the right hand"></span>
+                  <span class="timeline-segment" style="--from:44.64%;--to:90.84%" data-time="14.75" data-end="20.7" title="14.75–20.7: Pour water into the glass with the right hand"></span>
+                  <span class="timeline-segment" style="--from:90.84%;--to:99.38%" data-time="20.7" data-end="21.8" title="20.7–21.8: Place the jug on the table with the right hand"></span>
                 </div>
               </div>
               <div class="timeline-row astra shotwell-astra">
                 <span class="timeline-name">Astra on Shotwell-WGO</span>
                 <div class="timeline-track">
-                  <span class="timeline-segment" style="--from:0%;--to:9.52%" data-time="10.5" data-end="11.5" data-verdict="accepted" title="10.5–11.5: Pick the pitcher with the right hand"></span>
-                  <span class="timeline-segment" style="--from:9.52%;--to:23.81%" data-time="11.5" data-end="13" data-verdict="accepted" title="11.5–13.0: Move a glass left with the left hand"></span>
-                  <span class="timeline-segment" style="--from:23.81%;--to:29.52%" data-time="13" data-end="13.6" data-verdict="rejected" title="13.0–13.6: Pick the wine glass with the left hand"></span>
-                  <span class="timeline-segment" style="--from:29.52%;--to:100%" data-time="13.6" data-end="21" data-verdict="accepted" title="13.6–21.0: Pour water into the wine glass with the pitcher in the right hand and hold the wine glass with the left hand"></span>
+                  <span class="timeline-segment" style="--from:0%;--to:10.68%" data-time="9" data-end="10.375" data-verdict="accepted" title="9.0–10.375: Pick up the pitcher with the right hand"></span>
+                  <span class="timeline-segment" style="--from:10.68%;--to:27.17%" data-time="10.375" data-end="12.5" data-verdict="rejected" title="10.375–12.5: Pick up the tumbler with the left hand and hold the pitcher in the right hand"></span>
+                  <span class="timeline-segment" style="--from:27.17%;--to:32.03%" data-time="12.5" data-end="13.125" data-verdict="accepted" title="12.5–13.125: Place the tumbler on the table with the left hand and hold the pitcher in the right hand"></span>
+                  <span class="timeline-segment" style="--from:32.03%;--to:37.85%" data-time="13.125" data-end="13.875" data-verdict="rejected" title="13.125–13.875: Pick up the wine glass with the left hand and hold the pitcher in the right hand"></span>
+                  <span class="timeline-segment" style="--from:37.85%;--to:89.29%" data-time="13.875" data-end="20.5" data-verdict="accepted" title="13.875–20.5: Pour water from the pitcher into the wine glass with the right hand and hold the wine glass in the left hand"></span>
+                  <span class="timeline-segment" style="--from:89.29%;--to:100%" data-time="20.5" data-end="21.88" data-verdict="accepted" title="20.5–21.88: Place the pitcher on the table with the right hand"></span>
                 </div>
               </div>
             </div>
-            <p class="comparison-note">WGO-Bench ignores some actions and penalizes Astra for mentioning them. Shotwell-WGO accepts the valid handling actions, but marks Astra's wine-glass pickup wrong because it ends too early.</p>
+            <p class="comparison-note">Astra's latest run labels the pitcher and glass handling separately from the pour. WGO's single pour reference rejects every interval by temporal overlap. Shotwell-WGO matches four of Astra's six boundaries, but rejects the extra splits at 12.5s and 13.875s.</p>
           </figcaption>
         </figure>
 
@@ -355,7 +369,7 @@
     init();
 
     const scoreGrid = document.querySelector('#score-grid');
-    const scoreNames = { astra: 'GPT-6 Astra', sol: 'GPT-6.1 Sol', argon: 'Gemini 4 Argon', opus: 'Claude Opus 5.5', luna: 'GPT-6 Luna' };
+    const scoreNames = { astra: 'GPT-6 Astra', sol: 'GPT-6.1 Sol', argon: 'Gemini 4 Argon', opus: 'Claude Opus 5.5', luna: 'GPT-6 Luna', sonnet: 'Claude Sonnet 5.5', qwen: 'Qwen3-VL 235B Instruct' };
     const addPoint = (scale, model, kind, label, value, axisMin, axisMax) => {
       const point = document.createElement('button');
       point.type = 'button';
