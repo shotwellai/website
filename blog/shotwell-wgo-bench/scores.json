@@ -70,6 +70,28 @@
       },
       "overall_f1": 0.32298183533852326,
       "refused_tasks": 0
+    },
+    "sonnet": {
+      "model_id": "claude-sonnet-5-5",
+      "segmentation": {
+        "f1": 0.5202312138728323
+      },
+      "description": {
+        "f1": 0.4886877828054298
+      },
+      "overall_f1": 0.25423063845369176,
+      "refused_tasks": 0
+    },
+    "qwen": {
+      "model_id": "qwen/qwen3-vl-235b-a22b-instruct",
+      "segmentation": {
+        "f1": 0.3393739703459638
+      },
+      "description": {
+        "f1": 0.3189269746646795
+      },
+      "overall_f1": 0.10823551364237889,
+      "refused_tasks": 0
     }
   }
 }
