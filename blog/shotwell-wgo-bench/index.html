@@ -109,36 +109,25 @@
     .shotwell-reference .timeline-label:nth-child(even)::before { border-bottom-color: var(--shotwell-reference-alt); }
     .timeline-label:hover, .timeline-label:focus-visible { color: var(--fg); text-decoration: underline; text-underline-offset: 3px; }
     .timeline-label.is-visible { visibility: visible; }
-    .score-results { --score-point: #75a8a8; --score-active: #e8b33a; --score-frontier: #75c8a9; margin: 36px 0 0; }
-    [data-theme="light"] .score-results { --score-point: #477f80; --score-active: #ac7116; --score-frontier: #17745d; }
-    .score-figure { margin: 0 0 44px; }
-    .score-figure figcaption { margin-bottom: 20px; font: 400 22px/1.3 var(--display); }
+    .score-results { --score-overall: #6bc2a9; --score-seg: #67aeca; --score-desc: #d5a55c; margin: 32px 0 40px; }
+    [data-theme="light"] .score-results { --score-overall: #168768; --score-seg: #257fa5; --score-desc: #ad6b19; }
+    .score-figure { margin: 0; }
+    .score-figure figcaption { margin-bottom: 18px; font: 400 22px/1.3 var(--display); }
     .score-figure figcaption span { display: block; margin-top: 4px; color: var(--dim); font: 12px/1.5 var(--mono); }
-    .score-plot-layout { display: grid; grid-template-columns: 16px 36px minmax(0, 1fr); gap: 6px 8px; }
-    .score-y-title { grid-column: 1; grid-row: 1; align-self: center; justify-self: center; writing-mode: vertical-rl; transform: rotate(180deg); color: var(--dim); font: 11px/1.4 var(--mono); }
-    .score-y-ticks { grid-column: 2; grid-row: 1; height: 340px; padding: 14px 0; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; }
-    .score-plot { grid-column: 3; grid-row: 1; position: relative; height: 340px; border: 1px solid var(--wire); background: var(--surface); }
-    .score-field { position: absolute; inset: 14px; }
-    .score-gridline { position: absolute; background: var(--wire); pointer-events: none; }
-    .score-gridline.vertical { top: 0; bottom: 0; width: 1px; left: var(--position); }
-    .score-gridline.horizontal { left: 0; right: 0; height: 1px; bottom: var(--position); }
-    .score-leaders { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-    .score-leaders .score-frontier { fill: none; stroke: var(--score-frontier); stroke-width: 2; stroke-dasharray: 6 5; stroke-linecap: round; stroke-linejoin: round; }
-    .score-leaders line { stroke: var(--wire-strong); stroke-width: 1; }
-    .score-leaders line.is-active { stroke: var(--score-active); stroke-width: 1.5; }
-    .score-label { position: absolute; z-index: 2; padding: 2px 3px; border: 0; background: var(--surface); color: var(--fg); text-align: center; font: 11px/1.35 var(--mono); white-space: nowrap; cursor: pointer; }
-    .score-label span, .score-label strong { display: block; }
-    .score-label strong { color: var(--score-active); font-weight: 500; font-variant-numeric: tabular-nums; }
-    .score-label.is-frontier strong { color: var(--score-frontier); }
-    .score-label-short { display: none !important; }
-    .score-label:hover, .score-label:focus-visible, .score-label.is-active { text-decoration: underline; text-underline-offset: 3px; }
-    .score-point { position: absolute; z-index: 3; width: 18px; height: 18px; padding: 0; border: 2px solid var(--surface); border-radius: 50%; background: var(--score-point); box-shadow: 0 0 0 1px var(--wire-strong); transform: translate(-50%, 50%); cursor: pointer; }
-    .score-point.is-frontier { background: var(--score-frontier); }
-    .score-point:hover, .score-point:focus-visible, .score-point.is-active { background: var(--score-active); box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--score-active); }
-    .score-tooltip { position: absolute; z-index: 4; width: max-content; max-width: min(220px, 100%); padding: 7px 9px; border: 1px solid var(--wire-strong); background: var(--surface); color: var(--fg); font: 11px/1.5 var(--mono); white-space: pre-line; pointer-events: none; }
-    .score-x-ticks, .score-y-ticks, .score-x-title { color: var(--dim); font: 11px/1.4 var(--mono); }
-    .score-x-ticks { grid-column: 3; display: flex; justify-content: space-between; margin: 0 14px; }
-    .score-x-title { grid-column: 3; text-align: center; margin-top: 2px; }
+    .score-grid { border-top: 1px solid var(--wire-strong); }
+    .score-header, .score-row { display: grid; grid-template-columns: minmax(126px, 1.25fr) repeat(3, minmax(0, 1fr)); gap: 16px; align-items: center; }
+    .score-header { padding: 0 0 9px; color: var(--dim); font: 11px/1.4 var(--mono); }
+    .score-row { min-height: 72px; padding: 13px 0; border-top: 1px solid var(--wire); }
+    .score-model { font: 500 15px/1.3 var(--sans); }
+    .score-metric { min-width: 0; }
+    .score-track { height: 9px; background: var(--wire); }
+    .score-fill { display: block; height: 100%; width: var(--value); background: var(--fill); }
+    .score-metric.overall { --fill: var(--score-overall); }
+    .score-metric.segmentation { --fill: var(--score-seg); }
+    .score-metric.description { --fill: var(--score-desc); }
+    .score-value { display: block; margin-top: 5px; font: 12px/1.2 var(--mono); font-variant-numeric: tabular-nums; }
+    .score-metric.overall .score-value { color: var(--score-overall); font-weight: 700; }
+    .score-caveat { margin: 14px 0 0; color: var(--dim); font: 12px/1.5 var(--mono); }
     .site-footer {
       border-top: 1px solid var(--wire);
       padding-top: 24px;
@@ -169,10 +158,10 @@
       .timeline-name::before { width: 6px; height: 6px; margin-right: 4px; }
       .timeline-label { font-size: 10px; }
       .timeline-segment[data-verdict]::after { width: 16px; height: 16px; font-size: 12px; }
-      .score-y-ticks, .score-plot { height: 260px; }
-      .score-label { font-size: 10px; }
-      .score-label-full { display: none !important; }
-      .score-label-short { display: block !important; }
+      .score-header { display: none; }
+      .score-row { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+      .score-model { grid-column: 1 / -1; }
+      .score-metric::before { content: attr(data-mobile-label); display: block; margin-bottom: 5px; color: var(--dim); font: 10px/1.2 var(--mono); }
     }
   </style>
 </head>
@@ -314,34 +303,20 @@
 
         <h2>Results</h2>
 
-        <p>We calculate segmentation and description F1 separately, then multiply them for the final score. The chart plots overall F1 score for each model against the cost to annotate an hour of video.</p>
+        <p>We calculate segmentation and description F1 separately, then multiply them for the final score. The chart shows the first five episodes with completed golden descriptions, sampled at 8 frames per second for each model.</p>
 
-        <div class="score-results" aria-label="Example benchmark score comparison">
+        <div class="score-results" aria-label="Measured benchmark scores">
           <figure class="score-figure">
-            <figcaption>Overall F1 vs. cost <span>Example scores</span></figcaption>
-            <div class="score-plot-layout">
-              <div class="score-y-title">Overall F1</div>
-              <div class="score-y-ticks" aria-hidden="true"><span>1.0</span><span>0.75</span><span>0.50</span><span>0.25</span><span>0</span></div>
-              <div class="score-plot" role="group" aria-label="Model overall F1 by cost per video hour">
-                <div class="score-field" id="score-field">
-                  <svg class="score-leaders" id="score-leaders" aria-hidden="true"><polyline class="score-frontier" id="score-frontier"></polyline></svg>
-                  <span class="score-gridline vertical" style="--position: 25%"></span>
-                  <span class="score-gridline vertical" style="--position: 50%"></span>
-                  <span class="score-gridline vertical" style="--position: 75%"></span>
-                  <span class="score-gridline horizontal" style="--position: 25%"></span>
-                  <span class="score-gridline horizontal" style="--position: 50%"></span>
-                  <span class="score-gridline horizontal" style="--position: 75%"></span>
-                  <div class="score-tooltip" id="score-tooltip" role="tooltip" hidden></div>
-                </div>
-              </div>
-              <div class="score-x-ticks" aria-hidden="true"><span>$0.25</span><span>$2.50</span><span>$25</span></div>
-              <div class="score-x-title">Cost per video hour (USD, log scale)</div>
+            <figcaption>Model scores <span>Five-episode pilot · F1, 0 to 1</span></figcaption>
+            <div class="score-grid" id="score-grid" aria-live="polite">
+              <div class="score-header" aria-hidden="true"><span>Model</span><span>Overall F1</span><span>Segmentation F1</span><span>Description F1</span></div>
             </div>
+            <p class="score-caveat" id="score-caveat" hidden></p>
           </figure>
         </div>
 
-        <p>Here, the capabilities of stronger models, and the gap between them and weaker models, are shown much more strongly than in the original WGO-Bench. In the original benchmark, smaller models that were clearly weaker (such as FLORA) scored close to Astra and beat Sol due to the noisiness of the scoring approach. Shotwell-WGO results correlate much more strongly with the generally accepted visual abilities of these models. The Pareto frontier of cost/quality routes along the latest GPT models.</p>
-        <p>You can view the benchmark videos and reference annotations <a href="./episodes/">here</a> and view the annotation guide <a class="pending-link" href="#" aria-disabled="true" tabindex="-1">here</a>.</p>
+        <p>In this five-episode pilot, Astra ranks first overall, narrowly ahead of Sol. These results do not represent the full benchmark. The separate segmentation and description scores show where each model succeeds and where its annotations still need work.</p>
+        <p>Browse the benchmark videos and reference annotations <a href="./episodes/">here</a>. The <a href="https://github.com/shotwellai/shotwell-wgo-bench/blob/main/guide.txt">annotation guide</a>, runner, and scoring code are in the <a href="https://github.com/shotwellai/shotwell-wgo-bench">benchmark repository</a>.</p>
       </div>
     </article>
 
@@ -355,118 +330,52 @@
     import { init } from '/assets/theme.js';
     init();
 
-    const exampleScores = [
-      { model: 'GPT-6 Astra', short: 'Astra', cost: 20, lane: 'above', segmentation: 0.92, description: 0.92 },
-      { model: 'GPT-6.1 Sol', short: 'Sol', cost: 2.50, lane: 'below', segmentation: 0.84, description: 0.85 },
-      { model: 'GPT-6 Luna', short: 'Luna', cost: 0.35, lane: 'below', segmentation: 0.74, description: 0.71 },
-      { model: 'Gemini 4 Argon', short: 'Argon', cost: 5.50, lane: 'above', segmentation: 0.80, description: 0.78 },
-      { model: 'Claude Opus 5.5', short: 'Opus', cost: 10, lane: 'below', segmentation: 0.81, description: 0.80 },
-      { model: 'Qwen3.8-Max (0902)', short: 'Qwen', cost: 1.20, lane: 'below', segmentation: 0.70, description: 0.68 },
-    ];
-    const costPosition = (cost) => Math.max(0, Math.min(1, Math.log(cost / 0.25) / Math.log(25 / 0.25)));
-    const overallScore = (score) => score.segmentation * score.description;
-    let bestScore = -Infinity;
-    const frontierScores = [...exampleScores].sort((a, b) => a.cost - b.cost).filter((score) => {
-      const value = overallScore(score);
-      if (value <= bestScore) return false;
-      bestScore = value;
-      return true;
-    });
-    const scoreField = document.querySelector('#score-field');
-    const leaders = document.querySelector('#score-leaders');
-    const frontier = document.querySelector('#score-frontier');
-    const tooltip = document.querySelector('#score-tooltip');
-    const points = new Map();
-    const labels = new Map();
-    const lines = new Map();
-    let selectedModel = null;
-    let activeModel = null;
-    const positionTooltip = (score) => {
-      const x = costPosition(score.cost) * scoreField.clientWidth;
-      const y = (1 - overallScore(score)) * scoreField.clientHeight;
-      const left = x + tooltip.offsetWidth + 16 <= scoreField.clientWidth ? x + 16 : x - tooltip.offsetWidth - 16;
-      const top = y + tooltip.offsetHeight + 16 <= scoreField.clientHeight ? y + 16 : y - tooltip.offsetHeight - 16;
-      tooltip.style.left = `${Math.max(0, Math.min(scoreField.clientWidth - tooltip.offsetWidth, left))}px`;
-      tooltip.style.top = `${Math.max(0, Math.min(scoreField.clientHeight - tooltip.offsetHeight, top))}px`;
+    const scoreGrid = document.querySelector('#score-grid');
+    const scoreNames = { astra: 'GPT-6 Astra', sol: 'GPT-6.1 Sol', argon: 'Gemini 4 Argon', opus: 'Claude Opus 5.5', luna: 'GPT-6 Luna' };
+    const addMetric = (row, kind, label, value) => {
+      const cell = document.createElement('div');
+      cell.className = `score-metric ${kind}`;
+      cell.dataset.label = label;
+      cell.dataset.mobileLabel = label.replace(' F1', '');
+      const track = document.createElement('div');
+      track.className = 'score-track';
+      const fill = document.createElement('span');
+      fill.className = 'score-fill';
+      fill.style.setProperty('--value', `${Math.max(0, Math.min(100, value * 100))}%`);
+      track.append(fill);
+      const text = document.createElement('span');
+      text.className = 'score-value';
+      text.textContent = value.toFixed(3);
+      cell.append(track, text);
+      row.append(cell);
     };
-    const showScore = (model) => {
-      const score = exampleScores.find((item) => item.model === model);
-      activeModel = score?.model || null;
-      tooltip.hidden = !score;
-      if (score) {
-        tooltip.textContent = `${score.model}\nSegmentation F1 ${score.segmentation.toFixed(2)} · Description F1 ${score.description.toFixed(2)}\n$${score.cost.toFixed(2)} per video hour`;
-        positionTooltip(score);
+    fetch('./scores.json').then((response) => {
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return response.json();
+    }).then((data) => {
+      Object.entries(data.models).sort((a, b) => b[1].overall_f1 - a[1].overall_f1).forEach(([key, score]) => {
+        const row = document.createElement('div');
+        row.className = 'score-row';
+        const name = document.createElement('strong');
+        name.className = 'score-model';
+        name.textContent = scoreNames[key] || score.model_id;
+        row.append(name);
+        addMetric(row, 'overall', 'Overall F1', score.overall_f1);
+        addMetric(row, 'segmentation', 'Segmentation F1', score.segmentation.f1);
+        addMetric(row, 'description', 'Description F1', score.description.f1);
+        scoreGrid.append(row);
+      });
+      const refusals = Object.entries(data.models).filter(([, score]) => score.refused_tasks > 0);
+      if (refusals.length) {
+        const caveat = document.querySelector('#score-caveat');
+        caveat.textContent = refusals.map(([key, score]) => `${scoreNames[key] || key} refused ${score.refused_tasks} visual ${score.refused_tasks === 1 ? 'window' : 'windows'} under provider policy`).join('; ') + '. Refusals count as missing annotations.';
+        caveat.hidden = false;
       }
-      points.forEach((point, name) => point.classList.toggle('is-active', name === model));
-      labels.forEach((label, name) => label.classList.toggle('is-active', name === model));
-      lines.forEach((line, name) => line.classList.toggle('is-active', name === model));
-    };
-    const selectScore = (model) => {
-      selectedModel = selectedModel === model ? null : model;
-      showScore(selectedModel);
-    };
-    exampleScores.forEach((score) => {
-      const point = document.createElement('button');
-      point.type = 'button';
-      point.className = 'score-point';
-      point.classList.toggle('is-frontier', frontierScores.includes(score));
-      point.style.left = `${costPosition(score.cost) * 100}%`;
-      point.style.bottom = `${overallScore(score) * 100}%`;
-      point.setAttribute('aria-label', `${score.model}: segmentation F1 ${score.segmentation.toFixed(2)}, description F1 ${score.description.toFixed(2)}, overall F1 ${overallScore(score).toFixed(2)}, cost $${score.cost.toFixed(2)} per video hour`);
-      const label = document.createElement('button');
-      label.type = 'button';
-      label.className = 'score-label';
-      label.classList.toggle('is-frontier', frontierScores.includes(score));
-      label.setAttribute('aria-label', point.getAttribute('aria-label'));
-      const fullName = document.createElement('span');
-      fullName.className = 'score-label-full';
-      fullName.textContent = score.model;
-      const shortName = document.createElement('span');
-      shortName.className = 'score-label-short';
-      shortName.textContent = score.short;
-      const value = document.createElement('strong');
-      value.textContent = overallScore(score).toFixed(2);
-      label.append(fullName, shortName, value);
-      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      [point, label].forEach((target) => {
-        target.addEventListener('mouseenter', () => showScore(score.model));
-        target.addEventListener('mouseleave', () => showScore(selectedModel));
-        target.addEventListener('focus', () => showScore(score.model));
-        target.addEventListener('blur', () => showScore(selectedModel));
-        target.addEventListener('click', () => selectScore(score.model));
-      });
-      leaders.append(line);
-      scoreField.append(point);
-      scoreField.append(label);
-      points.set(score.model, point);
-      labels.set(score.model, label);
-      lines.set(score.model, line);
+    }).catch(() => {
+      const message = document.createElement('p');
+      message.textContent = 'Scores are not available yet.';
+      scoreGrid.append(message);
     });
-    const positionLabels = () => {
-      const width = scoreField.clientWidth;
-      const height = scoreField.clientHeight;
-      leaders.setAttribute('viewBox', `0 0 ${width} ${height}`);
-      frontier.setAttribute('points', frontierScores.map((score) => `${costPosition(score.cost) * width},${(1 - overallScore(score)) * height}`).join(' '));
-      exampleScores.forEach((score) => {
-        const label = labels.get(score.model);
-        const x = costPosition(score.cost) * width;
-        const y = (1 - overallScore(score)) * height;
-        const left = Math.max(0, Math.min(width - label.offsetWidth, x - label.offsetWidth / 2));
-        const preferredTop = score.lane === 'above' ? y - label.offsetHeight - 17 : y + 17;
-        const top = Math.max(0, Math.min(height - label.offsetHeight, preferredTop));
-        label.style.left = `${left}px`;
-        label.style.top = `${top}px`;
-        const line = lines.get(score.model);
-        line.setAttribute('x1', x);
-        line.setAttribute('y1', y + (score.lane === 'above' ? -10 : 10));
-        line.setAttribute('x2', left + label.offsetWidth / 2);
-        line.setAttribute('y2', top + (score.lane === 'above' ? label.offsetHeight : 0));
-      });
-      if (activeModel) positionTooltip(exampleScores.find((score) => score.model === activeModel));
-    };
-    positionLabels();
-    new ResizeObserver(positionLabels).observe(scoreField);
-    showScore(null);
 
     document.querySelectorAll('.comparison').forEach((comparison) => {
       const video = comparison.querySelector('video');
