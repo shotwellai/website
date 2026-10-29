@@ -1,47 +1,74 @@
 {
   "benchmark": "Shotwell-WGO-Bench",
-  "fps": 8,
   "episode_ids": [
     "wgo-bench-homer_1",
     "wgo-bench-homer_2",
     "wgo-bench-homer_3",
     "wgo-bench-homer_4",
-    "wgo-bench-homer_5"
+    "wgo-bench-homer_5",
+    "wgo-bench-homer_9",
+    "wgo-bench-homer_33",
+    "wgo-bench-homer_37",
+    "wgo-bench-homer_40",
+    "wgo-bench-homer_41",
+    "wgo-bench-homer_48"
   ],
+  "fps": 8,
+  "judge_rubric_version": "core-action-v2",
   "models": {
     "astra": {
       "model_id": "gpt-6-astra",
-      "segmentation": { "f1": 0.7022900763358779 },
-      "description": { "f1": 0.6291390728476821 },
-      "overall_f1": 0.44183812749608214,
+      "segmentation": {
+        "f1": 0.7728155339805826
+      },
+      "description": {
+        "f1": 0.709480122324159
+      },
+      "overall_f1": 0.548297259582554,
       "refused_tasks": 0
     },
     "sol": {
       "model_id": "gpt-6.1-sol",
-      "segmentation": { "f1": 0.7081712062256809 },
-      "description": { "f1": 0.5980066445182723 },
-      "overall_f1": 0.4234910867794769,
-      "refused_tasks": 0
-    },
-    "argon": {
-      "model_id": "gemini-4-argon",
-      "segmentation": { "f1": 0.584 },
-      "description": { "f1": 0.6086956521739131 },
-      "overall_f1": 0.35547826086956524,
-      "refused_tasks": 2
-    },
-    "opus": {
-      "model_id": "anthropic/claude-opus-5.5",
-      "segmentation": { "f1": 0.5416666666666667 },
-      "description": { "f1": 0.49523809523809526 },
-      "overall_f1": 0.2682539682539683,
+      "segmentation": {
+        "f1": 0.7563352826510722
+      },
+      "description": {
+        "f1": 0.6758832565284179
+      },
+      "overall_f1": 0.511194353865548,
       "refused_tasks": 0
     },
     "luna": {
       "model_id": "gpt-6-luna",
-      "segmentation": { "f1": 0.4909090909090909 },
-      "description": { "f1": 0.36241610738255037 },
-      "overall_f1": 0.17791336180597928,
+      "segmentation": {
+        "f1": 0.47356321839080456
+      },
+      "description": {
+        "f1": 0.431784107946027
+      },
+      "overall_f1": 0.20447707180892313,
+      "refused_tasks": 0
+    },
+    "argon": {
+      "model_id": "gemini-4-argon",
+      "segmentation": {
+        "f1": 0.6937119675456389
+      },
+      "description": {
+        "f1": 0.671850699844479
+      },
+      "overall_f1": 0.466070870886028,
+      "refused_tasks": 20
+    },
+    "opus": {
+      "model_id": "claude-opus-5-5",
+      "segmentation": {
+        "f1": 0.5477707006369427
+      },
+      "description": {
+        "f1": 0.5896296296296297
+      },
+      "overall_f1": 0.32298183533852326,
       "refused_tasks": 0
     }
   }
