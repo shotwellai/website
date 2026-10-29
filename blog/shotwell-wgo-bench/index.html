@@ -210,6 +210,8 @@
 
         <p>VLMs are a practical way to produce dense language annotations for the large amounts of egocentric video used in robot-policy pretraining. There are several existing benchmarks that assess VLM annotation accuracy that are flawed because they penalize annotations that differ from the benchmark's reference set but are still valid annotations. Shotwell-WGO-Bench builds on <a href="https://huggingface.co/datasets/macrodata/WGO-Bench">WGO-Bench</a> by assessing accuracy in producing annotations without penalizing different valid ways of segmenting the same video.</p>
 
+        <p>The chart compares segmentation, description, and overall F1 scores (higher is better); GPT-6 Astra leads on all three.</p>
+
         <div class="score-results" aria-label="Measured benchmark scores">
           <figure class="score-figure">
             <figcaption>Model scores</figcaption>
@@ -228,9 +230,9 @@
           </figure>
         </div>
 
-        <p>An annotation divides an episode into actions and describes each action in language. The tradeoffs between VLM approaches are accuracy, level of detail, and cost. Accuracy is particularly difficult to benchmark: annotators can choose different boundaries or group actions differently, yet produce equally valid accounts of what happened.</p>
-
         <h2>How we align annotation for better scoring</h2>
+
+        <p>An annotation divides an episode into actions and describes each action in language. The tradeoffs between VLM approaches are accuracy, level of detail, and cost. Accuracy is particularly difficult to benchmark: annotators can choose different boundaries or group actions differently, yet produce equally valid accounts of what happened.</p>
 
         <p>Shotwell-WGO-Bench reduces these arbitrary penalties by restructuring WGO-Bench in four ways:</p>
 
