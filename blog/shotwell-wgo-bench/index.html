@@ -114,19 +114,32 @@
     .score-figure { margin: 0; }
     .score-figure figcaption { margin-bottom: 18px; font: 400 22px/1.3 var(--display); }
     .score-figure figcaption span { display: block; margin-top: 4px; color: var(--dim); font: 12px/1.5 var(--mono); }
+    .score-legend { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-bottom: 14px; color: var(--dim); font: 11px/1.4 var(--mono); }
+    .score-key { display: inline-flex; align-items: center; gap: 7px; }
+    .score-key::before { content: ''; width: 4px; height: 14px; background: var(--marker); }
+    .score-key.overall { --marker: var(--score-overall); }
+    .score-key.segmentation { --marker: var(--score-seg); }
+    .score-key.description { --marker: var(--score-desc); }
     .score-grid { border-top: 1px solid var(--wire-strong); }
-    .score-header, .score-row { display: grid; grid-template-columns: minmax(126px, 1.25fr) repeat(3, minmax(0, 1fr)); gap: 16px; align-items: center; }
-    .score-header { padding: 0 0 9px; color: var(--dim); font: 11px/1.4 var(--mono); }
-    .score-row { min-height: 72px; padding: 13px 0; border-top: 1px solid var(--wire); }
-    .score-model { font: 500 15px/1.3 var(--sans); }
-    .score-metric { min-width: 0; }
-    .score-track { height: 9px; background: var(--wire); }
-    .score-fill { display: block; height: 100%; width: var(--value); background: var(--fill); }
-    .score-metric.overall { --fill: var(--score-overall); }
-    .score-metric.segmentation { --fill: var(--score-seg); }
-    .score-metric.description { --fill: var(--score-desc); }
-    .score-value { display: block; margin-top: 5px; font: 12px/1.2 var(--mono); font-variant-numeric: tabular-nums; }
-    .score-metric.overall .score-value { color: var(--score-overall); font-weight: 700; }
+    .score-axis, .score-row { display: grid; grid-template-columns: minmax(135px, 168px) minmax(0, 1fr); gap: 16px; align-items: center; }
+    .score-axis { padding: 10px 0 6px; color: var(--dim); font: 11px/1.4 var(--mono); }
+    .score-axis-scale { position: relative; height: 17px; margin: 0 8px; }
+    .score-axis-scale span { position: absolute; left: var(--tick); transform: translateX(-50%); }
+    .score-axis-scale span:first-child { transform: none; }
+    .score-axis-scale span:last-child { transform: translateX(-100%); }
+    .score-row { min-height: 64px; padding: 9px 0; border-top: 1px solid var(--wire); }
+    .score-model { display: block; font: 500 15px/1.3 var(--sans); }
+    .score-model-overall { display: block; margin-top: 4px; color: var(--score-overall); font: 12px/1.2 var(--mono); font-variant-numeric: tabular-nums; }
+    .score-plot { position: relative; min-width: 0; height: 42px; }
+    .score-scale { position: absolute; inset: 0 8px; }
+    .score-scale::after { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--wire-strong); }
+    .score-gridline { position: absolute; top: 0; bottom: 0; left: var(--tick); width: 1px; background: var(--wire); }
+    .score-point { --marker: var(--score-overall); position: absolute; z-index: 2; left: var(--value); top: 50%; width: 16px; height: 30px; padding: 0; border: 0; background: transparent; transform: translate(-50%, -50%); cursor: help; }
+    .score-point::before { content: ''; position: absolute; top: 50%; left: 50%; width: 5px; height: 26px; background: var(--marker); transform: translate(-50%, -50%); }
+    .score-point.segmentation { --marker: var(--score-seg); top: 19%; height: 18px; }
+    .score-point.description { --marker: var(--score-desc); top: 81%; height: 18px; }
+    .score-point.segmentation::before, .score-point.description::before { width: 4px; height: 17px; }
+    .score-point:hover, .score-point:focus-visible { z-index: 3; outline: 2px solid var(--fg); outline-offset: 2px; }
     .score-caveat { margin: 14px 0 0; color: var(--dim); font: 12px/1.5 var(--mono); }
     .site-footer {
       border-top: 1px solid var(--wire);
@@ -158,10 +171,13 @@
       .timeline-name::before { width: 6px; height: 6px; margin-right: 4px; }
       .timeline-label { font-size: 10px; }
       .timeline-segment[data-verdict]::after { width: 16px; height: 16px; font-size: 12px; }
-      .score-header { display: none; }
-      .score-row { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
-      .score-model { grid-column: 1 / -1; }
-      .score-metric::before { content: attr(data-mobile-label); display: block; margin-bottom: 5px; color: var(--dim); font: 10px/1.2 var(--mono); }
+      .score-legend { gap: 6px 12px; font-size: 10px; }
+      .score-axis, .score-row { grid-template-columns: minmax(0, 92px) minmax(0, 1fr); gap: 10px; }
+      .score-model { font-size: 12px; overflow-wrap: anywhere; }
+      .score-model-overall { font-size: 11px; }
+      .score-axis { font-size: 9px; }
+      .score-axis-scale span:nth-child(even), .score-axis-scale span:nth-last-child(2) { display: none; }
+      .score-axis-scale span:last-child { display: block; }
     }
   </style>
 </head>
@@ -303,19 +319,27 @@
 
         <h2>Results</h2>
 
-        <p>We calculate segmentation and description F1 separately, then multiply them for the final score. The chart shows the first five episodes with completed golden descriptions, sampled at 8 frames per second for each model.</p>
+        <p>We calculate segmentation and description F1 separately, then multiply them for the final score. The chart shows the first five benchmark episodes, sampled at 8 frames per second for each model.</p>
 
         <div class="score-results" aria-label="Measured benchmark scores">
           <figure class="score-figure">
-            <figcaption>Model scores <span>Five-episode pilot · F1, 0 to 1</span></figcaption>
+            <figcaption>Model scores <span>Five-episode pilot · F1</span></figcaption>
+            <div class="score-legend" aria-label="Score markers">
+              <span class="score-key overall">Overall</span>
+              <span class="score-key segmentation">Segmentation</span>
+              <span class="score-key description">Description</span>
+            </div>
             <div class="score-grid" id="score-grid" aria-live="polite">
-              <div class="score-header" aria-hidden="true"><span>Model</span><span>Overall F1</span><span>Segmentation F1</span><span>Description F1</span></div>
+              <div class="score-axis" aria-hidden="true">
+                <span>Model</span>
+                <div class="score-axis-scale"></div>
+              </div>
             </div>
             <p class="score-caveat" id="score-caveat" hidden></p>
           </figure>
         </div>
 
-        <p>In this five-episode pilot, Astra ranks first overall, narrowly ahead of Sol. These results do not represent the full benchmark. The separate segmentation and description scores show where each model succeeds and where its annotations still need work.</p>
+        <p>In this five-episode pilot, Astra ranks first overall, narrowly ahead of Sol. These results do not represent the full benchmark and predate the guide's head-camera rule. The separate segmentation and description scores show where each model succeeds and where its annotations still need work.</p>
         <p>Browse the benchmark videos and reference annotations <a href="./episodes/">here</a>. The <a href="https://github.com/shotwellai/shotwell-wgo-bench/blob/main/guide.txt">annotation guide</a>, runner, and scoring code are in the <a href="https://github.com/shotwellai/shotwell-wgo-bench">benchmark repository</a>.</p>
       </div>
     </article>
@@ -332,37 +356,60 @@
 
     const scoreGrid = document.querySelector('#score-grid');
     const scoreNames = { astra: 'GPT-6 Astra', sol: 'GPT-6.1 Sol', argon: 'Gemini 4 Argon', opus: 'Claude Opus 5.5', luna: 'GPT-6 Luna' };
-    const addMetric = (row, kind, label, value) => {
-      const cell = document.createElement('div');
-      cell.className = `score-metric ${kind}`;
-      cell.dataset.label = label;
-      cell.dataset.mobileLabel = label.replace(' F1', '');
-      const track = document.createElement('div');
-      track.className = 'score-track';
-      const fill = document.createElement('span');
-      fill.className = 'score-fill';
-      fill.style.setProperty('--value', `${Math.max(0, Math.min(100, value * 100))}%`);
-      track.append(fill);
-      const text = document.createElement('span');
-      text.className = 'score-value';
-      text.textContent = value.toFixed(3);
-      cell.append(track, text);
-      row.append(cell);
+    const addPoint = (scale, model, kind, label, value, axisMin, axisMax) => {
+      const point = document.createElement('button');
+      point.type = 'button';
+      point.className = `score-point ${kind}`;
+      point.style.setProperty('--value', `${(value - axisMin) / (axisMax - axisMin) * 100}%`);
+      point.title = `${label}: ${value.toFixed(3)}`;
+      point.setAttribute('aria-label', `${model}, ${label}: ${value.toFixed(3)}`);
+      scale.append(point);
     };
     fetch('./scores.json').then((response) => {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       return response.json();
     }).then((data) => {
+      const values = Object.values(data.models).flatMap((score) => [score.overall_f1, score.segmentation.f1, score.description.f1]);
+      const firstTick = Math.max(0, Math.floor((Math.min(...values) - 0.05) * 10));
+      const lastTick = Math.min(10, Math.max(firstTick + 1, Math.ceil((Math.max(...values) + 0.05) * 10)));
+      const axisMin = firstTick / 10;
+      const axisMax = lastTick / 10;
+      const axis = document.querySelector('.score-axis-scale');
+      for (let tick = firstTick; tick <= lastTick; tick += 1) {
+        const label = document.createElement('span');
+        label.style.setProperty('--tick', `${(tick - firstTick) / (lastTick - firstTick) * 100}%`);
+        label.textContent = (tick / 10).toFixed(1);
+        axis.append(label);
+      }
       Object.entries(data.models).sort((a, b) => b[1].overall_f1 - a[1].overall_f1).forEach(([key, score]) => {
         const row = document.createElement('div');
         row.className = 'score-row';
+        const model = scoreNames[key] || score.model_id;
+        const modelCell = document.createElement('div');
         const name = document.createElement('strong');
         name.className = 'score-model';
-        name.textContent = scoreNames[key] || score.model_id;
-        row.append(name);
-        addMetric(row, 'overall', 'Overall F1', score.overall_f1);
-        addMetric(row, 'segmentation', 'Segmentation F1', score.segmentation.f1);
-        addMetric(row, 'description', 'Description F1', score.description.f1);
+        name.textContent = model;
+        const overall = document.createElement('span');
+        overall.className = 'score-model-overall';
+        overall.textContent = `Overall ${score.overall_f1.toFixed(3)}`;
+        modelCell.append(name, overall);
+        const plot = document.createElement('div');
+        plot.className = 'score-plot';
+        plot.setAttribute('role', 'group');
+        plot.setAttribute('aria-label', `${model} F1 scores`);
+        const scale = document.createElement('div');
+        scale.className = 'score-scale';
+        for (let tick = firstTick; tick <= lastTick; tick += 1) {
+          const gridline = document.createElement('span');
+          gridline.className = 'score-gridline';
+          gridline.style.setProperty('--tick', `${(tick - firstTick) / (lastTick - firstTick) * 100}%`);
+          scale.append(gridline);
+        }
+        addPoint(scale, model, 'overall', 'Overall F1', score.overall_f1, axisMin, axisMax);
+        addPoint(scale, model, 'segmentation', 'Segmentation F1', score.segmentation.f1, axisMin, axisMax);
+        addPoint(scale, model, 'description', 'Description F1', score.description.f1, axisMin, axisMax);
+        plot.append(scale);
+        row.append(modelCell, plot);
         scoreGrid.append(row);
       });
       const refusals = Object.entries(data.models).filter(([, score]) => score.refused_tasks > 0);
