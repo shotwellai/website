@@ -218,7 +218,7 @@
         <ol>
           <li><strong>An extremely detailed annotation guide.</strong> It specifies which actions merit their own segment, exactly where boundaries should fall, and the format and level of detail expected in each description. This makes model outputs very consistent before grading begins. Shotwell-WGO-Bench also demands a much higher level of detail in outputs that spotlights the limits of weaker models.</li>
           <li><strong>Multiple acceptable segmentations.</strong> Even with a precise guide, there is a range of timestamps where an action boundary can be placed, and some actions can reasonably be grouped or split. The reference annotations include acceptable ranges for each individual boundary, rather than one fixed tolerance for every boundary. They also include optional sub-boundaries where splitting an action is valid. Every valid possible segmentation logic for an episode is captured.</li>
-          <li><strong>Multiple acceptable descriptions.</strong> For description grading, models receive fixed segments to describe. Each reference description provides required details and optional details for each segment. An LLM judge checks that required details are present and incorrect details are absent. The guide and explicit reference details leave less to the LLM judge's discretion.</li>
+          <li><strong>Multiple acceptable descriptions.</strong> For description grading, models receive fixed segments to describe. Each reference description provides required details and optional details for each segment. An LLM judge checks that every required action is present with the right verb, object, and hands. It allows compatible specificity and slight generalizations, but rejects contradictions and independent actions without reference support. The guide and explicit reference details leave less to the LLM judge's discretion.</li>
         </ol>
 
         <h2>The limits of a single reference timeline</h2>
@@ -319,11 +319,11 @@
 
         <h2>Results</h2>
 
-        <p>We calculate segmentation and description F1 separately, then multiply them for the final score. The chart shows the first five benchmark episodes, sampled at 8 frames per second for each model.</p>
+        <p>We calculate segmentation and description F1 separately, then multiply them for the final score. Each model is evaluated at 8 frames per second on the episodes in the chart.</p>
 
         <div class="score-results" aria-label="Measured benchmark scores">
           <figure class="score-figure">
-            <figcaption>Model scores <span>Five-episode pilot · F1</span></figcaption>
+            <figcaption>Model scores <span id="score-subtitle">F1</span></figcaption>
             <div class="score-legend" aria-label="Score markers">
               <span class="score-key overall">Overall</span>
               <span class="score-key segmentation">Segmentation</span>
@@ -339,7 +339,7 @@
           </figure>
         </div>
 
-        <p>In this five-episode pilot, Astra ranks first overall, narrowly ahead of Sol. These results do not represent the full benchmark and predate the guide's head-camera rule. The separate segmentation and description scores show where each model succeeds and where its annotations still need work.</p>
+        <p id="score-conclusion">The separate segmentation and description scores show where each model succeeds and where its annotations still need work. These results represent the selected evaluated episodes, not all of WGO-Bench.</p>
         <p>Browse the benchmark videos and reference annotations <a href="./episodes/">here</a>. The <a href="https://github.com/shotwellai/shotwell-wgo-bench/blob/main/guide.txt">annotation guide</a>, runner, and scoring code are in the <a href="https://github.com/shotwellai/shotwell-wgo-bench">benchmark repository</a>.</p>
       </div>
     </article>
@@ -369,6 +369,7 @@
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       return response.json();
     }).then((data) => {
+      document.querySelector('#score-subtitle').textContent = `${data.episode_ids.length} episodes · F1`;
       const values = Object.values(data.models).flatMap((score) => [score.overall_f1, score.segmentation.f1, score.description.f1]);
       const firstTick = Math.max(0, Math.floor((Math.min(...values) - 0.05) * 10));
       const lastTick = Math.min(10, Math.max(firstTick + 1, Math.ceil((Math.max(...values) + 0.05) * 10)));

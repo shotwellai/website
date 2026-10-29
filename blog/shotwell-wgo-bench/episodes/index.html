@@ -19,6 +19,7 @@
     } catch (e) {}
   </script>
   <script src="./data.js" defer></script>
+  <script src="./results.js" defer></script>
   <script src="./reference.js" defer></script>
 </head>
 <body>
@@ -37,7 +38,12 @@
   <main class="reference-main" id="reference-main">
     <header class="reference-heading">
       <h1>Shotwell-WGO-Bench Reference Annotations</h1>
-      <a class="download-csv" href="./shotwell-wgo-bench-reference-annotations.csv" download>Download CSV</a>
+      <div class="heading-actions">
+        <label class="model-picker" for="model-select">Model
+          <select id="model-select"><option value="">Reference only</option></select>
+        </label>
+        <a class="download-csv" href="./shotwell-wgo-bench-reference-annotations.csv" download>Download CSV</a>
+      </div>
     </header>
 
     <div class="reference-layout">
@@ -57,6 +63,14 @@
         <video id="episode-video" controls playsinline preload="metadata" aria-label="Selected episode video"></video>
 
         <section class="current-detail" id="segment-detail" aria-live="polite" aria-label="Current segment details">
+          <div class="model-assessment" id="model-assessment" hidden>
+            <div class="model-assessment-head">
+              <h3 id="model-description-label">Model description</h3>
+              <span id="model-verdict" class="model-verdict"></span>
+            </div>
+            <p id="model-description" class="model-description"></p>
+            <div id="model-issues" class="model-issues" hidden></div>
+          </div>
           <div class="detail-columns">
             <div class="detail-group required-group">
               <h4>Required details</h4>
@@ -73,16 +87,18 @@
         <section class="timeline" aria-label="Episode boundary timeline">
           <div class="timeline-toolbar">
             <h3>Timeline</h3>
-            <div class="boundary-legend" aria-label="Boundary types"><span class="legend-major">Required boundary</span><span class="legend-minor">Optional boundary</span></div>
+            <div class="boundary-legend" aria-label="Boundary types"><span class="legend-major">Required boundary</span><span class="legend-minor">Optional boundary</span><span id="model-boundary-legend" class="model-boundary-legend" hidden><span class="legend-model-hit">Model matched</span><span class="legend-model-extra">Model extra</span></span></div>
           </div>
           <div class="zoom-control-row">
             <span class="zoom-label" id="zoom-label"></span>
+            <span class="model-boundary-summary" id="model-boundary-summary" hidden></span>
             <label class="pause-boundaries"><input id="pause-major-boundaries" type="checkbox" checked>Pause at required boundaries</label>
           </div>
           <div id="zoom-track" class="timeline-track zoom-track" role="slider" tabindex="0" aria-label="Seek within one-minute timeline" aria-valuemin="0">
             <div id="zoom-segments" class="timeline-segments"></div>
             <div id="zoom-selected-range" class="selected-range"></div>
             <div id="zoom-markers" class="boundary-markers"></div>
+            <div id="zoom-model-markers" class="model-boundary-markers"></div>
             <div id="zoom-playhead" class="playhead"></div>
           </div>
           <svg id="timeline-fan" class="timeline-fan" viewBox="0 0 1000 28" preserveAspectRatio="none" aria-hidden="true">
@@ -92,6 +108,7 @@
             <div id="full-segments" class="timeline-segments"></div>
             <div id="full-selected-range" class="selected-range"></div>
             <div id="full-markers" class="boundary-markers"></div>
+            <div id="full-model-markers" class="model-boundary-markers"></div>
             <div id="full-window" class="full-window"></div>
             <div id="full-playhead" class="playhead"></div>
           </div>
