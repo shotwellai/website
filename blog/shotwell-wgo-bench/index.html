@@ -76,38 +76,34 @@
     .comparison .comparison-note { margin: 16px 0 0; }
     .comparison video { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: contain; background: #050505; border: 1px solid var(--wire); border-radius: 4px; }
     .comparison figcaption { margin-top: 12px; }
-    .timeline { --reference: #237e73; --shotwell-reference: #3989a3; --shotwell-reference-alt: #4b9cac; --astra: #b66a2c; --astra-alt: #b59425; --accepted: #53c386; --rejected: #ea6965; }
-    [data-theme="light"] .timeline { --reference: #1b756b; --shotwell-reference: #257fa5; --shotwell-reference-alt: #347f9a; --astra: #bb742f; --astra-alt: #ae8926; --accepted: #147b4b; --rejected: #be343b; }
+    .timeline { --reference: #327f9c; --reference-alt: #418ca6; --accepted: #2a865c; --rejected: #af464c; }
+    [data-theme="light"] .timeline { --reference: #257fa5; --reference-alt: #347f9a; --accepted: #147b4b; --rejected: #be343b; }
     .timeline-ruler, .timeline-row { display: grid; grid-template-columns: 108px minmax(0, 1fr); gap: 14px; align-items: start; }
     .timeline-ruler { margin: 0 0 7px; font: 11px var(--mono); color: var(--dim); }
     .timeline-ruler > span:last-child { display: flex; justify-content: space-between; }
     .timeline-row { margin-bottom: 4px; }
     .timeline-name { margin-top: 6px; font: 12px/1.4 var(--mono); color: var(--fg); }
     .timeline-name::before { content: ''; display: inline-block; width: 8px; height: 8px; margin-right: 7px; background: var(--reference); }
-    .timeline-row.astra .timeline-name::before { background: var(--astra); }
+    .timeline-row.astra .timeline-name::before { background: var(--dim); }
     .timeline-row.shotwell-reference { padding-top: 8px; border-top: 1px solid var(--wire); }
-    .timeline-row.shotwell-reference .timeline-name::before { background: var(--shotwell-reference); }
     .timeline-plot { min-width: 0; }
     .timeline-track { position: relative; height: 38px; background: var(--surface); border: 1px solid var(--wire); cursor: crosshair; touch-action: manipulation; }
     .timeline-track:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
     .timeline-track::after { content: ''; position: absolute; z-index: 2; left: var(--playhead, 0%); top: -3px; bottom: -3px; width: 2px; background: var(--fg); pointer-events: none; opacity: .85; }
     .timeline-segment { position: absolute; top: 3px; bottom: 3px; left: calc(var(--from) + 1px); width: calc(var(--to) - var(--from) - 2px); overflow: visible; border: 0; border-radius: 2px; padding: 0; background: var(--reference); color: transparent; font-size: 0; }
-    .astra .timeline-segment { background: var(--astra); }
-    .astra .timeline-segment:nth-child(even) { background: var(--astra-alt); }
-    .shotwell-reference .timeline-segment { background: var(--shotwell-reference); }
-    .shotwell-reference .timeline-segment:nth-child(even) { background: var(--shotwell-reference-alt); }
-    .timeline-segment[data-verdict]::after { position: absolute; z-index: 3; left: 50%; top: 50%; display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; color: #fff; font: 700 14px/1 var(--body); transform: translate(-50%, -50%); pointer-events: none; }
-    .timeline-segment[data-verdict="rejected"]::after { content: '\00D7'; background: var(--rejected); }
-    .timeline-segment[data-verdict="accepted"]::after { content: '\2713'; background: var(--accepted); }
-    .timeline-segment.is-current { filter: brightness(1.2); outline: 2px solid var(--fg); outline-offset: -2px; z-index: 1; }
-    [data-theme="light"] .timeline-segment.is-current { filter: brightness(1.05); }
+    .timeline-row:not(.astra) .timeline-segment:nth-child(even) { background: var(--reference-alt); }
+    .astra .timeline-segment[data-verdict="accepted"] { background: var(--accepted); }
+    .astra .timeline-segment[data-verdict="rejected"] { background: var(--rejected); }
+    .timeline-segment[data-verdict]::after { content: ''; position: absolute; z-index: 3; left: 50%; top: 50%; display: grid; place-items: center; width: 20px; height: 20px; color: #fff; font: 700 19px/1 var(--body); text-shadow: 0 1px 2px #0004; transform: translate(-50%, -50%); pointer-events: none; }
+    .timeline-segment[data-verdict="rejected"]::after { content: '\00D7'; }
+    .timeline-segment[data-verdict="accepted"]::after { content: '\2713'; }
+    .timeline-segment.is-current { outline: 2px solid var(--fg); outline-offset: -2px; z-index: 1; }
     .timeline-labels { position: relative; min-height: 22px; }
     .timeline-label { position: absolute; top: 6px; visibility: hidden; width: max-content; max-width: 100%; padding: 1px 0; border: 0; background: transparent; color: var(--fg); text-align: center; font: 500 11px/1.3 var(--mono); cursor: pointer; }
     .timeline-label::before { content: ''; position: absolute; top: -6px; left: var(--caret-x); transform: translateX(-50%); border-right: 4px solid transparent; border-bottom: 5px solid var(--reference); border-left: 4px solid transparent; }
-    .astra .timeline-label::before { border-bottom-color: var(--astra); }
-    .astra .timeline-label:nth-child(even)::before { border-bottom-color: var(--astra-alt); }
-    .shotwell-reference .timeline-label::before { border-bottom-color: var(--shotwell-reference); }
-    .shotwell-reference .timeline-label:nth-child(even)::before { border-bottom-color: var(--shotwell-reference-alt); }
+    .timeline-row:not(.astra) .timeline-label:nth-child(even)::before { border-bottom-color: var(--reference-alt); }
+    .astra .timeline-label[data-verdict="accepted"]::before { border-bottom-color: var(--accepted); }
+    .astra .timeline-label[data-verdict="rejected"]::before { border-bottom-color: var(--rejected); }
     .timeline-label:hover, .timeline-label:focus-visible { color: var(--fg); text-decoration: underline; text-underline-offset: 3px; }
     .timeline-label.is-visible { visibility: visible; }
     .score-results { --score-overall: #6bc2a9; --score-seg: #67aeca; --score-desc: #d5a55c; margin: 32px 0 40px; }
@@ -172,7 +168,7 @@
       .timeline-name { font-size: 10px; }
       .timeline-name::before { width: 6px; height: 6px; margin-right: 4px; }
       .timeline-label { font-size: 10px; }
-      .timeline-segment[data-verdict]::after { width: 16px; height: 16px; font-size: 12px; }
+      .timeline-segment[data-verdict]::after { width: 16px; height: 16px; font-size: 14px; }
       .score-legend { gap: 6px 12px; font-size: 10px; }
       .score-axis, .score-row { grid-template-columns: minmax(0, 92px) minmax(0, 1fr); gap: 10px; }
       .score-model { font-size: 12px; overflow-wrap: anywhere; }
@@ -211,7 +207,7 @@
 
         <p>VLMs are a practical way to produce dense language annotations for the large amounts of egocentric video used in robot-policy pretraining. There are several existing benchmarks that assess VLM annotation accuracy that are flawed because they penalize annotations that differ from the benchmark's reference set but are still valid annotations. Shotwell-WGO-Bench builds on <a href="https://huggingface.co/datasets/macrodata/WGO-Bench">WGO-Bench</a> by assessing accuracy in producing annotations without penalizing different valid ways of segmenting the same video.</p>
 
-        <p>The chart compares segmentation, description, and overall F1 scores (higher is better); GPT-6 Astra leads on all three.</p>
+        <p>Below are the F1 scores on segmentation and description accuracy, where GPT-6 is the winner.</p>
 
         <div class="score-results" aria-label="Measured benchmark scores">
           <figure class="score-figure">
@@ -518,6 +514,7 @@
           const label = document.createElement('button');
           label.type = 'button';
           label.className = 'timeline-label';
+          if (segment.dataset.verdict) label.dataset.verdict = segment.dataset.verdict;
           const [range, description] = segment.title.split(': ');
           label.textContent = description;
           const verdict = segment.dataset.verdict ? ` ${segment.dataset.verdict} by this benchmark.` : '';
