@@ -1,5 +1,5 @@
 {
-  "benchmark": "Shotwell-WGO-Bench",
+  "benchmark": "Shotwell-Bench",
   "episode_ids": [
     "wgo-bench-homer_1",
     "wgo-bench-homer_2",

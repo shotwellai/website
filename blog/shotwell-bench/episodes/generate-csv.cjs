@@ -41,5 +41,5 @@ const cell = (value) => {
 };
 
 const csv = [headers, ...rows].map((row) => row.map(cell).join(',')).join('\n') + '\n';
-fs.writeFileSync(path.join(__dirname, 'shotwell-wgo-bench-reference-annotations.csv'), csv);
+fs.writeFileSync(path.join(__dirname, 'shotwell-bench-reference-annotations.csv'), csv);
 console.log(`Wrote ${rows.length} reference segments from ${episodes.length} episodes.`);

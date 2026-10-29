@@ -18,7 +18,7 @@ import psycopg
 JOB_ID = 690
 EDITOR_KEY = "benchmark_reference_editor_v1"
 MAX_GAP_SECONDS = 0.15
-OUTPUT = Path(__file__).resolve().parents[1] / "blog/shotwell-wgo-bench/episodes/data.js"
+OUTPUT = Path(__file__).resolve().parents[1] / "blog/shotwell-bench/episodes/data.js"
 VIDEO_BASE_URL = ("https://huggingface.co/datasets/Nano1337/wgo-bench-videos/resolve/"
                   "3f3d01542aad6ed66332001f077ff1b208700ae7/videos")
 
