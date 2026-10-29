@@ -379,7 +379,7 @@
       point.setAttribute('aria-label', `${model}, ${label}: ${value.toFixed(3)}`);
       scale.append(point);
     };
-    fetch('./scores.json').then((response) => {
+    fetch('./scores.json?v=2026-10-29-7models').then((response) => {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       return response.json();
     }).then((data) => {
