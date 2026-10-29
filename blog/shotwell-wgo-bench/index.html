@@ -227,7 +227,7 @@
 
         <p>WGO-Bench and MicroAnnotationBench compare VLM annotations with human reference annotations. Both compare segmentation against just a single reference timeline. This can penalize logical alternative groupings of actions and understate annotation quality. Astra scores around 0.40 F1 score in published evaluations of both benchmarks. Below, we show examples of our run of Astra on the WGO-Bench where valid alternative groupings are marked wrong due to the <a href="https://macrodata.co/blog/annotating-robot-video-subtasks">benchmark's IoU threshold of 0.75</a>.</p>
 
-        <p>In the examples below, you can compare WGO-Bench and Shotwell-WGO-Bench against the same Astra output from our latest 8-fps run. Shotwell-WGO-Bench accepts more valid boundaries while still rejecting extra or early splits. The markers score segmentation only: WGO uses segment overlap, while Shotwell-WGO uses accepted boundary windows. They do not judge captions.</p>
+        <p>In the examples below, Astra was run separately with <a href="https://macrodata.co/blog/annotating-robot-video-subtasks">WGO-Bench's published segmentation prompt</a> and 2-fps contact sheets, and with Shotwell-WGO-Bench's guide at 8 fps. The <a href="https://github.com/shotwellai/shotwell-wgo-bench/blob/main/benchmark-results/wgo-prompt-examples/astra-official.jsonl">WGO-prompt output</a> is available to inspect. Each output is shown against its corresponding reference. The markers score segmentation only: WGO uses segment overlap, while Shotwell-WGO uses accepted boundary windows. They do not judge captions.</p>
 
         <figure class="comparison" data-clip-start="17.88" data-clip-end="25.8">
           <h3 class="comparison-title">Peel the onion, then set aside the peel</h3>
@@ -247,12 +247,9 @@
               <div class="timeline-row astra">
                 <span class="timeline-name">Astra on WGO</span>
                 <div class="timeline-track">
-                  <span class="timeline-segment" style="--from:0%;--to:29.92%" data-time="17.88" data-end="20.25" data-verdict="rejected" title="17.88–20.25: Peel the onion with the knife with the right hand and hold the onion in the left hand."></span>
-                  <span class="timeline-segment" style="--from:29.92%;--to:41.67%" data-time="20.25" data-end="21.18" data-verdict="rejected" title="20.25–21.18: Place the onion peel on the pile of peels on the counter with the right hand and hold the onion in the left hand."></span>
-                  <span class="timeline-segment" style="--from:41.67%;--to:61.49%" data-time="21.18" data-end="22.75" data-verdict="rejected" title="21.18–22.75: Peel the onion with the knife with the right hand and hold the onion in the left hand."></span>
-                  <span class="timeline-segment" style="--from:61.49%;--to:69.70%" data-time="22.75" data-end="23.4" data-verdict="rejected" title="22.75–23.4: Place the onion peel on the pile of peels on the counter with the right hand and hold the onion in the left hand."></span>
-                  <span class="timeline-segment" style="--from:69.70%;--to:91.41%" data-time="23.4" data-end="25.12" data-verdict="rejected" title="23.4–25.12: Peel the onion with the knife with the right hand and hold the onion in the left hand."></span>
-                  <span class="timeline-segment" style="--from:91.41%;--to:100%" data-time="25.12" data-end="25.8" data-verdict="rejected" title="25.12–25.8: Place the onion peel on the pile of peels on the counter with the right hand and hold the onion in the left hand."></span>
+                  <span class="timeline-segment" style="--from:1.52%;--to:33.08%" data-time="18" data-end="20.5" data-verdict="rejected" title="18.0–20.5: Peel off another strip of onion skin and discard it."></span>
+                  <span class="timeline-segment" style="--from:39.39%;--to:64.65%" data-time="21" data-end="23" data-verdict="rejected" title="21.0–23.0: Scrape away a section of outer skin and flick it aside."></span>
+                  <span class="timeline-segment" style="--from:70.96%;--to:96.21%" data-time="23.5" data-end="25.5" data-verdict="rejected" title="23.5–25.5: Remove another patch of onion skin with the knife."></span>
                 </div>
               </div>
               <div class="timeline-row shotwell-reference">
@@ -278,59 +275,59 @@
                 </div>
               </div>
             </div>
-            <p class="comparison-note">WGO groups the entire peel-and-discard sequence into one action. Astra identifies each time the person peels the onion and sets aside the peel. All six Astra boundaries in this excerpt match the reviewed Shotwell-WGO reference.</p>
+            <p class="comparison-note">WGO groups this peel-and-discard sequence into one long action. With WGO's prompt, Astra identifies three shorter peeling actions, all below WGO's overlap threshold. With Shotwell's guide, Astra separates peeling from setting aside the peel; all six boundaries shown match the reviewed reference.</p>
           </figcaption>
         </figure>
 
-        <figure class="comparison" data-clip-start="9" data-clip-end="21.88">
-          <h3 class="comparison-title">Where does the pour begin?</h3>
-          <video controls playsinline preload="metadata" poster="assets/homer-1-pour.jpg" aria-label="First-person video of a person handling two glasses and pouring water">
-            <source src="https://storage.googleapis.com/shotwell-wgo-bench-media-755576089506/clips/homer-1-pour.mp4" type="video/mp4">
+        <figure class="comparison" data-clip-start="59.5" data-clip-end="70.2">
+          <h3 class="comparison-title">From mug to glass</h3>
+          <video controls playsinline preload="metadata" poster="assets/homer-2-dishwashing.jpg" aria-label="First-person video of a person putting down a mug and washing a glass">
+            <source src="https://storage.googleapis.com/shotwell-wgo-bench-media-755576089506/clips/homer-2-dishwashing.mp4" type="video/mp4">
             Your browser does not support video playback.
           </video>
           <figcaption>
-            <div class="timeline" aria-label="Comparison of WGO and Shotwell-WGO action timelines from 9 to 21.88 seconds">
-              <div class="timeline-ruler"><span>Seconds</span><span><span>9.0</span><span>15.4</span><span>21.9</span></span></div>
+            <div class="timeline" aria-label="Comparison of WGO and Shotwell-WGO action timelines from 59.5 to 70.2 seconds">
+              <div class="timeline-ruler"><span>Seconds</span><span><span>59.5</span><span>64.9</span><span>70.2</span></span></div>
               <div class="timeline-row">
                 <span class="timeline-name">WGO Reference</span>
                 <div class="timeline-track">
-                  <span class="timeline-segment" style="--from:13.92%;--to:90.93%" data-time="10.793" data-end="20.712" title="10.79–20.71: Pour water into the wine glass"></span>
+                  <span class="timeline-segment" style="--from:0%;--to:25%" data-time="59.5" data-end="62.175" title="59.44–62.18: Place the black mug on the kitchen towel"></span>
+                  <span class="timeline-segment" style="--from:25%;--to:36.08%" data-time="62.175" data-end="63.36" title="62.18–63.36: Pick up the yellow sponge"></span>
+                  <span class="timeline-segment" style="--from:36.08%;--to:59.30%" data-time="63.36" data-end="65.845" title="63.36–65.85: Pick up the clear glass from the sink"></span>
+                  <span class="timeline-segment" style="--from:59.30%;--to:100%" data-time="65.845" data-end="70.2" title="65.85–80.87: Scrub and rinse the clear glass"></span>
                 </div>
               </div>
               <div class="timeline-row astra">
                 <span class="timeline-name">Astra on WGO</span>
                 <div class="timeline-track">
-                  <span class="timeline-segment" style="--from:0%;--to:10.68%" data-time="9" data-end="10.375" data-verdict="rejected" title="9.0–10.375: Pick up the pitcher with the right hand"></span>
-                  <span class="timeline-segment" style="--from:10.68%;--to:27.17%" data-time="10.375" data-end="12.5" data-verdict="rejected" title="10.375–12.5: Pick up the tumbler with the left hand and hold the pitcher in the right hand"></span>
-                  <span class="timeline-segment" style="--from:27.17%;--to:32.03%" data-time="12.5" data-end="13.125" data-verdict="rejected" title="12.5–13.125: Place the tumbler on the table with the left hand and hold the pitcher in the right hand"></span>
-                  <span class="timeline-segment" style="--from:32.03%;--to:37.85%" data-time="13.125" data-end="13.875" data-verdict="rejected" title="13.125–13.875: Pick up the wine glass with the left hand and hold the pitcher in the right hand"></span>
-                  <span class="timeline-segment" style="--from:37.85%;--to:89.29%" data-time="13.875" data-end="20.5" data-verdict="rejected" title="13.875–20.5: Pour water from the pitcher into the wine glass with the right hand and hold the wine glass in the left hand"></span>
-                  <span class="timeline-segment" style="--from:89.29%;--to:100%" data-time="20.5" data-end="21.88" data-verdict="rejected" title="20.5–21.88: Place the pitcher on the table with the right hand"></span>
+                  <span class="timeline-segment" style="--from:0%;--to:23.36%" data-time="59.5" data-end="62" data-verdict="accepted" title="59.5–62.0: Place the black mug on the draining area"></span>
+                  <span class="timeline-segment" style="--from:28.04%;--to:51.40%" data-time="62.5" data-end="65" data-verdict="rejected" title="62.5–65.0: Pick up another drinking glass and the sponge"></span>
+                  <span class="timeline-segment" style="--from:51.40%;--to:100%" data-time="65" data-end="70.2" data-verdict="rejected" title="65.0–71.0: Scrub the drinking glass"></span>
                 </div>
               </div>
               <div class="timeline-row shotwell-reference">
                 <span class="timeline-name">Shotwell-WGO Reference</span>
                 <div class="timeline-track">
-                  <span class="timeline-segment" style="--from:0%;--to:22.52%" data-time="9" data-end="11.9" title="9.0–11.9: Pick up the pitcher with the right hand"></span>
-                  <span class="timeline-segment" style="--from:22.52%;--to:32.28%" data-time="11.9" data-end="13.158144" title="11.9–13.16: Slide or push a glass left with the left hand and hold the pitcher in the right hand"></span>
-                  <span class="timeline-segment" style="--from:32.28%;--to:44.64%" data-time="13.158144" data-end="14.75" title="13.16–14.75: Pull the glass with the left hand and hold the pitcher in the right hand"></span>
-                  <span class="timeline-segment" style="--from:44.64%;--to:90.84%" data-time="14.75" data-end="20.7" title="14.75–20.7: Pour water into the glass with the right hand"></span>
-                  <span class="timeline-segment" style="--from:90.84%;--to:99.38%" data-time="20.7" data-end="21.8" title="20.7–21.8: Place the jug on the table with the right hand"></span>
+                  <span class="timeline-segment" style="--from:0%;--to:2.80%" data-time="59.5" data-end="59.8" title="55.96–59.8: Rinse and rotate the mug with both hands"></span>
+                  <span class="timeline-segment" style="--from:2.80%;--to:26.17%" data-time="59.8" data-end="62.3" title="59.8–62.3: Place the mug on the dishes with the left hand"></span>
+                  <span class="timeline-segment" style="--from:26.17%;--to:52.06%" data-time="62.3" data-end="65.07" title="62.3–65.07: Pick up the sponge with the right hand and the glass with the left hand"></span>
+                  <span class="timeline-segment" style="--from:52.06%;--to:99.18%" data-time="65.07" data-end="70.112" title="65.07–70.11: Scrub the glass with the sponge and place the sponge in the sink"></span>
+                  <span class="timeline-segment" style="--from:99.18%;--to:100%" data-time="70.112" data-end="70.2" title="70.11–79.17: Rub the glass with the right hand"></span>
                 </div>
               </div>
               <div class="timeline-row astra shotwell-astra">
                 <span class="timeline-name">Astra on Shotwell-WGO</span>
                 <div class="timeline-track">
-                  <span class="timeline-segment" style="--from:0%;--to:10.68%" data-time="9" data-end="10.375" data-verdict="accepted" title="9.0–10.375: Pick up the pitcher with the right hand"></span>
-                  <span class="timeline-segment" style="--from:10.68%;--to:27.17%" data-time="10.375" data-end="12.5" data-verdict="rejected" title="10.375–12.5: Pick up the tumbler with the left hand and hold the pitcher in the right hand"></span>
-                  <span class="timeline-segment" style="--from:27.17%;--to:32.03%" data-time="12.5" data-end="13.125" data-verdict="accepted" title="12.5–13.125: Place the tumbler on the table with the left hand and hold the pitcher in the right hand"></span>
-                  <span class="timeline-segment" style="--from:32.03%;--to:37.85%" data-time="13.125" data-end="13.875" data-verdict="rejected" title="13.125–13.875: Pick up the wine glass with the left hand and hold the pitcher in the right hand"></span>
-                  <span class="timeline-segment" style="--from:37.85%;--to:89.29%" data-time="13.875" data-end="20.5" data-verdict="accepted" title="13.875–20.5: Pour water from the pitcher into the wine glass with the right hand and hold the wine glass in the left hand"></span>
-                  <span class="timeline-segment" style="--from:89.29%;--to:100%" data-time="20.5" data-end="21.88" data-verdict="accepted" title="20.5–21.88: Place the pitcher on the table with the right hand"></span>
+                  <span class="timeline-segment" style="--from:0%;--to:2.34%" data-time="59.5" data-end="59.75" data-verdict="accepted" title="58.38–59.75: Rub the mug with the right hand and hold it with the left hand"></span>
+                  <span class="timeline-segment" style="--from:2.34%;--to:25.70%" data-time="59.75" data-end="62.25" data-verdict="accepted" title="59.75–62.25: Place the mug on the towel with the left hand"></span>
+                  <span class="timeline-segment" style="--from:25.70%;--to:51.40%" data-time="62.25" data-end="65" data-verdict="accepted" title="62.25–65.0: Pick up the sponge with the right hand and a glass with the left hand"></span>
+                  <span class="timeline-segment" style="--from:51.40%;--to:93.46%" data-time="65" data-end="69.5" data-verdict="accepted" title="65.0–69.5: Scrub the glass with the sponge with the right hand"></span>
+                  <span class="timeline-segment" style="--from:93.46%;--to:97.01%" data-time="69.5" data-end="69.88" data-verdict="accepted" title="69.5–69.88: Place the sponge in the bowl with the right hand"></span>
+                  <span class="timeline-segment" style="--from:97.01%;--to:100%" data-time="69.88" data-end="70.2" data-verdict="accepted" title="69.88–80.62: Rub the glass with the right hand"></span>
                 </div>
               </div>
             </div>
-            <p class="comparison-note">Astra's latest run labels the pitcher and glass handling separately from the pour. WGO's single pour reference rejects every interval by temporal overlap. Shotwell-WGO matches four of Astra's six boundaries, but rejects two extra splits, as the guide explicitly says not to have separate pick and place segments if an item is only slid across a surface.</p>
+            <p class="comparison-note">Both references accept setting down the mug. WGO then separates picking up the sponge and glass into two actions, while its Astra run combines them, so the pickup fails overlap matching. Astra's shorter scrub also fails against WGO's long scrub-and-rinse reference. Shotwell-WGO allows the combined pickup and the scrub split; all five Astra boundaries in this excerpt match.</p>
           </figcaption>
         </figure>
 
@@ -372,7 +369,7 @@
     init();
 
     const scoreGrid = document.querySelector('#score-grid');
-    const scoreNames = { astra: 'GPT-6 Astra', sol: 'GPT-6.1 Sol', argon: 'Gemini 4 Argon', opus: 'Claude Opus 5.5', luna: 'GPT-6 Luna', sonnet: 'Claude Sonnet 5.5', qwen: 'Qwen3-VL 235B Instruct' };
+    const scoreNames = { astra: 'GPT-6 Astra', sol: 'GPT-6.1 Sol', argon: 'Gemini 4 Argon', opus: 'Claude Opus 5.5', luna: 'GPT-6 Luna', sonnet: 'Claude Sonnet 5.5', qwen: 'Qwen3-VL 235B Instruct', qwen35: 'Qwen3.5 397B', flora: 'NVIDIA FLORA' };
     const addPoint = (scale, model, kind, label, value, axisMin, axisMax) => {
       const point = document.createElement('button');
       point.type = 'button';
