@@ -340,7 +340,7 @@
 
         <div class="score-results" aria-label="Measured benchmark scores">
           <figure class="score-figure">
-            <figcaption>Model scores <span id="score-subtitle">F1</span></figcaption>
+            <figcaption>Model scores</figcaption>
             <div class="score-legend" aria-label="Score markers">
               <span class="score-key overall">Overall</span>
               <span class="score-key segmentation">Segmentation</span>
@@ -386,12 +386,10 @@
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       return response.json();
     }).then((data) => {
-      document.querySelector('#score-subtitle').textContent = `${data.episode_ids.length} episodes · F1`;
-      const values = Object.values(data.models).flatMap((score) => [score.overall_f1, score.segmentation.f1, score.description.f1]);
-      const firstTick = Math.max(0, Math.floor((Math.min(...values) - 0.05) * 10));
-      const lastTick = Math.min(10, Math.max(firstTick + 1, Math.ceil((Math.max(...values) + 0.05) * 10)));
-      const axisMin = firstTick / 10;
-      const axisMax = lastTick / 10;
+      const firstTick = 0;
+      const lastTick = 10;
+      const axisMin = 0;
+      const axisMax = 1;
       const axis = document.querySelector('.score-axis-scale');
       for (let tick = firstTick; tick <= lastTick; tick += 1) {
         const label = document.createElement('span');
