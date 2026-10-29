@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <!-- Google tag (gtag.js) -->
@@ -8,18 +8,245 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-S6G438TS44');
 </script>
 <!-- RB2B visitor identification -->
 <script>!function(key) {if (window.reb2b) return;window.reb2b = {loaded: true};var s = document.createElement("script");s.async = true;s.src = "https://b2bjsstore.s3.us-west-2.amazonaws.com/b/" + key + "/" + key + ".js.gz";document.getElementsByTagName("script")[0].parentNode.insertBefore(s, document.getElementsByTagName("script")[0]);}("7N850HKY3RN1");</script>
 
-<title>Blog — Shotwell AI</title>
-<meta http-equiv="refresh" content="0; url=/ultra-case-study/">
-<link rel="canonical" href="https://shotwell.ai/ultra-case-study/">
-<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog - Shotwell AI</title>
+<meta name="description" content="Case studies, benchmarks, and field notes from Shotwell on robotics data annotation.">
+<meta property="og:title" content="Shotwell AI Blog">
+<meta property="og:description" content="Case studies, benchmarks, and field notes on robotics data annotation.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://shotwell.ai/blog/">
+<meta property="og:site_name" content="Shotwell AI">
+<meta property="og:image" content="https://shotwell.ai/og-default.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Shotwell AI Blog">
+<meta name="twitter:description" content="Case studies, benchmarks, and field notes on robotics data annotation.">
+<meta name="twitter:image" content="https://shotwell.ai/og-default.png">
+<link rel="canonical" href="https://shotwell.ai/blog/">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Outfit:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/tokens.css">
+<script>try{document.documentElement.dataset.theme=localStorage.getItem('shotwell-sample-theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');}catch(e){}</script>
+<style>
+  :root{--acc:#EFB702;--on-acc:#0C0C0E;--ink:color-mix(in srgb,var(--fg) 84%,transparent)}
+  html{overflow-x:clip}
+  body{overflow-x:clip;background:#1B1A21;--frost:245,242,235;
+    --ground:rgba(var(--frost),.5);--surface:rgba(255,255,255,.22);--wire:rgba(34,34,42,.18)}
+  html[data-theme="dark"] body{--frost:18,18,22;--ground:rgba(var(--frost),.5);
+    --surface:rgba(255,255,255,.06);--wire:rgba(242,239,232,.16)}
+  #board{position:fixed;inset:0;width:100vw;height:100vh;z-index:0;pointer-events:none}
+  #lights{position:fixed;inset:0;width:100vw;height:100vh;z-index:1;pointer-events:none;opacity:.5}
+  .frost{position:fixed;inset:0;z-index:1;pointer-events:none;background:rgba(var(--frost),.985);
+    backdrop-filter:blur(5px) saturate(.6);-webkit-backdrop-filter:blur(5px) saturate(.6)}
+  html[data-theme="dark"] .frost{background:rgba(var(--frost),.9)}
+  .center{position:fixed;inset:0;z-index:1;pointer-events:none;background:rgba(var(--frost),.58);
+    --edge:min(42vw,600px);
+    -webkit-mask:linear-gradient(90deg,transparent calc(50% - var(--edge) - 120px),#000 calc(50% - var(--edge)),#000 calc(50% + var(--edge)),transparent calc(50% + var(--edge) + 120px));
+    mask:linear-gradient(90deg,transparent calc(50% - var(--edge) - 120px),#000 calc(50% - var(--edge)),#000 calc(50% + var(--edge)),transparent calc(50% + var(--edge) + 120px))}
+  html[data-theme="dark"] .center{background:rgba(var(--frost),.44)}
+  .sheen{position:fixed;inset:0;z-index:1;pointer-events:none;
+    background:linear-gradient(116deg,rgba(255,255,255,.14) 0 10%,transparent 24%,transparent 62%,rgba(255,255,255,.07) 72%,transparent 84%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence baseFrequency='.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+  body > *:not(#board):not(#lights):not(.frost):not(.center):not(.sheen){position:relative;z-index:2}
+
+  .brandbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;
+    gap:20px;padding:14px 40px;background:color-mix(in srgb,var(--ground) 90%,transparent);backdrop-filter:blur(10px)}
+  .brandbar img{height:24px;width:auto}
+  .logo-dark{display:none}
+  [data-theme="dark"] .logo-dark{display:block}
+  [data-theme="dark"] .logo-light{display:none}
+  .navlinks{display:flex;gap:26px;align-items:center}
+  .navlinks a{font-size:.875rem;color:var(--dim);text-decoration:none}
+  .navlinks a:not(.cta):hover,.navlinks a[aria-current]{color:var(--fg)}
+  .tbtn{background:none;border:0;padding:4px 8px;cursor:pointer;color:var(--dim);font-size:1.05rem;line-height:1}
+  .tbtn:hover{color:var(--fg)}
+  .ghostcta{border:1px solid var(--wire-strong);padding:8px 15px;color:var(--fg)!important;font-weight:500}
+  .ghostcta:hover{border-color:var(--acc)}
+  .cta{background:var(--acc);color:var(--on-acc)!important;padding:9px 17px;font-size:.8125rem;font-weight:500;text-decoration:none}
+  .cta:hover{filter:brightness(1.06)}
+  .cta small{display:none;font-size:.75em;font-weight:400;opacity:.75}
+  @media (min-width:1100px){.cta small{display:inline}}
+
+  .page{max-width:1200px;margin:0 auto;padding:88px 48px 120px}
+  .hero{display:grid;grid-template-columns:1.05fr .95fr;gap:54px;align-items:end;margin-bottom:74px}
+  .kicker,.meta,.read{font-family:var(--mono);font-size:.6875rem;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .kicker{display:block;margin-bottom:24px}
+  h1{font-family:var(--display);font-weight:300;font-size:9rem;line-height:.9;letter-spacing:0}
+  .hero p{font-size:1.2rem;line-height:1.65;color:var(--ink);font-weight:300;max-width:48ch}
+  .hero .rule{height:1px;background:var(--wire);margin:28px 0 22px}
+
+  .posts{display:grid;gap:26px}
+  .post{display:grid;grid-template-columns:minmax(0,1fr) minmax(360px,.82fr);min-height:352px;
+    background:color-mix(in srgb,var(--surface) 88%,transparent);border:1px solid var(--wire);
+    color:inherit;text-decoration:none;overflow:hidden}
+  .post:hover{border-color:var(--wire-strong)}
+  .post-copy{padding:38px 42px 40px;display:flex;flex-direction:column;justify-content:space-between;gap:30px}
+  .post h2{font-family:var(--display);font-weight:300;font-size:3.65rem;line-height:1.02;
+    letter-spacing:0;max-width:13ch}
+  .post p{margin-top:18px;color:var(--ink);font-size:1.0625rem;line-height:1.65;max-width:52ch;font-weight:300}
+  .post-top{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+  .stamp{font-family:var(--mono);font-size:.625rem;letter-spacing:.14em;text-transform:uppercase;
+    background:var(--acc);color:var(--on-acc);padding:5px 9px}
+  .read{display:inline-flex;align-items:center;gap:10px;color:var(--fg)}
+  .read::after{content:"->";color:var(--acc)}
+
+  .visual{position:relative;min-height:352px;border-left:1px solid var(--wire);background:rgba(var(--frost),.28);overflow:hidden}
+  .visual::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.48;mix-blend-mode:multiply;
+    background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/><feComponentTransfer><feFuncA type='table' tableValues='0 .18'/></feComponentTransfer></filter><rect width='100%' height='100%' filter='url(%23g)'/></svg>")}
+  html[data-theme="dark"] .visual::after{mix-blend-mode:screen;opacity:.3}
+  .ultra-visual{display:flex;align-items:center;justify-content:center;padding:36px}
+  .ultra-lock{display:flex;align-items:center;gap:18px;transform:translateY(-10px)}
+  .ultra-lock img{height:auto}
+  .ultra-lock .sw{width:min(28vw,210px)}
+  .ultra-lock .ul{width:min(24vw,190px)}
+  .ultra-lock i{font-style:normal;font-family:var(--display);font-size:2rem;color:var(--fg)}
+  .logo-light-only{display:none}
+  [data-theme="light"] .logo-dark-only{display:none}
+  [data-theme="light"] .logo-light-only{display:block}
+  .metric{position:absolute;left:24px;bottom:22px;font-family:var(--mono);font-size:.6875rem;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--dim);border-top:1px solid var(--wire);padding-top:12px}
+  .metric b{display:block;margin-top:6px;font-family:var(--display);font-size:4.8rem;line-height:.9;font-weight:300;color:var(--fg);letter-spacing:0}
+
+  .bench-visual{padding:34px 30px;display:flex;flex-direction:column;justify-content:center;gap:22px}
+  .bench-title{font-family:var(--mono);font-size:.6875rem;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .timeline{display:grid;gap:8px}
+  .row{display:grid;grid-template-columns:92px 1fr;gap:12px;align-items:center;font-family:var(--mono);font-size:.625rem;color:var(--dim)}
+  .track{height:26px;position:relative;background:rgba(var(--frost),.22);border:1px solid var(--wire)}
+  .seg{position:absolute;top:3px;bottom:3px;left:var(--l);width:var(--w);background:var(--acc)}
+  .seg.alt{background:#3D82E8}.seg.ok{background:#6FA88C}.seg.bad{background:#AF3261}
+  .scores{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+  .score{border:1px solid var(--wire);padding:13px 12px 15px}
+  .score span{display:block;font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+  .score b{display:block;margin-top:6px;font-family:var(--display);font-weight:300;font-size:2.2rem;line-height:1;color:var(--fg)}
+
+  .footer{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:72px;
+    padding-top:26px;border-top:1px solid var(--wire);font-family:var(--mono);font-size:.6875rem;letter-spacing:.1em;color:var(--faint)}
+
+  @media (max-width:860px){
+    .brandbar{padding:12px 16px;flex-wrap:wrap}
+    .navlinks{gap:14px}.navlinks a{font-size:.8125rem}.cta{padding:8px 12px}
+    .page{padding:58px 20px 86px}
+    .hero{grid-template-columns:1fr;gap:22px;margin-bottom:42px}
+    h1{font-size:6rem}
+    .post h2{font-size:2.6rem}
+    .post{grid-template-columns:1fr}
+    .post-copy{padding:30px 26px 32px}
+    .visual{border-left:0;border-top:1px solid var(--wire);min-height:270px}
+    .ultra-lock .sw{width:150px}.ultra-lock .ul{width:130px}
+    .row{grid-template-columns:68px 1fr}
+  }
+</style>
 </head>
 <body>
-<p>Redirecting to <a href="/ultra-case-study/">the Shotwell x Ultra case study</a>.</p>
+<div class="brandbar">
+  <a href="/" data-theme-longpress aria-label="Shotwell home">
+    <img class="logo-light" src="/brand/assets/SVG/shotwell-logo-horizontal-black.svg" alt="Shotwell">
+    <img class="logo-dark" src="/brand/assets/SVG/shotwell-logo-horizontal-white.svg" alt="Shotwell">
+  </a>
+  <div class="navlinks">
+    <button class="tbtn" data-theme-toggle type="button" aria-label="Toggle theme">☀</button>
+    <a href="/blog" aria-current="page">Blog</a>
+    <a href="https://demo.shotwell.ai/">Demo</a>
+    <a class="ghostcta" href="/contact/">Talk to us</a>
+    <a class="cta" href="https://app.shotwell.ai/">Upload videos now <small>/ 24 hr turnaround</small></a>
+  </div>
+</div>
+
+<main class="page">
+  <header class="hero">
+    <div>
+      <h1>Blog</h1>
+    </div>
+  </header>
+
+  <section class="posts" aria-label="Articles">
+    <a class="post" href="/ultra-case-study/">
+      <div class="post-copy">
+        <div>
+          <div class="post-top">
+            <span class="stamp">Case study</span>
+            <span class="meta">Ultra</span>
+          </div>
+          <h2>Turning Robot Teleoperation Data Into Reliable Training Data</h2>
+          <p>How Shotwell helped Ultra turn raw robot teleoperation episodes into searchable, high-signal training data for policy improvement and operator feedback.</p>
+        </div>
+        <span class="read">Read case study</span>
+      </div>
+      <div class="visual ultra-visual" aria-hidden="true">
+        <div class="ultra-lock">
+          <img class="sw logo-dark-only" src="/brand/assets/SVG/shotwell-logo-horizontal-white.svg" alt="">
+          <img class="sw logo-light-only" src="/brand/assets/SVG/shotwell-logo-horizontal-black.svg" alt="">
+          <i>&times;</i>
+          <img class="ul logo-dark-only" src="/ultra-logo-white.svg" alt="">
+          <img class="ul logo-light-only" src="/ultra-logo.svg" alt="">
+        </div>
+        <div class="metric"><span>QA throughput</span><b>6x</b></div>
+      </div>
+    </a>
+
+    <a class="post" href="/blog/shotwell-wgo-bench/">
+      <div class="post-copy">
+        <div>
+          <div class="post-top">
+            <span class="stamp">Research</span>
+            <span class="meta">Benchmark</span>
+          </div>
+          <h2>Shotwell-WGO-Bench</h2>
+          <p>An annotation benchmark that evaluates dense video annotations without penalizing valid alternative segmentations and descriptions.</p>
+        </div>
+        <span class="read">Read benchmark</span>
+      </div>
+      <div class="visual bench-visual" aria-hidden="true">
+        <span class="bench-title">Multiple valid references</span>
+        <div class="timeline">
+          <div class="row"><span>Reference</span><div class="track"><i class="seg ok" style="--l:2%;--w:24%"></i><i class="seg ok" style="--l:31%;--w:18%"></i><i class="seg ok" style="--l:56%;--w:31%"></i></div></div>
+          <div class="row"><span>Model</span><div class="track"><i class="seg alt" style="--l:3%;--w:22%"></i><i class="seg alt" style="--l:29%;--w:22%"></i><i class="seg alt" style="--l:58%;--w:27%"></i></div></div>
+          <div class="row"><span>Accepted</span><div class="track"><i class="seg" style="--l:2%;--w:84%"></i><i class="seg bad" style="--l:91%;--w:6%"></i></div></div>
+        </div>
+        <div class="scores">
+          <div class="score"><span>Segments</span><b>0.86</b></div>
+          <div class="score"><span>Descriptions</span><b>0.91</b></div>
+          <div class="score"><span>Overall</span><b>0.89</b></div>
+        </div>
+      </div>
+    </a>
+  </section>
+
+  <footer class="footer">
+    <span>Shotwell - annotations for robotics data</span>
+    <span>team@shotwell.ai</span>
+  </footer>
+</main>
+
+<script type="module">
+  const btn = document.querySelector('[data-theme-toggle]');
+  const paint = () => { if (btn) btn.textContent = document.documentElement.dataset.theme === 'dark' ? '☀' : '☾'; };
+  paint();
+  btn?.addEventListener('click', () => {
+    const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = next;
+    localStorage.setItem('shotwell-sample-theme', next);
+    paint();
+    dispatchEvent(new Event('themechange'));
+  });
+
+  import { startBoard } from '/assets/home/board.js?v=1793069536';
+  const cv = document.createElement('canvas'); cv.id = 'board'; cv.setAttribute('aria-hidden', 'true');
+  const frost = document.createElement('div'); frost.className = 'frost';
+  const center = document.createElement('div'); center.className = 'center';
+  const lights = document.createElement('canvas'); lights.id = 'lights'; lights.setAttribute('aria-hidden', 'true');
+  const sheen = document.createElement('div'); sheen.className = 'sheen';
+  document.body.prepend(cv, frost, center, lights, sheen);
+  startBoard(cv, { lights, kind: 'charcoal' });
+</script>
 </body>
 </html>
