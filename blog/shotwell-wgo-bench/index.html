@@ -220,69 +220,72 @@
           <li><strong>An extremely detailed annotation guide.</strong> It specifies which actions merit their own segment, exactly where boundaries should fall, and the format and level of detail expected in each description. This makes model outputs very consistent before grading begins. Shotwell-WGO-Bench also demands a much higher level of detail in outputs that spotlights the limits of weaker models.</li>
           <li><strong>Multiple acceptable segmentations.</strong> Even with a precise guide, there is a range of timestamps where an action boundary can be placed, and some actions can reasonably be grouped or split. The reference annotations include acceptable ranges for each individual boundary, rather than one fixed tolerance for every boundary. They also include optional sub-boundaries where splitting an action is valid. Every valid possible segmentation logic for an episode is captured.</li>
           <li><strong>Multiple acceptable descriptions.</strong> For description grading, models receive fixed segments to describe. Each reference description provides required details and optional details for each segment. An LLM judge checks that every required action is present with the right verb, object, and hands. It allows compatible specificity and slight generalizations, but rejects contradictions and independent actions without reference support. The guide and explicit reference details leave less to the LLM judge's discretion.</li>
-          <li><strong>Curated episodes with clearer actions.</strong> We select clips where action boundaries and descriptions can be judged with relatively little ambiguity, limiting cases where equally careful annotators would disagree. This makes scores easier to interpret, while narrowing the range of activities the benchmark covers.</li>
+          <li><strong>Curated episodes with clearer actions.</strong> We select clips where action boundaries and descriptions can be judged with relatively little ambiguity, limiting cases where equally careful annotators would disagree.</li>
         </ol>
 
         <h2>The limits of a single reference timeline</h2>
 
         <p>WGO-Bench and MicroAnnotationBench compare VLM annotations with human reference annotations. Both compare segmentation against just a single reference timeline. This can penalize logical alternative groupings of actions and understate annotation quality. Astra scores around 0.40 F1 score in published evaluations of both benchmarks. Below, we show examples of our run of Astra on the WGO-Bench where valid alternative groupings are marked wrong due to the <a href="https://macrodata.co/blog/annotating-robot-video-subtasks">benchmark's IoU threshold of 0.75</a>.</p>
 
-        <p>In the examples below, you can compare WGO-Bench and Shotwell-WGO-Bench against the same Astra output from our latest 8-fps run. Shotwell-WGO-Bench accepts more valid boundaries while still rejecting extra or early splits. The markers show segmentation-boundary matches, not description judgments.</p>
+        <p>In the examples below, you can compare WGO-Bench and Shotwell-WGO-Bench against the same Astra output from our latest 8-fps run. Shotwell-WGO-Bench accepts more valid boundaries while still rejecting extra or early splits. The markers score segmentation only: WGO uses segment overlap, while Shotwell-WGO uses accepted boundary windows. They do not judge captions.</p>
 
-        <figure class="comparison" data-clip-start="140" data-clip-end="150.125">
-          <h3 class="comparison-title">One cleanup action, or several?</h3>
-          <video controls playsinline preload="metadata" poster="assets/homer-2-sponge.jpg" aria-label="First-person video of a person rinsing a sponge and washing their hands">
-            <source src="assets/homer-2-sponge.mp4" type="video/mp4">
+        <figure class="comparison" data-clip-start="17.88" data-clip-end="25.8">
+          <h3 class="comparison-title">Peel the onion, then set aside the peel</h3>
+          <video controls playsinline preload="metadata" poster="assets/homer-33-onion.jpg" aria-label="First-person video of a person peeling an onion and setting the peel aside">
+            <source src="https://storage.googleapis.com/shotwell-wgo-bench-media-755576089506/clips/homer-33-onion.mp4" type="video/mp4">
             Your browser does not support video playback.
           </video>
           <figcaption>
-            <div class="timeline" aria-label="Comparison of WGO and Shotwell-WGO action timelines from 140 to 150.125 seconds">
-              <div class="timeline-ruler"><span>Seconds</span><span><span>140.0</span><span>145.1</span><span>150.1</span></span></div>
+            <div class="timeline" aria-label="Comparison of WGO and Shotwell-WGO action timelines from 17.88 to 25.8 seconds">
+              <div class="timeline-ruler"><span>Seconds</span><span><span>17.9</span><span>21.8</span><span>25.8</span></span></div>
               <div class="timeline-row">
                 <span class="timeline-name">WGO Reference</span>
                 <div class="timeline-track">
-                  <span class="timeline-segment" style="--from:5.93%;--to:91.85%" data-time="140.6" data-end="149.3" title="140.6–149.3: Rinse and squeeze the sponge under running water and wash your hands"></span>
+                  <span class="timeline-segment" style="--from:0%;--to:100%" data-time="17.88" data-end="25.8" title="16.95–43.91: Peel the red onion with a knife"></span>
                 </div>
               </div>
               <div class="timeline-row astra">
                 <span class="timeline-name">Astra on WGO</span>
                 <div class="timeline-track">
-                  <span class="timeline-segment" style="--from:0%;--to:7.41%" data-time="140" data-end="140.75" data-verdict="rejected" title="140.0–140.75: Scrub the sink with the sponge with the right hand"></span>
-                  <span class="timeline-segment" style="--from:7.41%;--to:38.27%" data-time="140.75" data-end="143.875" data-verdict="rejected" title="140.75–143.875: Squeeze the sponge with both hands"></span>
-                  <span class="timeline-segment" style="--from:38.27%;--to:51.85%" data-time="143.875" data-end="145.25" data-verdict="rejected" title="143.875–145.25: Squeeze the sponge with the right hand"></span>
-                  <span class="timeline-segment" style="--from:51.85%;--to:64.20%" data-time="145.25" data-end="146.5" data-verdict="rejected" title="145.25–146.5: Place the sponge in the basket with the right hand"></span>
-                  <span class="timeline-segment" style="--from:64.20%;--to:100%" data-time="146.5" data-end="150.125" data-verdict="rejected" title="146.5–150.125: Rub the hands together with both hands"></span>
+                  <span class="timeline-segment" style="--from:0%;--to:29.92%" data-time="17.88" data-end="20.25" data-verdict="rejected" title="17.88–20.25: Peel the onion with the knife with the right hand and hold the onion in the left hand."></span>
+                  <span class="timeline-segment" style="--from:29.92%;--to:41.67%" data-time="20.25" data-end="21.18" data-verdict="rejected" title="20.25–21.18: Place the onion peel on the pile of peels on the counter with the right hand and hold the onion in the left hand."></span>
+                  <span class="timeline-segment" style="--from:41.67%;--to:61.49%" data-time="21.18" data-end="22.75" data-verdict="rejected" title="21.18–22.75: Peel the onion with the knife with the right hand and hold the onion in the left hand."></span>
+                  <span class="timeline-segment" style="--from:61.49%;--to:69.70%" data-time="22.75" data-end="23.4" data-verdict="rejected" title="22.75–23.4: Place the onion peel on the pile of peels on the counter with the right hand and hold the onion in the left hand."></span>
+                  <span class="timeline-segment" style="--from:69.70%;--to:91.41%" data-time="23.4" data-end="25.12" data-verdict="rejected" title="23.4–25.12: Peel the onion with the knife with the right hand and hold the onion in the left hand."></span>
+                  <span class="timeline-segment" style="--from:91.41%;--to:100%" data-time="25.12" data-end="25.8" data-verdict="rejected" title="25.12–25.8: Place the onion peel on the pile of peels on the counter with the right hand and hold the onion in the left hand."></span>
                 </div>
               </div>
               <div class="timeline-row shotwell-reference">
                 <span class="timeline-name">Shotwell-WGO Reference</span>
                 <div class="timeline-track">
-                  <span class="timeline-segment" style="--from:0%;--to:7.90%" data-time="140" data-end="140.8" title="140.0–140.8: Scrub the sink and gather food scraps with the sponge in the right hand"></span>
-                  <span class="timeline-segment" style="--from:7.90%;--to:53.83%" data-time="140.8" data-end="145.45" title="140.8–145.45: Squeeze the sponge with both hands or the right hand"></span>
-                  <span class="timeline-segment" style="--from:53.83%;--to:64.69%" data-time="145.45" data-end="146.55" title="145.45–146.55: Put the sponge in the basket with the right hand"></span>
-                  <span class="timeline-segment" style="--from:64.69%;--to:98.57%" data-time="146.55" data-end="149.98" title="146.55–149.98: Rub or wash both hands"></span>
-                  <span class="timeline-segment" style="--from:98.57%;--to:100%" data-time="149.98" data-end="150.125" title="From 149.98s: Turn off the faucet with the right hand"></span>
+                  <span class="timeline-segment" style="--from:0%;--to:30.14%" data-time="17.88" data-end="20.2667" title="17.88–20.27: Peel the onion with the knife in the right hand and hold it in the left hand"></span>
+                  <span class="timeline-segment" style="--from:30.14%;--to:40.66%" data-time="20.2667" data-end="21.1" title="20.27–21.1: Place the peel on the counter with the right hand"></span>
+                  <span class="timeline-segment" style="--from:40.66%;--to:60.44%" data-time="21.1" data-end="22.6667" title="21.1–22.67: Peel the onion with the knife in the right hand and hold it in the left hand"></span>
+                  <span class="timeline-segment" style="--from:60.44%;--to:68.65%" data-time="22.6667" data-end="23.3167" title="22.67–23.32: Place the peel on the counter with the right hand"></span>
+                  <span class="timeline-segment" style="--from:68.65%;--to:89.48%" data-time="23.3167" data-end="24.9667" title="23.32–24.97: Peel the onion with the knife in the right hand and hold it in the left hand"></span>
+                  <span class="timeline-segment" style="--from:89.48%;--to:100%" data-time="24.9667" data-end="25.8" title="24.97–25.8: Place the peel on the counter with the right hand"></span>
                 </div>
               </div>
               <div class="timeline-row astra shotwell-astra">
                 <span class="timeline-name">Astra on Shotwell-WGO</span>
                 <div class="timeline-track">
-                  <span class="timeline-segment" style="--from:0%;--to:7.41%" data-time="140" data-end="140.75" data-verdict="accepted" title="140.0–140.75: Scrub the sink with the sponge with the right hand"></span>
-                  <span class="timeline-segment" style="--from:7.41%;--to:38.27%" data-time="140.75" data-end="143.875" data-verdict="rejected" title="140.75–143.875: Squeeze the sponge with both hands"></span>
-                  <span class="timeline-segment" style="--from:38.27%;--to:51.85%" data-time="143.875" data-end="145.25" data-verdict="accepted" title="143.875–145.25: Squeeze the sponge with the right hand"></span>
-                  <span class="timeline-segment" style="--from:51.85%;--to:64.20%" data-time="145.25" data-end="146.5" data-verdict="accepted" title="145.25–146.5: Place the sponge in the basket with the right hand"></span>
-                  <span class="timeline-segment" style="--from:64.20%;--to:100%" data-time="146.5" data-end="150.125" data-verdict="accepted" title="146.5–150.125: Rub the hands together with both hands"></span>
+                  <span class="timeline-segment" style="--from:0%;--to:29.92%" data-time="17.88" data-end="20.25" data-verdict="accepted" title="17.88–20.25: Peel the onion with the knife with the right hand and hold the onion in the left hand."></span>
+                  <span class="timeline-segment" style="--from:29.92%;--to:41.67%" data-time="20.25" data-end="21.18" data-verdict="accepted" title="20.25–21.18: Place the onion peel on the pile of peels on the counter with the right hand and hold the onion in the left hand."></span>
+                  <span class="timeline-segment" style="--from:41.67%;--to:61.49%" data-time="21.18" data-end="22.75" data-verdict="accepted" title="21.18–22.75: Peel the onion with the knife with the right hand and hold the onion in the left hand."></span>
+                  <span class="timeline-segment" style="--from:61.49%;--to:69.70%" data-time="22.75" data-end="23.4" data-verdict="accepted" title="22.75–23.4: Place the onion peel on the pile of peels on the counter with the right hand and hold the onion in the left hand."></span>
+                  <span class="timeline-segment" style="--from:69.70%;--to:91.41%" data-time="23.4" data-end="25.12" data-verdict="accepted" title="23.4–25.12: Peel the onion with the knife with the right hand and hold the onion in the left hand."></span>
+                  <span class="timeline-segment" style="--from:91.41%;--to:100%" data-time="25.12" data-end="25.8" data-verdict="accepted" title="25.12–25.8: Place the onion peel on the pile of peels on the counter with the right hand and hold the onion in the left hand."></span>
                 </div>
               </div>
             </div>
-            <p class="comparison-note">Astra's latest run separates squeezing the sponge, placing it in the basket, and rubbing both hands. WGO's one long reference rejects every split. Shotwell-WGO matches four of Astra's five boundaries here, but rejects the extra split at 143.875s.</p>
+            <p class="comparison-note">WGO groups the entire peel-and-discard sequence into one action. Astra identifies each time the person peels the onion and sets aside the peel. All six Astra boundaries in this excerpt match the reviewed Shotwell-WGO reference.</p>
           </figcaption>
         </figure>
 
         <figure class="comparison" data-clip-start="9" data-clip-end="21.88">
           <h3 class="comparison-title">Where does the pour begin?</h3>
           <video controls playsinline preload="metadata" poster="assets/homer-1-pour.jpg" aria-label="First-person video of a person handling two glasses and pouring water">
-            <source src="assets/homer-1-pour.mp4" type="video/mp4">
+            <source src="https://storage.googleapis.com/shotwell-wgo-bench-media-755576089506/clips/homer-1-pour.mp4" type="video/mp4">
             Your browser does not support video playback.
           </video>
           <figcaption>
@@ -430,7 +433,7 @@
       const refusals = Object.entries(data.models).filter(([, score]) => score.refused_tasks > 0);
       if (refusals.length) {
         const caveat = document.querySelector('#score-caveat');
-        caveat.textContent = refusals.map(([key, score]) => `${scoreNames[key] || key} refused ${score.refused_tasks} visual ${score.refused_tasks === 1 ? 'window' : 'windows'} under provider policy`).join('; ') + '. Refusals count as missing annotations.';
+        caveat.textContent = refusals.map(([key]) => `${scoreNames[key] || key} refused some visual windows under their provider policy`).join('; ') + '. Refusals count as missing annotations.';
         caveat.hidden = false;
       }
     }).catch(() => {
