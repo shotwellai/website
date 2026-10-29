@@ -92,6 +92,17 @@
       },
       "overall_f1": 0.10823551364237889,
       "refused_tasks": 0
+    },
+    "flora": {
+      "model_id": "nvidia/Flora-TempSeg+Flora-Captioner@78a0e4ac75d33509f077fdf985ebb51153920e7c",
+      "segmentation": {
+        "f1": 0.5286885245901638
+      },
+      "description": {
+        "f1": 0.6696696696696697
+      },
+      "overall_f1": 0.35404666962044,
+      "refused_tasks": 0
     }
   }
 }

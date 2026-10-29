@@ -333,7 +333,7 @@
 
         <h2>Results</h2>
 
-        <p>We calculate segmentation and description F1 separately, then multiply them for the final score. Each model is evaluated at 8 frames per second on the episodes in the chart.</p>
+        <p>We calculate segmentation and description F1 separately, then multiply them for the final score. API models are evaluated at 8 frames per second. FLORA receives 8-fps video, but its native temporal model samples internally at 4 fps.</p>
 
         <div class="score-results" aria-label="Measured benchmark scores">
           <figure class="score-figure">
@@ -379,7 +379,7 @@
       point.setAttribute('aria-label', `${model}, ${label}: ${value.toFixed(3)}`);
       scale.append(point);
     };
-    fetch('./scores.json?v=2026-10-29-7models').then((response) => {
+    fetch('./scores.json?v=2026-10-29-8models').then((response) => {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       return response.json();
     }).then((data) => {
