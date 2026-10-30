@@ -241,6 +241,17 @@
   .description-example dd { margin-bottom: 8px; }
   .description-example dd:last-child { margin-bottom: 0; }
 }
+
+.article-toc{position:fixed;z-index:30;left:20px;top:110px;width:min(220px,calc((100vw - 808px)/2 - 40px));max-height:calc(100vh - 140px);overflow-y:auto;font:13px/1.45 var(--body);overscroll-behavior:contain}
+.article-toc[hidden]{display:none}.toc-label{display:block;font:10px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:0 0 16px 12px}
+.article-toc ol{list-style:none;margin:0;padding:0;border-left:1px solid var(--wire)}
+.article-toc a{display:block;padding:7px 10px 7px 12px;border-left:2px solid transparent;margin-left:-1px;text-decoration:none;color:var(--dim)}
+.article-toc a:hover{color:var(--fg)}.article-toc a[aria-current="location"]{color:var(--fg);border-left-color:var(--accent);background:var(--hover)}
+.article-toc .toc-sub a{padding-left:24px;font-size:12px}.toc-toggle{display:none}
+article h2,article h3{scroll-margin-top:32px}
+@media(max-width:1199px){.article-toc{left:16px;top:auto;bottom:18px;width:240px;max-width:calc(100vw - 32px);max-height:65vh;padding:10px;border:1px solid var(--wire);border-radius:8px;background:var(--ground);box-shadow:0 5px 24px #0002}.toc-label{display:none}.toc-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;padding:4px 6px;border:0;background:none;color:var(--fg);font:13px var(--body);cursor:pointer}.article-toc ol{display:none;margin-top:10px}.article-toc.is-open ol{display:block}}
+
+@media(min-width:1200px){.article-toc{left:68px;top:50%;transform:translateY(-50%);width:min(220px,calc((100vw - 808px)/2 - 88px));max-height:calc(100vh - 80px)}}
 </style>
 </head>
 <body>
@@ -258,6 +269,11 @@
     </nav>
   </header>
 
+  <nav class="article-toc" aria-label="Table of contents" hidden>
+    <span class="toc-label">SHOTWELL-BENCH</span>
+    <button class="toc-toggle" type="button" aria-expanded="false" aria-controls="article-toc-links">Contents <span aria-hidden="true">⌄</span></button>
+    <ol id="article-toc-links"></ol>
+  </nav>
   <main class="document" id="post">
     <article aria-labelledby="post-title">
       <header class="post-header">
@@ -607,6 +623,8 @@
         <p id="score-conclusion">Here, the capabilities of stronger models, and the gap between them and weaker models, are shown much more strongly than in the original WGO-Bench. In the original benchmark, smaller models that were clearly weaker (such as FLORA) beat Astra and GPT-5.6 Sol on <a href="https://arxiv.org/html/2610.31779">segmentation F1</a> due to the noisiness of the scoring approach. Shotwell-Bench results correlate much more strongly with the generally accepted visual abilities of these models.</p>
         <p>Browse the benchmark videos and reference annotations <a href="./episodes/">here</a>. The <a href="https://github.com/shotwellai/shotwell-bench/blob/main/guide.md">annotation guide</a>, runner, and scoring code are in the <a href="https://github.com/shotwellai/shotwell-bench">benchmark repository</a>.</p>
 
+        <h2 id="acknowledgments">Acknowledgments</h2>
+        <p>Thanks to the teams behind <a href="https://macrodata.co/blog/annotating-robot-video-subtasks">WGO-Bench</a> and <a href="https://www.microagi.ai/benchmarks/microannotationbench">MicroAnnotationBench</a>, whose work we build on and cite throughout this benchmark. Our data was curated from the <a href="https://huggingface.co/datasets/macrodata/WGO-Bench">WGO-Bench dataset</a>.</p>
       </div>
     </article>
 
@@ -932,5 +950,22 @@ function syncVisualThemes(){for(const frame of visualFrames)frame.contentWindow?
 visualFrames.forEach(frame=>frame.addEventListener('load',syncVisualThemes));
 new MutationObserver(syncVisualThemes).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 addEventListener('message',event=>{if(event.origin!==location.origin||event.data?.type!=='shotwell-visual-size')return;const frame=visualFrames.find(f=>f.contentWindow===event.source);const h=Number(event.data.height);if(frame&&Number.isFinite(h)&&h>0&&h<5000)frame.style.height=h+'px'});
+</script><script>
+(() => {
+  const toc=document.querySelector('.article-toc'),list=document.getElementById('article-toc-links'),toggle=toc.querySelector('.toc-toggle');
+  const headings=[...document.querySelectorAll('article h2, article h3')].filter(h=>!h.closest('figure'));
+  const links=headings.map((heading,i)=>{
+    if(!heading.id){const base=heading.textContent.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');let id=base,n=2;while(document.getElementById(id))id=base+'-'+n++;heading.id=id;}
+    const li=document.createElement('li');if(heading.tagName==='H3')li.className='toc-sub';
+    const a=document.createElement('a');a.href='#'+heading.id;a.textContent=heading.textContent;li.append(a);list.append(li);
+    a.addEventListener('click',()=>{toc.classList.remove('is-open');toggle.setAttribute('aria-expanded','false');});return a;
+  });
+  toggle.addEventListener('click',()=>{const open=toc.classList.toggle('is-open');toggle.setAttribute('aria-expanded',String(open));});
+  toc.addEventListener('keydown',e=>{if(e.key==='Escape'){toc.classList.remove('is-open');toggle.setAttribute('aria-expanded','false');toggle.focus();}});
+  let queued=false;
+  function update(){queued=false;toc.hidden=window.scrollY<180;let active=-1;const threshold=Math.min(180,innerHeight*.25);headings.forEach((h,i)=>{if(h.getBoundingClientRect().top<=threshold)active=i;});if(active<0&&headings[0]?.getBoundingClientRect().top<innerHeight)active=0;if(innerHeight+scrollY>=document.documentElement.scrollHeight-4)active=headings.length-1;links.forEach((a,i)=>{if(i===active)a.setAttribute('aria-current','location');else a.removeAttribute('aria-current');});}
+  function schedule(){if(!queued){queued=true;requestAnimationFrame(update)}}
+  addEventListener('scroll',schedule,{passive:true});addEventListener('resize',schedule);new ResizeObserver(schedule).observe(document.querySelector('article'));update();
+})();
 </script></body>
 </html>
