@@ -260,13 +260,69 @@ a{color:inherit}
 
 [data-theme="light"] .timeline{--reference:#cdd7d9;--reference-alt:#c3cfd2;--accepted:#aabfb0;--rejected:#c49b9f}
 [data-theme="light"] .timeline-segment[data-verdict]::after,[data-theme="light"] .timeline-segment.missing::after{color:#26372d;text-shadow:none}
-</style></head><body><main class="document"><figure class="comparison"><h3 class="comparison-title">Putting down the glass and sponge: split or group?</h3><video id="video" controls playsinline preload="auto" src="optional-boundaries.mp4"></video><figcaption><div class="timeline"><div class="timeline-ruler"><span>Seconds</span><span><span>103.0</span><span>104.3</span><span>105.55</span></span></div><div id="rows"></div></div><p class="comparison-note">Amber windows mark required boundaries; the purple dashed window marks an optional boundary. Opus separates putting down the glass and sponge. Astra groups them. Both are valid: the intermediate boundary is optional. Luna includes the optional split but misses the required boundary afterward.</p><p class="source-note">Episode 7 · wgo-bench-homer_9 · 103–105.55s</p></figcaption></figure></main><script>
+.timeline{--reference:#327f9c;--reference-alt:#418ca6;--accepted:#2a865c;--rejected:#af464c}
+[data-theme="light"] .timeline{--reference:#257fa5;--reference-alt:#347f9a;--accepted:#147b4b;--rejected:#be343b}
+.timeline-track{height:48px;background:transparent;border:0}
+.timeline-segment.continuing{background:var(--surface);border:1px dashed var(--wire-strong)}
+.timeline-segment.missing{background:var(--rejected)}
+.timeline-ruler{margin-bottom:30px}
+.timeline{--optional-range:#e8b33a}
+[data-theme="light"] .timeline{--optional-range:#a47712}
+.range-window,[data-theme="light"] .range-window{z-index:0;top:0;bottom:0;height:auto;background:color-mix(in srgb,var(--reference) 16%,transparent);border:0;border-radius:3px;box-shadow:none}
+.range-window.optional,[data-theme="light"] .range-window.optional{background:color-mix(in srgb,var(--optional-range) 18%,transparent);border:0}
+.range-window[data-label]::before{content:attr(data-label);position:absolute;top:-23px;left:50%;padding:0 4px;background:var(--ground);color:var(--reference);font:500 10px/1.4 var(--mono);white-space:nowrap;transform:translateX(-50%)}
+.range-window.optional[data-label]::before{color:var(--optional-range)}
+.boundary-guide.optional{border-color:var(--optional-range)}
+[data-theme="light"] .timeline-segment[data-verdict]::after,[data-theme="light"] .timeline-segment.missing::after{color:#fff;text-shadow:0 1px 2px #0004}
+.timeline-segment{z-index:1;top:7px;bottom:7px;left:calc(var(--from) + 8px);width:calc(var(--to) - var(--from) - 16px);overflow:hidden;border:2px solid #70bdd9;border-radius:5px;padding:0 8px;background:transparent;color:var(--fg);font:500 13px/30px var(--mono);white-space:nowrap;text-overflow:ellipsis}
+.timeline-row:not(.astra) .timeline-segment,.timeline-row:not(.astra) .timeline-segment:nth-child(even),.astra .timeline-segment,.astra .timeline-segment.missing{background:transparent;border-color:#70bdd9;color:var(--fg)}
+[data-theme="light"] .timeline-row:not(.astra) .timeline-segment,[data-theme="light"] .timeline-row:not(.astra) .timeline-segment:nth-child(even),[data-theme="light"] .astra .timeline-segment,[data-theme="light"] .astra .timeline-segment.missing{background:transparent;border-color:#145c79;color:var(--fg)}
+.timeline-segment[data-verdict]::after,.timeline-segment.missing::after{content:none}
+.boundary-verdict{position:absolute;z-index:4;top:4px;width:4px;height:40px;background:var(--accepted);transform:translateX(-50%);pointer-events:none}
+.boundary-verdict::before{content:'✓';position:absolute;top:-22px;left:50%;display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--accepted);color:#fff;font:700 14px/1 var(--body);transform:translateX(-50%)}
+.boundary-verdict.missing{width:0;height:0;background:none}
+.boundary-verdict.missing::before{content:'×';left:50%;background:var(--rejected);transform:translateX(-50%)}
+.boundary-verdict.near-end::before{left:auto;right:0;transform:none}
+.boundary-guide{transform:translateX(-100%)}
+html,body{overflow-x:hidden}
+@media(max-width:600px){
+  .timeline{overflow-x:visible}
+  .timeline-ruler,.timeline-row{min-width:0}
+  .timeline-name{overflow-wrap:anywhere}
+}
+</style></head><body><main class="document"><figure class="comparison"><h3 class="comparison-title">Putting down the glass and sponge: split or group?</h3><video id="video" controls playsinline preload="auto" src="optional-boundaries.mp4"></video><figcaption><div class="timeline"><div class="timeline-ruler"><span>Seconds</span><span><span>103.0</span><span>104.3</span><span>105.55</span></span></div><div id="rows"></div></div><p class="comparison-note">Blue bands show acceptable ranges for required boundaries; yellow marks an optional split.</p></figcaption></figure></main><script>
 const video=document.getElementById('video'),start=103,end=105.55,pc=t=>(t-start)/(end-start)*100;
-const rows=[{name:'Shotwell-Bench Reference',reference:true,points:[103,103.99,105.55],labels:['Finish scrubbing','Put down glass and sponge','Next action'],note:'Major: 103.650–104.120s · Minor: 104.294–104.694s · Major: 105.200–105.630s'}, {name:'Claude Opus 5.5',points:[103,104,104.5,105.5],labels:['Finish scrubbing','Place glass','Place sponge','Continues beyond excerpt'],note:'✓ Required 104.000s · ✓ Optional 104.500s · ✓ Required 105.500s'}, {name:'GPT-6 Astra',points:[103,104,105.5],labels:['Finish scrubbing','Place glass and sponge together','Continues beyond excerpt'],note:'✓ Required 104.000s · Optional split omitted · ✓ Required 105.500s'}, {name:'GPT-6 Luna',points:[103,104.1,104.5,105.55],labels:['Finish scrubbing','Placement boundary','Required transition missing'],note:'✓ Required 104.100s · ✓ Optional 104.500s · ✕ Missing required boundary',missing:true}];
-for(const r of rows){const row=document.createElement('div');row.className='timeline-row'+(r.reference?'':' astra');const label=document.createElement('span');label.className='timeline-name';label.textContent=r.name;const plot=document.createElement('div');plot.className='timeline-plot';const track=document.createElement('div');track.className='timeline-track';track.tabIndex=0;track.setAttribute('aria-label',r.name+' timeline; use arrow keys to seek');const info=document.createElement('div');info.className='timeline-labels';const text=document.createElement('span');text.className='timeline-label';text.textContent=r.note;info.append(text);for(let i=0;i<r.points.length-1;i++){const a=r.points[i],b=r.points[i+1],last=i===r.points.length-2;const seg=document.createElement('span');seg.className='timeline-segment'+(!r.reference&&last&&r.missing?' missing':'');seg.style.setProperty('--from',pc(a)+'%');seg.style.setProperty('--to',pc(b)+'%');if(!r.reference&&!(last&&r.missing))seg.dataset.verdict='accepted';seg.dataset.time=a;seg.title=`${a.toFixed(3)}–${b.toFixed(3)}s: ${r.labels[i]}`;seg.onmouseenter=()=>text.textContent=seg.title;seg.onmouseleave=()=>text.textContent=r.note;track.append(seg);}for(const [a,b,t,minor] of [[103.65,104.12,103.99,false],[104.293718,104.693718,104.543718,true],[105.2,105.63,105.55,false]]){const band=document.createElement('span');band.className='range-window'+(minor?' optional':'');band.style.left=pc(Math.max(start,a))+'%';band.style.width=pc(Math.min(end,b))-pc(Math.max(start,a))+'%';track.append(band);if(r.reference){const mark=document.createElement('span');mark.className='boundary-guide'+(minor?' optional':'');mark.style.left=pc(t)+'%';track.append(mark);}}if(r.missing){const mark=document.createElement('span');mark.className='boundary-guide missing';mark.style.left=pc(105.55)+'%';track.append(mark);}track.onclick=e=>{const rect=track.getBoundingClientRect();seek(start+(e.clientX-rect.left)/rect.width*(end-start));};track.onkeydown=e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();seek(start+video.currentTime+(e.key==='ArrowRight'?.125:-.125));}};plot.append(track);row.append(label,plot);document.getElementById('rows').append(row);}
+const rows=[{name:'Shotwell-Bench Reference',reference:true,points:[103,103.99,105.55],labels:['Finish scrubbing','Put down glass and sponge','Next action'],note:'Major: 103.650–104.120s · Minor: 104.294–104.694s · Major: 105.200–105.630s'}, {name:'Claude Opus 5.5',points:[103,104,104.5,105.5],labels:['Finish scrubbing','Place glass','Place sponge','Continues beyond excerpt'],note:'✓ Required 104.000s · ✓ Optional 104.500s · ✓ Required 105.500s'}, {name:'GPT-6 Astra',points:[103,104,105.5],labels:['Finish scrubbing','Place glass and sponge together','Continues beyond excerpt'],note:'✓ Required 104.000s · Optional split omitted · ✓ Required 105.500s'}, {name:'GPT-6 Luna',points:[103,104.1,104.5,105.55],labels:['Scrub the cup with the sponge with the right hand and hold the cup with the left hand.','Place the sponge in the sink with the right hand.','Continue placing the sponge in the sink with the right hand.'],note:'✓ Required 104.100s · ✓ Optional 104.500s · ✕ Missing required boundary',missing:true}];
+const shortLabels={'Finish scrubbing':'Finish scrub...','Put down glass and sponge':'Place glass + sponge...','Place glass':'Place glass...','Place sponge':'Place sponge...','Place glass and sponge together':'Place glass + sponge...','Scrub the cup with the sponge with the right hand and hold the cup with the left hand.':'Scrub cup...','Place the sponge in the sink with the right hand.':'Place sponge...','Continue placing the sponge in the sink with the right hand.':'Continue placing sponge...'};
+for(const r of rows){const row=document.createElement('div');row.className='timeline-row'+(r.reference?'':' astra');const label=document.createElement('span');label.className='timeline-name';label.textContent=r.name;const plot=document.createElement('div');plot.className='timeline-plot';const track=document.createElement('div');track.className='timeline-track';track.tabIndex=0;track.setAttribute('aria-label',r.name+' timeline; use arrow keys to seek');const info=document.createElement('div');info.className='timeline-labels';const text=document.createElement('span');text.className='timeline-label';text.textContent=r.note;info.append(text);for(let i=0;i<r.points.length-1;i++){const a=r.points[i],b=r.points[i+1];const seg=document.createElement('span');seg.className='timeline-segment';seg.style.setProperty('--from',pc(a)+'%');seg.style.setProperty('--to',pc(b)+'%');seg.dataset.time=a;seg.textContent=shortLabels[r.labels[i]]||r.labels[i];if(!(r.missing&&i===r.points.length-2))seg.title=`${a.toFixed(3)}–${b.toFixed(3)}s: ${r.labels[i]}`;seg.onmouseenter=()=>text.textContent=seg.title||r.note;seg.onmouseleave=()=>text.textContent=r.note;track.append(seg);}for(const [a,b,t,minor] of [[103.65,104.12,103.99,false],[104.293718,104.693718,104.543718,true],[105.2,105.63,105.55,false]]){const band=document.createElement('span');band.className='range-window'+(minor?' optional':'');band.style.left=pc(Math.max(start,a))+'%';band.style.width=pc(Math.min(end,b))-pc(Math.max(start,a))+'%';track.append(band);if(r.reference){const mark=document.createElement('span');mark.className='boundary-guide'+(minor?' optional':'');mark.style.left=pc(t)+'%';track.append(mark);}}track.onclick=e=>{const rect=track.getBoundingClientRect();seek(start+(e.clientX-rect.left)/rect.width*(end-start));};track.onkeydown=e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();seek(start+video.currentTime+(e.key==='ArrowRight'?.125:-.125));}};plot.append(track);row.append(label,plot);document.getElementById('rows').append(row);}
+document.querySelectorAll('#rows .timeline-row').forEach((row, index) => {
+  const data = rows[index];
+  if (data.reference) return;
+  const track = row.querySelector('.timeline-track');
+  for (const time of data.points.slice(1, data.missing ? -1 : undefined)) {
+    const mark = document.createElement('span');
+    mark.className = 'boundary-verdict' + (time >= 105.45 ? ' near-end' : '');
+    mark.style.left = `${pc(time)}%`;
+    mark.setAttribute('role', 'img');
+    mark.setAttribute('aria-label', `${data.name}: accepted boundary at ${time.toFixed(2)}s`);
+    track.append(mark);
+  }
+  if (data.missing) {
+    const mark = document.createElement('span');
+    mark.className = 'boundary-verdict missing';
+    mark.style.left = `${pc((105.2 + 105.63) / 2)}%`;
+    mark.setAttribute('role', 'img');
+    mark.setAttribute('aria-label', `${data.name}: missing required boundary in the 105.20–105.63s acceptable range`);
+    track.append(mark);
+  }
+});
 function seek(t){video.currentTime=Math.max(0,Math.min(end-start,t-start));update();}
 function update(){if(video.currentTime>end-start){video.pause();video.currentTime=end-start;}document.querySelectorAll('.timeline-track').forEach(t=>t.style.setProperty('--playhead',Math.min(100,pc(start+video.currentTime))+'%'));}
 
+const referenceRanges=document.querySelectorAll('#rows>.timeline-row:first-child .range-window');
+referenceRanges[0]?.setAttribute('data-label','Acceptable range');
+referenceRanges[1]?.setAttribute('data-label','Acceptable range');
+referenceRanges[2]?.setAttribute('data-label','Acceptable range');
 video.playbackRate=.5;video.ontimeupdate=update;video.addEventListener('play',()=>{if(video.currentTime>=end-start-.01)video.currentTime=0;});
 function tick(){if(!video.paused)update();requestAnimationFrame(tick);}tick();
 </script><script>

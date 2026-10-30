@@ -86,10 +86,10 @@
     .alignment-ruler { margin-bottom: 6px; color: var(--dim); font: 11px var(--mono); }
     .alignment-ruler span:last-child { display: flex; justify-content: space-between; }
     .alignment-pair + .alignment-pair { margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--wire); }
-    .alignment-row + .alignment-row { margin-top: 5px; }
-    .alignment-name { padding-top: 5px; font: 11px/1.4 var(--mono); }
-    .alignment-track { position: relative; height: 30px; border: 1px solid var(--wire); background: var(--surface); }
-    .alignment-piece { position: absolute; top: 3px; bottom: 3px; left: calc(var(--from) + 1px); width: calc(var(--to) - var(--from) - 2px); min-width: 2px; border-radius: 2px; background: var(--ref-bar); }
+    .alignment-row + .alignment-row { margin-top: 3px; }
+    .alignment-name { padding-top: 11px; font: 11px/1.4 var(--mono); }
+    .alignment-track { position: relative; height: 38px; }
+    .alignment-piece { position: absolute; top: 3px; bottom: 3px; left: calc(var(--from) + 2px); width: calc(var(--to) - var(--from) - 4px); min-width: 2px; border: 0; border-radius: 3px; background: var(--ref-bar); }
     .alignment-row.model .alignment-piece { background: var(--model-bar); }
     .alignment-callouts { position: relative; margin-left: 134px; color: var(--fg); }
     .alignment-callouts.above { margin-bottom: 6px; }
@@ -123,7 +123,7 @@
     .timeline-row.astra .timeline-name::before { background: var(--dim); }
     .timeline-row.shotwell-reference { padding-top: 8px; border-top: 1px solid var(--wire); }
     .timeline-plot { min-width: 0; }
-    .timeline-track { position: relative; height: 38px; background: var(--surface); border: 1px solid var(--wire); cursor: crosshair; touch-action: manipulation; }
+    .timeline-track { position: relative; height: 38px; cursor: crosshair; touch-action: manipulation; }
     .timeline-track:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
     .timeline-track::after { content: ''; position: absolute; z-index: 2; left: var(--playhead, 0%); top: -3px; bottom: -3px; width: 2px; background: var(--fg); pointer-events: none; opacity: .85; }
     .timeline-segment { position: absolute; top: 3px; bottom: 3px; left: calc(var(--from) + 1px); width: calc(var(--to) - var(--from) - 2px); overflow: visible; border: 0; border-radius: 2px; padding: 0; background: var(--reference); color: transparent; font-size: 0; }
@@ -225,9 +225,23 @@
       .score-axis-scale span:last-child { display: block; }
     }
 
-.benchmark-visual{display:block;width:100%;border:0;margin:30px 0 24px;background:var(--ground)}
-.prose h4{font:500 20px/1.4 var(--body);margin:28px 0 14px}
-#multiple-segmentations{margin-top:36px}
+.benchmark-visual { display: block; width: 100%; border: 0; margin: 28px 0 36px; background: var(--ground); }
+.description-examples { margin: 24px 0 32px; }
+.description-example { padding: 16px 0 20px; border-top: 1px solid var(--wire-strong); }
+.description-example + .description-example { margin-top: 16px; }
+.description-example h3 { display: flex; align-items: baseline; gap: 12px; margin: 0 0 12px; font: 500 18px/1.4 var(--body); }
+.description-example h3 span { color: var(--accent); font: 500 12px/1 var(--mono); }
+.description-example dl { display: grid; grid-template-columns: 138px minmax(0, 1fr); gap: 7px 14px; margin: 0; }
+.description-example dt { color: var(--dim); font: 500 14px/1.5 var(--body); }
+.description-example dd { min-width: 0; margin: 0; font-size: 17px; line-height: 1.5; }
+.description-example ul, .prose .description-example ul { margin: 0; padding: 0; list-style: none; }
+.description-example li, .prose .description-example li { margin: 0; padding: 0; }
+.description-example li + li, .prose .description-example li + li { margin-top: 4px; }
+@media (max-width: 600px) {
+  .description-example dl { grid-template-columns: 1fr; gap: 2px; }
+  .description-example dd { margin-bottom: 8px; }
+  .description-example dd:last-child { margin-bottom: 0; }
+}
 </style>
 </head>
 <body>
@@ -254,7 +268,7 @@
       </header>
 
       <div class="prose">
-        <p class="tldr"><strong>TL;DR:</strong> Shotwell-Bench fixes the core problem with annotation benchmarks. Existing benchmarks are extremely rigid in how they expect annotations, penalizing accurate model results which leads to noisy benchmark scores. Shotwell-Bench accepts multiple valid ways to annotate the same video and reflects model performance far more accurately. GPT Astra 6 performs the best on this benchmark.</p>
+        <p class="tldr"><strong>TL;DR:</strong> Shotwell-Bench fixes the core problem with annotation benchmarks. Existing benchmarks are extremely rigid in how they expect annotations, penalizing accurate model outputs which leads to noisy benchmark scores. Shotwell-Bench accepts multiple valid ways to annotate the same video and reflects model performance far more accurately. GPT Astra 6 performs the best on this benchmark.</p>
 
         <p>VLMs are a practical way to produce dense language annotations for the large amounts of egocentric video used in robot-policy pretraining. There are several existing benchmarks that assess VLM annotation accuracy that are flawed because they penalize annotations that differ from the benchmark's reference set but are still valid annotations. Shotwell-Bench builds on <a href="https://huggingface.co/datasets/macrodata/WGO-Bench">WGO-Bench</a> by assessing accuracy in producing annotations without penalizing different valid ways of segmenting the same video.</p>
 
@@ -290,30 +304,9 @@
           <li><strong>Curated episodes with clearer actions.</strong> We select clips where action boundaries and descriptions can be judged with relatively little ambiguity, limiting cases where equally careful annotators would disagree.</li>
         </ol>
 
-        <section aria-labelledby="multiple-segmentations">
-          <h3 id="multiple-segmentations" class="comparison-title">Multiple acceptable segmentations</h3>
-          <p>Our approach relies on two important properties in our reference annotations and scoring: boundary ranges and optional boundaries.</p>
-
-          <h4>Boundary ranges</h4>
-          <p>There is always going to be a range of timestamps where a boundary is valid, and it is not going to be the same from segment to segment. In some cases the range might be wide. For example, a pickup could end as soon as the object is lifted above the surface, or later in the trajectory if no other action begins. In other cases it might be much tighter, such as when a pour ends and the operator immediately starts placing the container—the next segment.</p>
-
-          <iframe class="benchmark-visual" src="visuals/boundary-ranges.html" title="Wide and tight boundary ranges compared with model predictions" height="950" loading="eager"></iframe>
-
-          <p>This captures acceptable timing more directly than a fixed tolerance or an IoU overlap threshold. We create an acceptability range for every boundary: a model marker inside that range can count as a hit, while a marker outside all accepted ranges is an error. Matching is one-to-one, so an extra marker inside an already matched range is still an error.</p>
-
-          <h4>Optional boundaries</h4>
-          <p>No matter how specific an annotation guide is, there will always be cases where different segmentation interpretations are valid. Two actions could be grouped together or split into separate segments, and both choices can be defensible. The scoring should accept each valid interpretation. Shotwell-Bench represents these alternatives with minor and major boundaries: leaving a minor boundary unmatched carries no penalty, but missing a major boundary does. Placing a marker outside every minor and major boundary range also incurs a penalty.</p>
-
-          <iframe class="benchmark-visual" src="visuals/optional-boundaries.html" title="Optional split between putting down a glass and a sponge" height="850" loading="eager"></iframe>
-
-          <p>In this example, the person finishes scrubbing a glass, then puts down the glass and sponge. Opus marks an intermediate boundary at 104.5 seconds, splitting the placement into two segments. Astra groups the two placements into one segment. Both are valid: the intermediate boundary is minor, and both models match the required boundaries around the placement sequence. Luna also includes the optional split, but misses the final major boundary, whose accepted range is 105.200–105.630 seconds. Hitting an optional boundary does not compensate for missing a required one.</p>
-        </section>
-
         <h2>The limits of a single reference timeline</h2>
 
         <p>WGO-Bench and MicroAnnotationBench compare VLM annotations with human reference annotations. Both compare segmentation against just a single reference timeline. This can penalize logical alternative groupings of actions and understate annotation quality. Astra scores around 0.40 F1 score in published evaluations of both benchmarks. Below, we show examples of our run of Astra on the WGO-Bench where valid alternative groupings are marked wrong due to the <a href="https://macrodata.co/blog/annotating-robot-video-subtasks">benchmark's IoU threshold of 0.75</a>.</p>
-
-        <p>In the examples below, Astra was run separately with <a href="https://macrodata.co/blog/annotating-robot-video-subtasks">WGO-Bench's published segmentation prompt</a> and 2-fps contact sheets, and with Shotwell-Bench's guide at 8 fps. The <a href="https://github.com/shotwellai/shotwell-bench/blob/main/benchmark-results/wgo-prompt-examples/astra-official.jsonl">WGO-prompt output</a> is available to inspect. Each output is shown against its corresponding reference. The markers score segmentation only: WGO uses segment overlap, while Shotwell-Bench uses accepted boundary windows. They do not judge captions.</p>
 
         <figure class="comparison" data-clip-start="17.88" data-clip-end="25.8">
           <h3 class="comparison-title">Peel the onion, then set aside the peel</h3>
@@ -416,6 +409,61 @@
             <p class="comparison-note">Both references accept setting down the mug. WGO then separates picking up the sponge and glass into two actions, while its Astra run combines them, so the pickup fails overlap matching. Astra's shorter scrub also fails against WGO's long scrub-and-rinse reference. Shotwell-Bench allows the combined pickup and the scrub split; all five Astra boundaries in this excerpt match.</p>
           </figcaption>
         </figure>
+
+        <section aria-labelledby="multiple-segmentations">
+          <h2 id="multiple-segmentations">Multiple acceptable segmentations</h2>
+          <p>Our approach relies on two important properties in our reference annotations and scoring: boundary ranges and optional boundaries.</p>
+
+          <h3 class="guide-subheading">Boundary ranges</h3>
+          <p>There is always going to be a range of timestamps where a boundary is valid, and it is not going to be the same from segment to segment. In some cases the range might be wide. For example, a pickup could end as soon as the object is lifted above the surface, or later in the trajectory if no other action begins. In other cases it might be much tighter, such as when a pour ends and the operator immediately starts placing the container—the next segment.</p>
+
+          <iframe class="benchmark-visual" src="visuals/boundary-ranges.html?v=10" title="Wide and tight boundary ranges compared with model predictions" height="950" loading="eager"></iframe>
+
+          <p>This captures acceptable timing more directly than a fixed tolerance or an IoU overlap threshold. We create an acceptability range for every boundary: a model marker inside that range can count as a hit, while a marker outside all accepted ranges is an error. Matching is one-to-one, so an extra marker inside an already matched range is still an error.</p>
+
+          <h3 class="guide-subheading">Optional boundaries</h3>
+          <p>No matter how specific an annotation guide is, there will always be cases where different segmentation interpretations are valid. Two actions could be grouped together or split into separate segments, and both choices can be defensible. The scoring should accept each valid interpretation. Shotwell-Bench represents these alternatives with minor and major boundaries: leaving a minor boundary unmatched carries no penalty, but missing a major boundary does. Placing a marker outside every minor and major boundary range also incurs a penalty.</p>
+
+          <iframe class="benchmark-visual" src="visuals/optional-boundaries.html?v=17" title="Optional split between putting down a glass and a sponge" height="850" loading="eager"></iframe>
+
+          <p>Opus splits the glass and sponge placement; Astra groups it. Both match the required boundaries, and the split is optional. Luna misses the last boundary as the last segment shown above extends well past it.</p>
+        </section>
+
+        <section aria-labelledby="multiple-descriptions">
+          <h2 id="multiple-descriptions">Multiple acceptable descriptions</h2>
+          <p>There's more than one good way to describe the same action. For each segment, we list the details that matter and others that are optional. A correct output must list all the required details, and must not fabricate any detail not present in the required or optional detail list. Within a detail, there may be different interpretations of an action or item. These interpretation options are represented as brackets below, and the judge will accept any of the options. Different wording is accepted, as is having a slight different level of specificity.</p>
+          <p>Below are three examples of reference segment descriptions, and accepted and rejected annotations.</p>
+
+          <div class="description-examples" aria-label="Description grading examples">
+            <div class="description-example">
+              <h3><span>01</span>Optional detail</h3>
+              <dl>
+                <dt>Required details</dt><dd><ul><li>Pour water into the glass with the right hand.</li></ul></dd>
+                <dt>Optional details</dt><dd><ul><li>Hold the glass with the left hand.</li></ul></dd>
+                <dt>Accepted</dt><dd><ul><li>“Pour water into the glass with the right hand.”</li><li>“Pour water into the glass with the right hand and hold the glass with the left hand.”</li></ul></dd>
+                <dt>Rejected</dt><dd><ul><li>“Pour water into the glass with the left hand.” (Wrong hand.)</li></ul></dd>
+              </dl>
+            </div>
+            <div class="description-example">
+              <h3><span>02</span>Alternative interpretations</h3>
+              <dl>
+                <dt>Required details</dt><dd><ul><li>[Slide left / push] a glass with the left hand.</li></ul></dd>
+                <dt>Optional details</dt><dd>None.</dd>
+                <dt>Accepted</dt><dd><ul><li>“Slide a glass left with the left hand.”</li><li>“Push a glass with the left hand.”</li></ul></dd>
+                <dt>Rejected</dt><dd><ul><li>“Pick up the glass with the left hand.” (Wrong action.)</li></ul></dd>
+              </dl>
+            </div>
+            <div class="description-example">
+              <h3><span>03</span>Two required actions</h3>
+              <dl>
+                <dt>Required details</dt><dd><ul><li>Squeeze the sponge with the right hand.</li><li>Turn on the faucet with the left hand.</li></ul></dd>
+                <dt>Optional details</dt><dd>None.</dd>
+                <dt>Accepted</dt><dd><ul><li>“Squeeze the sponge with the right hand and turn on the faucet with the left hand.”</li></ul></dd>
+                <dt>Rejected</dt><dd><ul><li>“Squeeze the sponge with the right hand.” (Missing the faucet action.)</li></ul></dd>
+              </dl>
+            </div>
+          </div>
+        </section>
 
         <h2>Disambiguating with a pedantic guide</h2>
 
@@ -634,8 +682,8 @@
             const above = band.classList.contains('above');
             line.setAttribute('x1', String(above ? left + labelWidth / 2 : anchor));
             line.setAttribute('x2', String(above ? anchor : left + labelWidth / 2));
-            line.setAttribute('y1', String(above ? top + caption.offsetHeight : -6));
-            line.setAttribute('y2', String(above ? total + 6 : top));
+            line.setAttribute('y1', String(above ? top + caption.offsetHeight : -9));
+            line.setAttribute('y2', String(above ? total + 9 : top));
             svg.append(line);
           });
         });
