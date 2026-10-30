@@ -174,14 +174,34 @@
     .score-point:hover::after, .score-point:focus-visible::after { opacity: 1; }
     .score-point:hover, .score-point:focus-visible { z-index: 3; outline: 2px solid var(--fg); outline-offset: 2px; }
     .score-caveat { margin: 14px 0 0; color: var(--dim); font: 12px/1.5 var(--mono); }
-    .results-table-wrap { margin: 20px 0 28px; overflow-x: auto; }
-    .results-table { width: 100%; min-width: 520px; border-collapse: collapse; font: 14px/1.5 var(--body); }
-    .results-table th, .results-table td { padding: 11px 12px; border-bottom: 1px solid var(--wire); text-align: right; font-variant-numeric: tabular-nums; }
-    .results-table thead th { border-top: 1px solid var(--wire-strong); color: var(--dim); font: 11px/1.4 var(--mono); }
-    .results-table th:first-child { text-align: left; }
-    .results-table tbody th { font-weight: 500; }
-    .results-table tbody td { font-family: var(--mono); }
-    .results-table tbody td:last-child { font-weight: 500; }
+    .cost-figure { margin: 24px 0 32px; }
+    .cost-figure figcaption { font: 400 22px/1.3 var(--display); }
+    .cost-chart { width: 100%; margin-top: 12px; }
+    .cost-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+    .cost-chart .cost-grid { stroke: var(--wire); stroke-width: 1; }
+    .cost-chart .cost-axis { stroke: var(--wire-strong); stroke-width: 1; }
+    .cost-chart .cost-tick, .cost-chart .cost-axis-title { fill: var(--dim); font: 11px var(--mono); }
+    .cost-chart .cost-axis-title { font-size: 12px; }
+    .cost-chart .cost-frontier-line { fill: none; stroke: #218764; stroke-width: 2; }
+    .cost-chart .cost-point { fill: var(--ground); stroke: var(--fg); stroke-width: 2; }
+    .cost-chart .cost-point.frontier { fill: #218764; stroke: #218764; }
+    .cost-chart .cost-open-weight-ring { fill: none; stroke: var(--fg); stroke-width: 1.5; pointer-events: none; }
+    .cost-chart .cost-point:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
+    .cost-chart .cost-label { fill: var(--fg); font: 12px var(--mono); }
+    .cost-legend { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 2px 0 12px; }
+    .cost-key { display: flex; gap: 8px; align-items: center; margin: 0; color: var(--dim); font: 12px/1.5 var(--mono); }
+    .cost-key::before { content: ''; display: inline-block; width: 18px; border-top: 2px solid #218764; }
+    .cost-key.open-weight::before { display: none; }
+    .cost-key.open-weight svg { width: 18px; height: 18px; fill: var(--ground); stroke: var(--fg); stroke-width: 1.5; }
+    .cost-method { padding-top: 10px; border-top: 1px solid var(--wire); color: var(--dim); font: 12px/1.6 var(--mono); }
+    .cost-method summary { width: fit-content; cursor: pointer; color: var(--fg); }
+    .cost-method p { margin: 10px 0; }
+    .cost-mobile-list { display: none; }
+    @media (max-width: 620px) {
+      .cost-mobile-list { display: grid; grid-template-columns: 1fr auto auto; gap: 6px 10px; margin: 0 0 16px; font: 11px/1.5 var(--mono); }
+      .cost-mobile-list span:nth-child(3n + 2), .cost-mobile-list span:nth-child(3n + 3) { text-align: right; }
+      .cost-mobile-list .frontier { color: #218764; font-weight: 500; }
+    }
     .site-footer {
       border-top: 1px solid var(--wire);
       padding-top: 24px;
@@ -611,14 +631,22 @@ article h2,article h3{scroll-margin-top:32px}
         <p>Description rules are also far more explicit in Shotwell-Bench than in the original WGO-Bench. The exact required format of sentences and rulings on required details leave no room for ambiguity, which makes checking accuracy far more objective. The guide also has more required details than WGO-Bench, making this a harder benchmark that punishes weaker models.</p>
         <h2>Results</h2>
 
-        <p>We calculate segmentation and description F1 separately, then multiply them for the final score. API models are evaluated at 8 frames per second. FLORA receives 8-fps video, but its native temporal model samples internally at 4 fps.</p>
+        <p>The chart compares the mean of each model's segmentation and description F1 with estimated cost per hour of video. The green line marks the Pareto frontier and routes through the latest GPT models and NVIDIA Flora.</p>
 
-        <div class="results-table-wrap">
-          <table class="results-table" aria-label="Benchmark F1 scores by model">
-            <thead><tr><th scope="col">Model</th><th scope="col">Segmentation F1</th><th scope="col">Description F1</th><th scope="col">Overall F1</th></tr></thead>
-            <tbody id="results-table-body"></tbody>
-          </table>
-        </div>
+        <figure class="cost-figure">
+          <figcaption>Performance vs cost per video hour</figcaption>
+          <div class="cost-chart" id="cost-chart" role="img" aria-label="Cost per video hour versus mean segmentation and description F1 for benchmark models"></div>
+          <div class="cost-legend">
+            <p class="cost-key">Pareto frontier</p>
+            <p class="cost-key open-weight"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="none"></circle><circle cx="10" cy="10" r="5"></circle></svg>Open-weight model</p>
+          </div>
+          <div class="cost-mobile-list" id="cost-mobile-list" aria-label="Model cost and average F1"></div>
+          <details class="cost-method">
+            <summary>How costs are calculated</summary>
+            <p>API costs estimate both benchmark passes at 8 fps using published <a href="https://developers.openai.com/api/docs/guides/images-vision">image-token rules</a> and standard, uncached token prices. Kimi uses OpenAI's image-token rule as a proxy. These estimates exclude retries, judging, and hidden reasoning.</p>
+            <p>As FLORA does not have an API endpoint, FLORA's roughly $23/video-hour point is based on our actual calculations using GPU time at the <a href="https://nebius.com/spot-prices">Nebius US-central H200 spot rate</a> of $2.99/hour on October 30, 2026. Actual spot costs may vary.</p>
+          </details>
+        </figure>
 
         <p id="score-conclusion">Here, the capabilities of stronger models, and the gap between them and weaker models, are shown much more strongly than in the original WGO-Bench. In the original benchmark, smaller models that were clearly weaker (such as FLORA) beat Astra and GPT-5.6 Sol on <a href="https://arxiv.org/html/2610.31779">segmentation F1</a> due to the noisiness of the scoring approach. Shotwell-Bench results correlate much more strongly with the generally accepted visual abilities of these models.</p>
         <p>Browse the benchmark videos and reference annotations <a href="./episodes/">here</a>. The <a href="https://github.com/shotwellai/shotwell-bench/blob/main/guide.md">annotation guide</a>, runner, and scoring code are in the <a href="https://github.com/shotwellai/shotwell-bench">benchmark repository</a>.</p>
@@ -712,8 +740,7 @@ article h2,article h3{scroll-margin-top:32px}
     }
 
     const scoreGrid = document.querySelector('#score-grid');
-    const resultsTableBody = document.querySelector('#results-table-body');
-    const scoreNames = { astra: 'GPT-6 Astra', sol: 'GPT-6.1 Sol', argon: 'Gemini 4 Argon', opus: 'Claude Opus 5.5', luna: 'GPT-6 Luna', sonnet: 'Claude Sonnet 5.5', qwen: 'Qwen3-VL 235B Instruct', qwen35: 'Qwen3.5 397B', flora: 'NVIDIA FLORA' };
+    const scoreNames = { astra: 'GPT-6 Astra', sol: 'GPT-6.1 Sol', argon: 'Gemini 4 Argon', opus: 'Claude Opus 5.5', luna: 'GPT-6 Luna', sonnet: 'Claude Sonnet 5.5', qwen35: 'Qwen3.5 397B', flora: 'NVIDIA FLORA', kimi3: 'Kimi K3', kimi31pro: 'Kimi K3.1 Pro' };
     const addPoint = (scale, model, kind, label, value, axisMin, axisMax) => {
       const point = document.createElement('button');
       point.type = 'button';
@@ -725,7 +752,138 @@ article h2,article h3{scroll-margin-top:32px}
       point.setAttribute('aria-label', `${model}, ${label}: ${value.toFixed(3)}`);
       scale.append(point);
     };
-    fetch('./scores.json?v=2026-10-29-8models').then((response) => {
+    const costChart = document.querySelector('#cost-chart');
+    const costMobileList = document.querySelector('#cost-mobile-list');
+    const costWorkload = {
+      hours: 1193.594176 / 3600,
+      segmentationCalls: 126,
+      descriptionCalls: 221,
+      promptTokensPerCall: 4800,
+      segmentationOutputTokens: 250,
+      descriptionOutputTokens: 75,
+      imageTokens: { openai: 4182538, anthropic: 5038990, google: 7967556 },
+    };
+    const costRates = {
+      astra: { imageRule: 'openai', input: 10, output: 50 },
+      sol: { imageRule: 'openai', input: 2, output: 10 },
+      luna: { imageRule: 'openai', input: 0.1, output: 0.5 },
+      argon: { imageRule: 'google', input: 2, output: 10 },
+      opus: { imageRule: 'anthropic', input: 4, output: 20 },
+      sonnet: { imageRule: 'anthropic', input: 2, output: 10 },
+      kimi3: { imageRule: 'openai', input: 0.1624, output: 9.75 },
+      kimi31pro: { imageRule: 'openai', input: 2, output: 10 },
+    };
+    const floraCompletedPassSpend = 9.42775365 + 0.94503751;
+    const floraFailedAttemptSeconds = 287;
+    const floraModalH100HourlyRate = 0.001097 * 3600;
+    const floraH200SpotHourlyRate = 2.99;
+    const floraSuccessfulGpuHours = floraCompletedPassSpend / floraModalH100HourlyRate
+      - floraFailedAttemptSeconds / 3600;
+    const floraCostPerHour = floraSuccessfulGpuHours / costWorkload.hours * floraH200SpotHourlyRate;
+    const estimateCostPerHour = (rate) => {
+      const calls = costWorkload.segmentationCalls + costWorkload.descriptionCalls;
+      const input = costWorkload.imageTokens[rate.imageRule] + calls * costWorkload.promptTokensPerCall;
+      const output = costWorkload.segmentationCalls * costWorkload.segmentationOutputTokens
+        + costWorkload.descriptionCalls * costWorkload.descriptionOutputTokens;
+      return (input * rate.input + output * rate.output) / 1e6 / costWorkload.hours;
+    };
+    const svgElement = (tag, attributes, label) => {
+      const element = document.createElementNS('http://www.w3.org/2000/svg', tag);
+      Object.entries(attributes).forEach(([key, value]) => element.setAttribute(key, String(value)));
+      if (label !== undefined) element.textContent = label;
+      return element;
+    };
+    let costPoints = [];
+    const drawCostChart = () => {
+      if (!costPoints.length) return;
+      const width = costChart.clientWidth;
+      if (!width) return;
+      const compact = width <= 620;
+      const height = compact ? 360 : 420;
+      const left = compact ? 40 : 55;
+      const right = width - (compact ? 16 : 120);
+      const top = 32;
+      const bottom = height - 55;
+      const x = (cost) => left + Math.log(cost) / Math.log(250) * (right - left);
+      const y = (performance) => bottom - (performance - 0.35) / 0.45 * (bottom - top);
+      const svg = svgElement('svg', { viewBox: `0 0 ${width} ${height}`, 'aria-hidden': 'true' });
+      for (const tick of [0.4, 0.5, 0.6, 0.7, 0.8]) {
+        const position = y(tick);
+        svg.append(svgElement('line', { class: 'cost-grid', x1: left, y1: position, x2: right, y2: position }));
+        svg.append(svgElement('text', { class: 'cost-tick', x: left - 10, y: position + 4, 'text-anchor': 'end' }, tick.toFixed(1)));
+      }
+      for (const tick of (compact ? [1, 5, 20, 100] : [1, 2, 5, 10, 20, 50, 100, 200])) {
+        const position = x(tick);
+        svg.append(svgElement('line', { class: 'cost-grid', x1: position, y1: top, x2: position, y2: bottom }));
+        svg.append(svgElement('text', { class: 'cost-tick', x: position, y: bottom + 21, 'text-anchor': 'middle' }, `$${tick}`));
+      }
+      svg.append(svgElement('line', { class: 'cost-axis', x1: left, y1: bottom, x2: right, y2: bottom }));
+      svg.append(svgElement('text', { class: 'cost-axis-title', x: left, y: 18 }, 'Mean F1'));
+      svg.append(svgElement('text', { class: 'cost-axis-title', x: (left + right) / 2, y: height - 10, 'text-anchor': 'middle' }, 'USD / video hour (log scale)'));
+      const frontier = costPoints.filter((point) => point.frontier);
+      if (frontier.length > 1) {
+        svg.append(svgElement('path', {
+          class: 'cost-frontier-line',
+          d: frontier.map((point, index) => `${index ? 'L' : 'M'} ${x(point.cost)} ${y(point.performance)}`).join(' '),
+        }));
+      }
+      for (const point of costPoints) {
+        const px = x(point.cost);
+        const py = y(point.performance);
+        if (point.openWeight) {
+          svg.append(svgElement('circle', {
+            class: 'cost-open-weight-ring', cx: px, cy: py, r: 9,
+          }));
+        }
+        const marker = svgElement('circle', {
+          class: `cost-point${point.frontier ? ' frontier' : ''}`,
+          cx: px, cy: py, r: point.frontier ? 6 : 5,
+          tabindex: 0,
+          'aria-label': `${point.name}${point.openWeight ? ', open-weight' : ''}: mean F1 ${point.performance.toFixed(3)}, ${point.native ? 'estimated H200 spot cost' : 'estimated API cost'} $${point.cost.toFixed(2)} per video hour`,
+        });
+        marker.append(svgElement('title', {}, `${point.name}: mean F1 ${point.performance.toFixed(3)}, $${point.cost.toFixed(2)}/video hour (${point.native ? 'H200 spot estimate' : 'API estimate'})`));
+        svg.append(marker);
+        if (!compact) {
+          const labelLeft = px > right - 115;
+          svg.append(svgElement('text', {
+            class: 'cost-label', x: px + (labelLeft ? -11 : 11), y: py - 8,
+            'text-anchor': labelLeft ? 'end' : 'start',
+          }, point.name));
+        }
+      }
+      costChart.replaceChildren(svg);
+    };
+    const updateCostChart = (models) => {
+      costPoints = Object.entries(models).filter(([key]) => costRates[key] || key === 'flora').map(([key, score]) => ({
+        name: scoreNames[key] || score.model_id,
+        cost: key === 'flora' ? floraCostPerHour : estimateCostPerHour(costRates[key]),
+        performance: (score.segmentation.f1 + score.description.f1) / 2,
+        native: key === 'flora',
+        openWeight: key === 'flora' || key === 'kimi3',
+      })).sort((a, b) => a.cost - b.cost || b.performance - a.performance);
+      let best = -Infinity;
+      for (const point of costPoints) {
+        point.frontier = point.performance > best;
+        best = Math.max(best, point.performance);
+      }
+      costMobileList.replaceChildren();
+      for (const label of ['Model', 'USD / h', 'Mean F1']) {
+        const cell = document.createElement('span');
+        cell.textContent = label;
+        costMobileList.append(cell);
+      }
+      for (const point of costPoints) {
+        for (const value of [point.name, `$${point.cost.toFixed(2)}`, point.performance.toFixed(3)]) {
+          const cell = document.createElement('span');
+          if (point.frontier) cell.className = 'frontier';
+          cell.textContent = value;
+          costMobileList.append(cell);
+        }
+      }
+      drawCostChart();
+    };
+    new ResizeObserver(drawCostChart).observe(costChart);
+    fetch('./scores.json?v=2026-10-30-kimi31pro').then((response) => {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       return response.json();
     }).then((data) => {
@@ -740,7 +898,7 @@ article h2,article h3{scroll-margin-top:32px}
         label.textContent = (tick / 10).toFixed(1);
         axis.append(label);
       }
-      Object.entries(data.models).sort((a, b) => b[1].overall_f1 - a[1].overall_f1).forEach(([key, score]) => {
+      Object.entries(data.models).sort((a, b) => b[1].segmentation.f1 - a[1].segmentation.f1).forEach(([key, score]) => {
         const row = document.createElement('div');
         row.className = 'score-row';
         const model = scoreNames[key] || score.model_id;
@@ -767,18 +925,8 @@ article h2,article h3{scroll-margin-top:32px}
         row.append(modelCell, plot);
         scoreGrid.append(row);
 
-        const tableRow = document.createElement('tr');
-        const tableModel = document.createElement('th');
-        tableModel.scope = 'row';
-        tableModel.textContent = model;
-        tableRow.append(tableModel);
-        for (const value of [score.segmentation.f1, score.description.f1, score.overall_f1]) {
-          const cell = document.createElement('td');
-          cell.textContent = value.toFixed(3);
-          tableRow.append(cell);
-        }
-        resultsTableBody.append(tableRow);
       });
+      updateCostChart(data.models);
       const refusals = Object.entries(data.models).filter(([, score]) => score.refused_tasks > 0);
       if (refusals.length) {
         const caveat = document.querySelector('#score-caveat');
@@ -789,12 +937,7 @@ article h2,article h3{scroll-margin-top:32px}
       const message = document.createElement('p');
       message.textContent = 'Scores are not available yet.';
       scoreGrid.append(message);
-      const row = document.createElement('tr');
-      const cell = document.createElement('td');
-      cell.colSpan = 4;
-      cell.textContent = 'Scores are not available yet.';
-      row.append(cell);
-      resultsTableBody.append(row);
+      costChart.textContent = 'Cost estimates are not available yet.';
     });
 
     document.querySelectorAll('.comparison').forEach((comparison) => {
