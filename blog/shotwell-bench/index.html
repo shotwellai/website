@@ -76,6 +76,42 @@
     .comparison .comparison-note { margin: 16px 0 0; }
     .comparison video { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: contain; background: #050505; border: 1px solid var(--wire); border-radius: 4px; }
     .comparison figcaption { margin-top: 12px; }
+    .guide-subheading { margin: 36px 0 14px; font: 400 23px/1.3 var(--display); }
+    .alignment { --ref-bar: #327f9c; --model-bar: #bd8331; margin: 28px 0 36px; }
+    [data-theme="light"] .alignment { --ref-bar: #257fa5; --model-bar: #b17425; }
+    .alignment figcaption { margin-bottom: 14px; font: 400 22px/1.3 var(--display); }
+    .alignment-scroll { overflow-x: auto; }
+    .alignment-canvas { min-width: 680px; }
+    .alignment-ruler, .alignment-row { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 14px; }
+    .alignment-ruler { margin-bottom: 6px; color: var(--dim); font: 11px var(--mono); }
+    .alignment-ruler span:last-child { display: flex; justify-content: space-between; }
+    .alignment-pair + .alignment-pair { margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--wire); }
+    .alignment-row + .alignment-row { margin-top: 5px; }
+    .alignment-name { padding-top: 5px; font: 11px/1.4 var(--mono); }
+    .alignment-track { position: relative; height: 30px; border: 1px solid var(--wire); background: var(--surface); }
+    .alignment-piece { position: absolute; top: 3px; bottom: 3px; left: calc(var(--from) + 1px); width: calc(var(--to) - var(--from) - 2px); min-width: 2px; border-radius: 2px; background: var(--ref-bar); }
+    .alignment-row.model .alignment-piece { background: var(--model-bar); }
+    .alignment-callouts { position: relative; margin-left: 134px; color: var(--fg); }
+    .alignment-callouts.above { margin-bottom: 6px; }
+    .alignment-callouts.below { margin-top: 6px; }
+    .alignment-callouts svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+    .alignment-callouts line { stroke: var(--ref-bar); stroke-width: 1.5; opacity: .7; }
+    .alignment-callouts.below line { stroke: var(--model-bar); }
+    .alignment-caption { position: absolute; z-index: 1; width: 152px; padding: 2px 3px; background: var(--ground); font: 11px/1.35 var(--mono); text-wrap: pretty; }
+    .alignment-caption::before { content: ''; display: inline-block; width: 6px; height: 6px; margin-right: 6px; background: var(--ref-bar); vertical-align: 1px; }
+    .alignment-callouts.below .alignment-caption::before { background: var(--model-bar); }
+    .guide-rules { margin: 16px 0 30px; border-top: 1px solid var(--wire); }
+    .guide-rule { display: grid; grid-template-columns: 100px minmax(0, 1fr); gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--wire); }
+    .guide-rule a { padding-top: 2px; font: 500 12px/1.5 var(--mono); color: var(--accent); }
+    .guide-rule details { min-width: 0; }
+    .guide-rule summary { position: relative; display: block; padding-right: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; list-style: none; cursor: pointer; font-size: 15px; line-height: 1.4; }
+    .guide-rule summary::-webkit-details-marker { display: none; }
+    .guide-rule summary::after { content: 'Full rule +'; position: absolute; right: 1px; top: 3px; color: var(--accent); background: var(--ground); font: 500 11px/1.4 var(--mono); }
+    .guide-rule details[open] summary::after { content: 'Hide rule −'; }
+    .guide-rule summary:hover, .guide-rule summary:focus-visible { color: var(--accent); }
+    .guide-rule-full { margin-top: 10px; padding-bottom: 4px; }
+    .guide-rule p { margin: 0; font-size: 16px; line-height: 1.55; }
+    .guide-rule p + p { margin-top: 8px; }
     .timeline { --reference: #327f9c; --reference-alt: #418ca6; --accepted: #2a865c; --rejected: #af464c; }
     [data-theme="light"] .timeline { --reference: #257fa5; --reference-alt: #347f9a; --accepted: #147b4b; --rejected: #be343b; }
     .timeline-ruler, .timeline-row { display: grid; grid-template-columns: 108px minmax(0, 1fr); gap: 14px; align-items: start; }
@@ -177,6 +213,10 @@
       .timeline-name::before { width: 6px; height: 6px; margin-right: 4px; }
       .timeline-label { font-size: 10px; }
       .timeline-segment[data-verdict]::after { width: 16px; height: 16px; font-size: 14px; }
+      .alignment-ruler, .alignment-row { grid-template-columns: 76px minmax(0, 1fr); gap: 8px; }
+      .alignment-name { font-size: 10px; overflow-wrap: anywhere; }
+      .alignment-callouts { margin-left: 84px; }
+      .guide-rule { grid-template-columns: 1fr; gap: 3px; }
       .score-legend { gap: 6px 12px; font-size: 10px; }
       .score-axis, .score-row { grid-template-columns: minmax(0, 92px) minmax(0, 1fr); gap: 10px; }
       .score-model { font-size: 12px; overflow-wrap: anywhere; }
@@ -210,7 +250,7 @@
       </header>
 
       <div class="prose">
-        <p class="tldr"><strong>TL;DR:</strong> Shotwell-Bench fixes the core problem with annotation benchmarks. Existing benchmarks are extremely rigid in how they expect annotations, penalizing accurate model results which leads to noisy benchmark results. Shotwell-Bench accepts multiple valid ways to annotate the same video and reflects model performance far more accurately. GPT Astra 6 performs the best on this benchmark.</p>
+        <p class="tldr"><strong>TL;DR:</strong> Shotwell-Bench fixes the core problem with annotation benchmarks. Existing benchmarks are extremely rigid in how they expect annotations, penalizing accurate model results which leads to noisy benchmark scores. Shotwell-Bench accepts multiple valid ways to annotate the same video and reflects model performance far more accurately. GPT Astra 6 performs the best on this benchmark.</p>
 
         <p>VLMs are a practical way to produce dense language annotations for the large amounts of egocentric video used in robot-policy pretraining. There are several existing benchmarks that assess VLM annotation accuracy that are flawed because they penalize annotations that differ from the benchmark's reference set but are still valid annotations. Shotwell-Bench builds on <a href="https://huggingface.co/datasets/macrodata/WGO-Bench">WGO-Bench</a> by assessing accuracy in producing annotations without penalizing different valid ways of segmenting the same video.</p>
 
@@ -334,7 +374,7 @@
                   <span class="timeline-segment" style="--from:0%;--to:2.80%" data-time="59.5" data-end="59.8" title="55.96–59.8: Rinse and rotate the mug with both hands"></span>
                   <span class="timeline-segment" style="--from:2.80%;--to:26.17%" data-time="59.8" data-end="62.3" title="59.8–62.3: Place the mug on the dishes with the left hand"></span>
                   <span class="timeline-segment" style="--from:26.17%;--to:52.06%" data-time="62.3" data-end="65.07" title="62.3–65.07: Pick up the sponge with the right hand and the glass with the left hand"></span>
-                  <span class="timeline-segment" style="--from:52.06%;--to:99.18%" data-time="65.07" data-end="70.112" title="65.07–70.11: Scrub the glass with the sponge and place the sponge in the sink"></span>
+                  <span class="timeline-segment" style="--from:52.06%;--to:99.18%" data-time="65.07" data-end="70.112" title="65.07–70.11: Scrub the glass with the sponge with the right hand and place the sponge in the sink with the right hand"></span>
                   <span class="timeline-segment" style="--from:99.18%;--to:100%" data-time="70.112" data-end="70.2" title="70.11–79.17: Rub the glass with the right hand"></span>
                 </div>
               </div>
@@ -354,6 +394,138 @@
           </figcaption>
         </figure>
 
+        <h2>Disambiguating with a pedantic guide</h2>
+
+        <p>In the clips above, Astra's Shotwell annotations are extremely similar to the reference segments, which makes for grading much clearer and objective. The boundaries are almost identical, and some captions differ by only a few words. Take a look at how Astra captions line up more closely on Shotwell-Bench than WGO-Bench, both in timing and wording.</p>
+
+        <figure class="alignment" aria-label="Timing and action text for the four sink annotations">
+          <figcaption>Model output and reference similarity</figcaption>
+          <div class="alignment-scroll"><div class="alignment-canvas">
+            <div class="alignment-ruler" aria-hidden="true"><span>Seconds</span><span><span>59.8</span><span>64.8</span><span>69.9</span></span></div>
+            <div class="alignment-pair">
+              <div class="alignment-callouts above" aria-label="WGO reference segment captions"></div>
+              <div class="alignment-row">
+                <span class="alignment-name">WGO reference</span>
+              <div class="alignment-track" aria-hidden="true">
+                  <span class="alignment-piece" style="--from:0%;--to:23.56%" data-caption="Place the black mug on the kitchen towel"></span>
+                  <span class="alignment-piece" style="--from:23.56%;--to:35.32%" data-caption="Pick up the yellow sponge"></span>
+                  <span class="alignment-piece" style="--from:35.32%;--to:59.97%" data-caption="Pick up the clear glass from the sink"></span>
+                  <span class="alignment-piece" style="--from:59.97%;--to:100%" data-caption="Scrub and rinse the clear glass"></span>
+                </div>
+              </div>
+              <div class="alignment-row model">
+                <span class="alignment-name">Astra on WGO</span>
+                <div class="alignment-track" aria-hidden="true">
+                  <span class="alignment-piece" style="--from:0%;--to:21.83%" data-caption="Place the black mug on the draining area"></span>
+                  <span class="alignment-piece" style="--from:26.79%;--to:51.59%" data-caption="Pick up another drinking glass and the sponge"></span>
+                  <span class="alignment-piece" style="--from:51.59%;--to:100%" data-caption="Scrub the drinking glass"></span>
+                </div>
+              </div>
+              <div class="alignment-callouts below" aria-label="Astra on WGO segment captions"></div>
+            </div>
+            <div class="alignment-pair">
+              <div class="alignment-callouts above" aria-label="Shotwell reference segment captions"></div>
+              <div class="alignment-row">
+                <span class="alignment-name">Shotwell reference</span>
+                <div class="alignment-track" aria-hidden="true">
+                  <span class="alignment-piece" style="--from:0%;--to:24.80%" data-caption="Place the mug on the dishes with the left hand"></span>
+                  <span class="alignment-piece" style="--from:24.80%;--to:52.28%" data-caption="Pick up the sponge with the right hand and the glass with the left hand"></span>
+                  <span class="alignment-piece" style="--from:52.28%;--to:100%" data-caption="Scrub the glass with the sponge with the right hand and place the sponge in the sink with the right hand"></span>
+                </div>
+              </div>
+              <div class="alignment-row model">
+                <span class="alignment-name">Astra on Shotwell</span>
+                <div class="alignment-track" aria-hidden="true">
+                  <span class="alignment-piece" style="--from:0%;--to:24.31%" data-caption="Place the mug on the towel with the left hand"></span>
+                  <span class="alignment-piece" style="--from:24.31%;--to:51.59%" data-caption="Pick up the sponge with the right hand and a glass with the left hand"></span>
+                  <span class="alignment-piece" style="--from:51.59%;--to:96.23%" data-caption="Scrub the glass with the sponge with the right hand"></span>
+                  <span class="alignment-piece" style="--from:96.23%;--to:100%" data-caption="Place the sponge in the bowl with the right hand"></span>
+                </div>
+              </div>
+              <div class="alignment-callouts below" aria-label="Astra on Shotwell segment captions"></div>
+            </div>
+          </div></div>
+        </figure>
+
+        <p>The similarity is because of how specific the <a href="https://github.com/shotwellai/shotwell-bench/blob/main/guide.md">guide</a> is in where it expects segment boundaries, and how it expects descriptions to be formatted.</p>
+
+        <h3 class="guide-subheading">Where the boundaries go</h3>
+        <p>The guide has a large list of rules for where segment boundaries must be placed. These are the parts most relevant to the segments above; expand a snippet to read the full rule:</p>
+        <div class="guide-rules" aria-label="Relevant segmentation rules">
+          <div class="guide-rule">
+            <a href="https://github.com/shotwellai/shotwell-bench/blob/main/guide.md#segmenting">Segmenting</a>
+            <details><summary>Merge actions into one segment only when they overlap in time.</summary>
+              <div class="guide-rule-full"><p>Set boundaries so that each segment features a single complete or attempted action, fully contained within that segment.</p><p>Merge actions into a single segment only when the actions overlap in time.</p></div>
+            </details>
+          </div>
+          <div class="guide-rule">
+            <a href="https://github.com/shotwellai/shotwell-bench/blob/main/guide.md#action-rules">Pick up</a>
+            <details><summary>End a pick-up segment when the object clears its supporting surface.</summary>
+              <div class="guide-rule-full"><p>Grabbing an object with one or both hands and lifting it. The object must be completely lifted from its supporting surface; otherwise, it is a single Move action rather than separate Pick up and Place actions. Keep multiple lifting attempts of the same object together unless the operator completely releases the object between attempts. If the object is released without being lifted but a clear attempt to lift the object was made, treat the attempt as a Pickup action (completed unsuccessfully).</p><p>Start: When hands start reaching or moving toward the object, or the operator starts leaning forward to pick up the items.</p><p>End: Once the object is lifted and not in contact with the surface. For an unsuccessful attempt, end when the hands completely release it.</p></div>
+            </details>
+          </div>
+          <div class="guide-rule">
+            <a href="https://github.com/shotwellai/shotwell-bench/blob/main/guide.md#action-rules">Place</a>
+            <details><summary>Start a Place segment as the object moves toward its destination; end it at release.</summary>
+              <div class="guide-rule-full"><p>Placing / fully releasing an object that is held in hand(s), or pouring a liquid or grain, or spraying using a spray nozzle.</p><p>Start: When the object begins moving toward its destination.</p><p>End: When the hands completely release the object. For pouring, end when no more liquid or grain is being transferred. For spraying, after the spray leaves the nozzle. If it has stopped moving the object entirely but not released when another action begins, mark the end when the object stops moving instead of overlapping. If the hands nudge the placed item for the purposes of securing it in place after placement, include that nudging in the segment and end after.</p></div>
+            </details>
+          </div>
+          <div class="guide-rule">
+            <a href="https://github.com/shotwellai/shotwell-bench/blob/main/guide.md#action-rules">Rub</a>
+            <details><summary>End a Rub segment when the hand releases the tool or removes it from the object.</summary>
+              <div class="guide-rule-full"><p>Rubbing or wiping a surface or object using a tool, such as a sponge or cloth, or using the hands directly.</p><p>Start: When the hand begins reaching toward the object.</p><p>End: When the hand releases the rubbing tool or removes it from the object.</p></div>
+            </details>
+          </div>
+          <div class="guide-rule">
+            <a href="https://github.com/shotwellai/shotwell-bench/blob/main/guide.md#additional-rules">Repetition</a>
+            <details><summary>Group repetitions on one object only when the hands and motion stay the same.</summary>
+              <div class="guide-rule-full"><p>Group short, repetitive motions into one segment when they act on the same object(s), use the same hand(s), and are performed in the same way. They may act on different parts of the same object, for example cleaning the top and sides of furniture is the same and should remain in one segment. There is one exception, which is cleaning different shelves, even if they’re connected. Split the repetitions when the object or hand changes, or when a separate action occurs between them, such as rotating the object. The segment starts with the first occurrence’s start condition and ends with the last occurrence’s end condition.</p></div>
+            </details>
+          </div>
+          <div class="guide-rule">
+            <a href="https://github.com/shotwellai/shotwell-bench/blob/main/guide.md#additional-rules">Overlap</a>
+            <details><summary>Group both hands' actions when their active movements overlap.</summary>
+              <div class="guide-rule-full"><p>Group overlapping actions into one segment when each hand is performing an action and the first action’s end condition occurs after the next action’s start condition. Start at the first action’s start condition and end at the last action’s end condition. Simply holding an object in a hand does not constitute a simultaneous action.</p></div>
+            </details>
+          </div>
+        </div>
+        <p>The guide provides far more rules on segmentation than WGO-Bench. This leaves no room for ambiguity, forcing model outputs to align.</p>
+
+        <h3 class="guide-subheading">What the descriptions say</h3>
+        <p>The guide is just as specific about what each description must say. These snippets show the relevant parts; expand one to read the full rule:</p>
+        <div class="guide-rules" aria-label="Relevant description rules">
+          <div class="guide-rule">
+            <a href="https://github.com/shotwellai/shotwell-bench/blob/main/guide.md#description-format">Format</a>
+            <details><summary>Name the action, object, acting hand, and any tool in each caption.</summary>
+              <div class="guide-rule-full"><p>Descriptions take the imperative form. They explain what action was performed and which hands (and which tools, if any) were used.</p><p>Standard action sentence: "{verb} + {object} + {hand (+ tool) used}."</p><p>Navigation sentence: "{verb} {destination}".</p><p>No extra detail beyond these structures, other than the exceptions in this guide.</p><p>For an IDLE segment, write just "IDLE".</p></div>
+            </details>
+          </div>
+          <div class="guide-rule">
+            <a href="https://github.com/shotwellai/shotwell-bench/blob/main/guide.md#compound-sentences">Overlap</a>
+            <details><summary>Join overlapping actions as independent clauses with “and.”</summary>
+              <div class="guide-rule-full"><p>When a segment contains overlapping actions, its description is a compound sentence. Each action gets a full, independent description that could stand alone, joined with "and" in the order the actions start. In the compound sentence, the clauses should be fully independent without any reference to each other (no "Pick the cup with the left hand and pick the other cup with the right hand"). For example:</p><p>1. One hand performs one action while the other hand performs a different action, overlapping in time ("Pick the cup with the left hand and pick the bowl with the right hand.")</p><p>2. The person walks while interacting with an object in their hands ("Walk to the trash can and carry the paper plate in both hands.")</p><p>3. An item is picked up and then transferred quickly, such that either the pick or transfer segments individually would be shorter than 0.5s ("Pick up the bottle with the left hand and transfer the bottle from the left hand to the right hand.")</p></div>
+            </details>
+          </div>
+          <div class="guide-rule">
+            <a href="https://github.com/shotwellai/shotwell-bench/blob/main/guide.md#location-details">Destination</a>
+            <details><summary>Name the destination surface or container in a placement caption.</summary>
+              <div class="guide-rule-full"><p>Give brief location information in only two cases:</p><p>1. The destination of a navigation segment ("Walk toward the counter.")</p><p>2. Placing an item ("Put the bottle on the shelf with the right hand.")</p><p>Placed inside a container → name the container ("Put the bottle in the fridge", not "Put the bottle on the top shelf of the fridge").</p><p>Placed on a surface → name the surface ("Place the plate on the table").</p><p>Placing / stacking on top of other item(s) → name the other items and the surface or container they are on/in ("Place the book on the stack of books on the shelf with the left hand" or “Place the bottle on the coaster on the table with the right hand”).</p><p>Do not give extra detail on the location (not "kitchen-side counter" or "top shelf").</p><p>For an object moved along a surface without lifting it, provide the direction of movement using one of the following options for the verb:</p><p>1. Slide left</p><p>2. Slide right</p><p>3. Pull</p><p>4. Push</p><p>("Slide the bottle left with the right hand").</p></div>
+            </details>
+          </div>
+          <div class="guide-rule">
+            <a href="https://github.com/shotwellai/shotwell-bench/blob/main/guide.md#object-identity">Object</a>
+            <details><summary>Do not add adjectives merely to distinguish similar objects.</summary>
+              <div class="guide-rule-full"><p>Do not add adjectives to disambiguate when several items matching a description are present, but use “a/an {object}” in place of “the {object}” when interacting with an object not already in the hands and several objects fit the description during the segment. When several apples are in view, "Pick an apple with the left hand" is correct; "Pick the nearest apple with the left hand" is incorrect.</p><p>If unsure about the identity of an item, use a broader category ("garment" instead of "shirt", "fruit" instead of "apple").</p></div>
+            </details>
+          </div>
+          <div class="guide-rule">
+            <a href="https://github.com/shotwellai/shotwell-bench/blob/main/guide.md#holding-and-other-passive-actions">Holding</a>
+            <details><summary>Name an item held in the other hand when that hold is useful.</summary>
+              <div class="guide-rule-full"><p>If one hand holds an item during a segment created for another, more noticeable activity, mention the held item too ("Wipe the mirror with the cloth with the right hand and hold the spray bottle in the left hand."). This also applies to other passive but useful interactions with objects ("Place the bottle in the fridge with the left hand and hold the fridge door open with the right hand.").</p><p>Do not name passive, non-useful actions, such as resting a hand on a surface or on an item. For example, do not write "Place item in container with right hand and hold container with left hand" if the left hand is only resting on the container edge.</p><p>Do name a hand that is actively steadying an item, perhaps because the other hand's activity may destabilize it ("Scrub the container with the cloth with the right hand and steady the container with the left hand").</p><p>“Releasing” an item from grasp usually should not be noted. Do not name the “release” of an item by a hand separately if the hand was moving the item along a surface or steadying the item without lifting it off a surface. For items lifted off a surface, then placing the item should be noted, but there shouldn’t be an additional “release” action as well. (no “Release the cup with the left hand” after “Place the cup on the table with the left hand.”)</p></div>
+            </details>
+          </div>
+        </div>
+        <p>Description rules are also far more explicit in Shotwell-Bench than in the original WGO-Bench. The exact required format of sentences and rulings on required details leave no room for ambiguity, which makes checking accuracy far more objective. The guide also has more required details than WGO-Bench, making this a harder benchmark that punishes weaker models.</p>
         <h2>Results</h2>
 
         <p>We calculate segmentation and description F1 separately, then multiply them for the final score. API models are evaluated at 8 frames per second. FLORA receives 8-fps video, but its native temporal model samples internally at 4 fps.</p>
@@ -380,6 +552,79 @@
   <script type="module">
     import { init } from '/assets/theme.js';
     init();
+
+    const alignment = document.querySelector('.alignment');
+    if (alignment) {
+      const canvas = alignment.querySelector('.alignment-canvas');
+      const bands = [...alignment.querySelectorAll('.alignment-callouts')];
+      bands.forEach((band) => {
+        const row = band.classList.contains('above') ? band.nextElementSibling : band.previousElementSibling;
+        const segments = [...row.querySelectorAll('.alignment-piece')];
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('aria-hidden', 'true');
+        band.append(svg);
+        segments.forEach((segment) => {
+          const caption = document.createElement('span');
+          caption.className = 'alignment-caption';
+          caption.textContent = segment.dataset.caption;
+          band.append(caption);
+        });
+      });
+      const positionCallouts = () => {
+        bands.forEach((band) => {
+          const row = band.classList.contains('above') ? band.nextElementSibling : band.previousElementSibling;
+          const segments = [...row.querySelectorAll('.alignment-piece')];
+          const captions = [...band.querySelectorAll('.alignment-caption')];
+          const svg = band.querySelector('svg');
+          const bounds = band.getBoundingClientRect();
+          const width = band.clientWidth;
+          const labelWidth = segments.length > 4 ? 176 : 152;
+          const tiers = [];
+          const placed = segments.map((segment, index) => {
+            const segmentBounds = segment.getBoundingClientRect();
+            const anchor = segmentBounds.left + segmentBounds.width / 2 - bounds.left;
+            const left = Math.max(0, Math.min(width - labelWidth, anchor - labelWidth / 2));
+            const caption = captions[index];
+            caption.style.width = `${labelWidth}px`;
+            caption.style.left = `${left}px`;
+            caption.style.top = '0px';
+            let tier = tiers.findIndex((items) => items.every((item) => left >= item.right + 8 || left + labelWidth + 8 <= item.left));
+            if (tier < 0) {
+              tier = tiers.length;
+              tiers.push([]);
+            }
+            tiers[tier].push({ left, right: left + labelWidth });
+            return { anchor, caption, left, tier };
+          });
+          const tierHeights = tiers.map((_, tier) => Math.max(...placed.filter((item) => item.tier === tier).map((item) => item.caption.offsetHeight)));
+          const total = tierHeights.reduce((sum, height) => sum + height, 12) + (tierHeights.length - 1) * 10;
+          band.style.height = `${total}px`;
+          svg.setAttribute('viewBox', `0 0 ${width} ${total}`);
+          svg.replaceChildren();
+          placed.forEach(({ anchor, caption, left, tier }) => {
+            const before = tierHeights.slice(0, tier).reduce((sum, height) => sum + height, 0) + tier * 10;
+            const top = band.classList.contains('above')
+              ? total - 12 - before - tierHeights[tier]
+              : 12 + before;
+            caption.style.top = `${top}px`;
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            const above = band.classList.contains('above');
+            line.setAttribute('x1', String(above ? left + labelWidth / 2 : anchor));
+            line.setAttribute('x2', String(above ? anchor : left + labelWidth / 2));
+            line.setAttribute('y1', String(above ? top + caption.offsetHeight : -6));
+            line.setAttribute('y2', String(above ? total + 6 : top));
+            svg.append(line);
+          });
+        });
+      };
+      let lastWidth = 0;
+      new ResizeObserver(() => {
+        if (canvas.clientWidth === lastWidth) return;
+        lastWidth = canvas.clientWidth;
+        positionCallouts();
+      }).observe(canvas);
+      document.fonts.ready.then(positionCallouts);
+    }
 
     const scoreGrid = document.querySelector('#score-grid');
     const resultsTableBody = document.querySelector('#results-table-body');
