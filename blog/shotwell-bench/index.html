@@ -224,7 +224,11 @@
       .score-axis-scale span:nth-child(even), .score-axis-scale span:nth-last-child(2) { display: none; }
       .score-axis-scale span:last-child { display: block; }
     }
-  </style>
+
+.benchmark-visual{display:block;width:100%;border:0;margin:30px 0 24px;background:var(--ground)}
+.prose h4{font:500 20px/1.4 var(--body);margin:28px 0 14px}
+#multiple-segmentations{margin-top:36px}
+</style>
 </head>
 <body>
   <a class="skip-link" href="#post">Skip to article</a>
@@ -285,6 +289,25 @@
           <li><strong>Multiple acceptable descriptions.</strong> For description grading, models receive fixed segments to describe. Each reference description provides required details and optional details for each segment. An LLM judge checks that every required action is present with the right verb, object, and hands. It allows compatible specificity and slight generalizations, but rejects contradictions and independent actions without reference support. The guide and explicit reference details leave less to the LLM judge's discretion.</li>
           <li><strong>Curated episodes with clearer actions.</strong> We select clips where action boundaries and descriptions can be judged with relatively little ambiguity, limiting cases where equally careful annotators would disagree.</li>
         </ol>
+
+        <section aria-labelledby="multiple-segmentations">
+          <h3 id="multiple-segmentations" class="comparison-title">Multiple acceptable segmentations</h3>
+          <p>Our approach relies on two important properties in our reference annotations and scoring: boundary ranges and optional boundaries.</p>
+
+          <h4>Boundary ranges</h4>
+          <p>There is always going to be a range of timestamps where a boundary is valid, and it is not going to be the same from segment to segment. In some cases the range might be wide. For example, a pickup could end as soon as the object is lifted above the surface, or later in the trajectory if no other action begins. In other cases it might be much tighter, such as when a pour ends and the operator immediately starts placing the container—the next segment.</p>
+
+          <iframe class="benchmark-visual" src="visuals/boundary-ranges.html" title="Wide and tight boundary ranges compared with model predictions" height="950" loading="eager"></iframe>
+
+          <p>This captures acceptable timing more directly than a fixed tolerance or an IoU overlap threshold. We create an acceptability range for every boundary: a model marker inside that range can count as a hit, while a marker outside all accepted ranges is an error. Matching is one-to-one, so an extra marker inside an already matched range is still an error.</p>
+
+          <h4>Optional boundaries</h4>
+          <p>No matter how specific an annotation guide is, there will always be cases where different segmentation interpretations are valid. Two actions could be grouped together or split into separate segments, and both choices can be defensible. The scoring should accept each valid interpretation. Shotwell-Bench represents these alternatives with minor and major boundaries: leaving a minor boundary unmatched carries no penalty, but missing a major boundary does. Placing a marker outside every minor and major boundary range also incurs a penalty.</p>
+
+          <iframe class="benchmark-visual" src="visuals/optional-boundaries.html" title="Optional split between putting down a glass and a sponge" height="850" loading="eager"></iframe>
+
+          <p>In this example, the person finishes scrubbing a glass, then puts down the glass and sponge. Opus marks an intermediate boundary at 104.5 seconds, splitting the placement into two segments. Astra groups the two placements into one segment. Both are valid: the intermediate boundary is minor, and both models match the required boundaries around the placement sequence. Luna also includes the optional split, but misses the final major boundary, whose accepted range is 105.200–105.630 seconds. Hitting an optional boundary does not compensate for missing a required one.</p>
+        </section>
 
         <h2>The limits of a single reference timeline</h2>
 
@@ -859,5 +882,11 @@
       document.fonts.ready.then(positionLabels);
     });
   </script>
-</body>
+<script>
+const visualFrames=[...document.querySelectorAll('.benchmark-visual')];
+function syncVisualThemes(){for(const frame of visualFrames)frame.contentWindow?.postMessage({type:'shotwell-theme',theme:document.documentElement.dataset.theme||'dark'},location.origin)}
+visualFrames.forEach(frame=>frame.addEventListener('load',syncVisualThemes));
+new MutationObserver(syncVisualThemes).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+addEventListener('message',event=>{if(event.origin!==location.origin||event.data?.type!=='shotwell-visual-size')return;const frame=visualFrames.find(f=>f.contentWindow===event.source);const h=Number(event.data.height);if(frame&&Number.isFinite(h)&&h>0&&h<5000)frame.style.height=h+'px'});
+</script></body>
 </html>
