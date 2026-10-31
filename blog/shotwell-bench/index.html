@@ -272,6 +272,8 @@ article h2,article h3{scroll-margin-top:32px}
 @media(max-width:1199px){.article-toc{left:16px;top:auto;bottom:18px;width:240px;max-width:calc(100vw - 32px);max-height:65vh;padding:10px;border:1px solid var(--wire);border-radius:8px;background:var(--ground);box-shadow:0 5px 24px #0002}.toc-label{display:none}.toc-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;padding:4px 6px;border:0;background:none;color:var(--fg);font:13px var(--body);cursor:pointer}.article-toc ol{display:none;margin-top:10px}.article-toc.is-open ol{display:block}}
 
 @media(min-width:1200px){.article-toc{left:68px;top:50%;transform:translateY(-50%);width:min(220px,calc((100vw - 808px)/2 - 88px));max-height:calc(100vh - 80px)}}
+    .annotation-tradeoffs { padding-left: 26px; margin: 24px 0; }
+    .annotation-tradeoffs li { margin-bottom: 12px; }
 </style>
 </head>
 <body>
@@ -303,9 +305,13 @@ article h2,article h3{scroll-margin-top:32px}
       </header>
 
       <div class="prose">
-        <p class="tldr"><strong>TL;DR:</strong> Shotwell-Bench fixes the core problem with annotation benchmarks. Existing benchmarks are extremely rigid in how they expect annotations, penalizing accurate model outputs which leads to noisy benchmark scores. Shotwell-Bench accepts multiple valid ways to annotate the same video and reflects model performance far more accurately. GPT Astra 6 performs the best on this benchmark.</p>
+        <p class="tldr"><strong>TL;DR:</strong> Shotwell-Bench fixes the core problem with annotation benchmarks. Existing benchmarks are extremely rigid in how they expect annotations, penalizing accurate model outputs which leads to noisy benchmark scores. Shotwell-Bench accepts multiple valid ways to annotate the same video and reflects model performance far more comprehensively. GPT-6 Astra performs the best on this benchmark.</p>
 
-        <p>VLMs are a practical way to produce dense language annotations for the large amounts of egocentric video used in robot-policy pretraining. There are several existing benchmarks that assess VLM annotation accuracy that are flawed because they penalize annotations that differ from the benchmark's reference set but are still valid annotations. Shotwell-Bench builds on <a href="https://huggingface.co/datasets/macrodata/WGO-Bench">WGO-Bench</a> by assessing accuracy in producing annotations without penalizing different valid ways of segmenting the same video.</p>
+        <h2 id="why-another-benchmark">Why another benchmark?</h2>
+
+        <p>VLMs are a practical way to produce dense language annotations for the large amounts of egocentric video used in robot-policy pretraining.</p>
+
+        <p>Existing benchmarks that assess VLM annotation accuracy are flawed because they penalize annotations that differ from the benchmark's reference set but are still valid annotations. These benchmark limitations hinder research efforts, as they don’t accurately capture nuance. We built Shotwell-Bench, extending <a href="https://huggingface.co/datasets/macrodata/WGO-Bench">WGO-Bench</a>, to assess accuracy in producing annotations without penalizing different valid ways of segmenting the same video.</p>
 
         <p>Below are the F1 scores on segmentation and description accuracy. GPT-6 Astra leads in both.</p>
 
@@ -328,14 +334,20 @@ article h2,article h3{scroll-margin-top:32px}
 
         <h2>How we align annotation for better scoring</h2>
 
-        <p>An annotation divides an episode into actions and describes each action in language. The tradeoffs between VLM approaches are accuracy, level of detail, and cost. Accuracy is particularly difficult to benchmark: annotators can choose different boundaries or group actions differently, yet produce equally valid accounts of what happened.</p>
+        <p>An annotation divides an episode into segments representing <strong>actions</strong> and describes each action with a text <strong>description</strong>. The tradeoffs between VLM approaches to doing this are:</p>
+        <ul class="annotation-tradeoffs">
+          <li><strong>Accuracy:</strong> are the segment boundaries correct, or did actions get cut off or grouped together? Are the descriptions correct, or do they mention the wrong object, action, or hand?</li>
+          <li><strong>Level of detail:</strong> do the descriptions miss key information?</li>
+          <li><strong>Cost:</strong> how much does it cost to produce the annotations?</li>
+        </ul>
+        <p>Accuracy is particularly difficult to benchmark: annotators can choose different boundaries or group actions differently, yet produce equally valid accounts of what happened.</p>
 
-        <p>Shotwell-Bench reduces these arbitrary penalties by restructuring WGO-Bench in four ways:</p>
+        <p>Shotwell-Bench provides a better way to judge accuracy by restructuring WGO-Bench in four ways:</p>
 
         <ol>
-          <li><strong>An extremely detailed annotation guide.</strong> It specifies which actions merit their own segment, exactly where boundaries should fall, and the format and level of detail expected in each description. This makes model outputs very consistent before grading begins. Shotwell-Bench also demands a much higher level of detail in outputs that spotlights the limits of weaker models.</li>
           <li><strong>Multiple acceptable segmentations.</strong> Even with a precise guide, there is a range of timestamps where an action boundary can be placed, and some actions can reasonably be grouped or split. The reference annotations include acceptable ranges for each individual boundary, rather than one fixed tolerance for every boundary. They also include optional sub-boundaries where splitting an action is valid. Every valid possible segmentation logic for an episode is captured.</li>
           <li><strong>Multiple acceptable descriptions.</strong> For description grading, models receive fixed segments to describe. Each reference description provides required details and optional details for each segment. An LLM judge checks that every required action is present with the right verb, object, and hands. It allows compatible specificity and slight generalizations, but rejects contradictions and independent actions without reference support. The guide and explicit reference details leave less to the LLM judge's discretion.</li>
+          <li><strong>An extremely detailed annotation guide.</strong> Our guide specifies which actions merit their own segment, exactly where boundaries should fall, and the format and level of detail expected in each description. This makes model outputs very consistent before grading begins. Shotwell-Bench also demands a much higher level of detail in outputs that spotlights the limits of weaker models.</li>
           <li><strong>Curated episodes with clearer actions.</strong> We select clips where action boundaries and descriptions can be judged with relatively little ambiguity, limiting cases where equally careful annotators would disagree.</li>
         </ol>
 
@@ -450,23 +462,23 @@ article h2,article h3{scroll-margin-top:32px}
           <p>Our approach relies on two important properties in our reference annotations and scoring: boundary ranges and optional boundaries.</p>
 
           <h3 class="guide-subheading">Boundary ranges</h3>
-          <p>There is always going to be a range of timestamps where a boundary is valid, and it is not going to be the same from segment to segment. In some cases the range might be wide. For example, a pickup could end as soon as the object is lifted above the surface, or later in the trajectory if no other action begins. In other cases it might be much tighter, such as when a pour ends and the operator immediately starts placing the container—the next segment.</p>
+          <p>There is always a range of timestamps where a boundary is valid, but the width of that range will vary per segment. In some cases, the range might be wide. For example, a ‘pick up’ action might end as soon as the object is lifted above the surface, or later in the trajectory, if no other action begins. In other cases, the range might be much narrower, such as when a pour ends and the operator immediately starts placing the container.</p>
 
           <iframe class="benchmark-visual" src="visuals/boundary-ranges.html?v=10" title="Wide and tight boundary ranges compared with model predictions" height="950" loading="eager"></iframe>
 
-          <p>This captures acceptable timing more directly than a fixed tolerance or an IoU overlap threshold. We create an acceptability range for every boundary: a model marker inside that range can count as a hit, while a marker outside all accepted ranges is an error. Matching is one-to-one, so an extra marker inside an already matched range is still an error.</p>
+          <p>Our approach captures acceptable timing more directly than a fixed tolerance or an IoU overlap threshold. We create an acceptability range for every boundary: a model marker inside that range can count as a hit, while one outside all accepted ranges is an error. Matching is one-to-one, so an extra marker inside an already matched range is still an error.</p>
 
           <h3 class="guide-subheading">Optional boundaries</h3>
-          <p>No matter how specific an annotation guide is, there will always be cases where different segmentation interpretations are valid. Two actions could be grouped together or split into separate segments, and both choices can be defensible. The scoring should accept each valid interpretation. Shotwell-Bench represents these alternatives with minor and major boundaries: leaving a minor boundary unmatched carries no penalty, but missing a major boundary does. Placing a marker outside every minor and major boundary range also incurs a penalty.</p>
+          <p>No matter how specific an annotation guide is, there will always be cases where different segmentation interpretations are valid. Two actions could be grouped together or split into separate segments, and both choices can be defensible. The scoring should accept each valid interpretation. Shotwell-Bench handles these alternatives by distinguishing between <strong>minor and major boundaries</strong>: Major boundaries are required, and missing one incurs a penalty. Minor boundaries are optional and can be omitted without penalty. Placing a marker outside every minor and major boundary range also incurs a penalty.</p>
 
           <iframe class="benchmark-visual" src="visuals/optional-boundaries.html?v=17" title="Optional split between putting down a glass and a sponge" height="850" loading="eager"></iframe>
 
-          <p>Opus splits the glass and sponge placement; Astra groups it. Both match the required boundaries, and the split is optional. Luna misses the last boundary as the last segment shown above extends well past it.</p>
+          <p>In the example above, Opus splits the glass and sponge placement; Astra groups it. Both match the required boundaries, and the split is optional. Luna, however, misses the last boundary as the last segment shown above extends well past it.</p>
         </section>
 
         <section aria-labelledby="multiple-descriptions">
           <h2 id="multiple-descriptions">Multiple acceptable descriptions</h2>
-          <p>There's more than one good way to describe the same action. For each segment, we list the details that matter and others that are optional. A correct output must list all the required details, and must not fabricate any detail not present in the required or optional detail list. Within a detail, there may be different interpretations of an action or item. These interpretation options are represented as brackets below, and the judge will accept any of the options. Different wording is accepted, as is having a slight different level of specificity.</p>
+          <p>There's more than one good way to describe the same action. For each segment, we list the details that matter and mark others as optional. A correct output must list all the required details, and must not fabricate any detail not present in the required or optional detail list. Within a detail, there may be different interpretations of an action or item. These interpretation options are represented as brackets below, and the judge will accept any of the options. Different wording is accepted, as is having a slightly different level of specificity.</p>
           <p>Below are three examples of reference segment descriptions, and accepted and rejected annotations.</p>
 
           <div class="description-examples" aria-label="Description grading examples">
@@ -499,7 +511,7 @@ article h2,article h3{scroll-margin-top:32px}
 
         <h2>Disambiguating with a pedantic guide</h2>
 
-        <p>In the clips above, Astra's Shotwell annotations are extremely similar to the reference segments, which makes for grading much clearer and objective. The boundaries are almost identical, and some captions differ by only a few words. Take a look at how Astra captions line up more closely on Shotwell-Bench than WGO-Bench, both in timing and wording.</p>
+        <p>In the clips above, Astra's Shotwell annotations closely match the reference segments, which makes grading much clearer and more objective. The segment boundaries are almost identical, and some captions differ by only a few words. Take a look at how Astra captions line up more closely on Shotwell-Bench than WGO-Bench, both in timing and wording.</p>
 
         <figure class="alignment" aria-label="Timing and action text for the four sink annotations">
           <figcaption>Model output and reference similarity</figcaption>
@@ -550,7 +562,7 @@ article h2,article h3{scroll-margin-top:32px}
           </div></div>
         </figure>
 
-        <p>The similarity is because of how specific the <a href="https://github.com/shotwellai/shotwell-bench/blob/main/guide.md">guide</a> is in where it expects segment boundaries, and how it expects descriptions to be formatted.</p>
+        <p>The similarity is because of how specific the <a href="https://github.com/shotwellai/shotwell-bench/blob/main/guide.md">guide</a> is in where it expects segment boundaries, and how it expects descriptions to be formatted. By reducing ambiguity in segmentation and captioning, the guide makes model outputs more consistent with the reference annotations and easier to evaluate reliably.</p>
 
         <h3 class="guide-subheading">Where the boundaries go</h3>
         <p>The guide has a large list of rules for where segment boundaries must be placed. These are the parts most relevant to the segments above; expand a snippet to read the full rule:</p>
@@ -649,7 +661,7 @@ article h2,article h3{scroll-margin-top:32px}
         </figure>
 
         <p id="score-conclusion">Here, the capabilities of stronger models, and the gap between them and weaker models, are shown much more strongly than in the original WGO-Bench. In the original benchmark, smaller models that were clearly weaker (such as FLORA) beat Astra and GPT-5.6 Sol on <a href="https://arxiv.org/html/2610.31779">segmentation F1</a> due to the noisiness of the scoring approach. Shotwell-Bench results correlate much more strongly with the generally accepted visual abilities of these models.</p>
-        <p>Browse the benchmark videos and reference annotations <a href="./episodes/">here</a>. The <a href="https://github.com/shotwellai/shotwell-bench/blob/main/guide.md">annotation guide</a>, runner, and scoring code are in the <a href="https://github.com/shotwellai/shotwell-bench">benchmark repository</a>.</p>
+        <p><strong>Browse the benchmark <a href="https://shotwell.ai/blog/shotwell-bench/episodes/">videos and reference annotations here</a>. The <a href="https://github.com/shotwellai/shotwell-bench/blob/main/guide.md">annotation guide</a>, runner, and scoring code are in the <a href="https://github.com/shotwellai/shotwell-bench">benchmark repository</a>.</strong></p>
 
         <h2 id="acknowledgments">Acknowledgments</h2>
         <p>Thanks to the teams behind <a href="https://macrodata.co/blog/annotating-robot-video-subtasks">WGO-Bench</a> and <a href="https://www.microagi.ai/benchmarks/microannotationbench">MicroAnnotationBench</a>, whose work we build on and cite throughout this benchmark. Our data was curated from the <a href="https://huggingface.co/datasets/macrodata/WGO-Bench">WGO-Bench dataset</a>.</p>
