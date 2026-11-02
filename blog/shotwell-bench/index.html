@@ -160,7 +160,7 @@
     .score-axis-scale span:first-child { transform: none; }
     .score-axis-scale span:last-child { transform: translateX(-100%); }
     .score-row { min-height: 64px; padding: 9px 0; border-top: 1px solid var(--wire); }
-    .score-model { display: block; font: 500 15px/1.3 var(--sans); }
+    .score-model { display: block; font: 500 20px/1.3 var(--body); }
     .score-plot { position: relative; min-width: 0; height: 42px; }
     .score-scale { position: absolute; inset: 0 8px; }
     .score-scale::after { display: none; }
@@ -237,7 +237,7 @@
       .guide-rule { grid-template-columns: 1fr; gap: 3px; }
       .score-legend { gap: 6px 12px; font-size: 10px; }
       .score-axis, .score-row { grid-template-columns: minmax(0, 92px) minmax(0, 1fr); gap: 10px; }
-      .score-model { font-size: 12px; overflow-wrap: anywhere; }
+      .score-model { font-size: 15px; overflow-wrap: anywhere; }
       .score-axis { font-size: 9px; }
       .score-axis-scale span:nth-child(even), .score-axis-scale span:nth-last-child(2) { display: none; }
       .score-axis-scale span:last-child { display: block; }
@@ -272,6 +272,12 @@ article h2,article h3{scroll-margin-top:32px}
 @media(min-width:1200px){.article-toc{left:68px;top:50%;transform:translateY(-50%);width:min(220px,calc((100vw - 808px)/2 - 88px));max-height:calc(100vh - 80px)}}
     .annotation-tradeoffs { padding-left: 26px; margin: 24px 0; }
     .annotation-tradeoffs li { margin-bottom: 12px; }
+
+.score-figure[data-score-kind] + .score-figure[data-score-kind]{margin-top:40px}
+.score-figure[data-score-kind] .score-row{min-height:48px}
+.score-figure[data-score-kind] .score-plot{height:28px}
+.score-figure[data-score-kind] .score-point{top:50%;height:14px}
+.score-winner .score-point::after{font-weight:700;font-size:12px}
 </style>
 </head>
 <body>
@@ -314,20 +320,19 @@ article h2,article h3{scroll-margin-top:32px}
         <p>Below are the F1 scores on segmentation and description accuracy. GPT-6 Astra leads in both.</p>
 
         <div class="score-results" aria-label="Measured benchmark scores">
-          <figure class="score-figure">
-            <figcaption>Model scores</figcaption>
-            <div class="score-legend" aria-label="Score markers">
-              <span class="score-key segmentation">Segmentation</span>
-              <span class="score-key description">Description</span>
-            </div>
+          <figure class="score-figure" data-score-kind="segmentation">
+            <figcaption>Segmentation: Model Scores (F1)</figcaption>
             <div class="score-grid" id="score-grid" aria-live="polite">
-              <div class="score-axis" aria-hidden="true">
-                <span>Model</span>
-                <div class="score-axis-scale"></div>
-              </div>
+              <div class="score-axis" aria-hidden="true"><span>Model</span><div class="score-axis-scale"></div></div>
             </div>
-            <p class="score-caveat" id="score-caveat" hidden></p>
           </figure>
+          <figure class="score-figure" data-score-kind="description">
+            <figcaption>Description: Model Scores (F1)</figcaption>
+            <div class="score-grid" id="description-score-grid" aria-live="polite">
+              <div class="score-axis" aria-hidden="true"><span>Model</span><div class="score-axis-scale"></div></div>
+            </div>
+          </figure>
+          <p class="score-caveat" id="score-caveat" hidden></p>
         </div>
 
         <h2>How we align annotation for better scoring</h2>
@@ -901,41 +906,45 @@ article h2,article h3{scroll-margin-top:32px}
       const lastTick = 10;
       const axisMin = 0;
       const axisMax = 1;
-      const axis = document.querySelector('.score-axis-scale');
-      for (let tick = firstTick; tick <= lastTick; tick += 1) {
-        const label = document.createElement('span');
-        label.style.setProperty('--tick', `${(tick - firstTick) / (lastTick - firstTick) * 100}%`);
-        label.textContent = (tick / 10).toFixed(1);
-        axis.append(label);
-      }
-      Object.entries(data.models).sort((a, b) => b[1].segmentation.f1 - a[1].segmentation.f1).forEach(([key, score]) => {
-        const row = document.createElement('div');
-        row.className = 'score-row';
-        const model = scoreNames[key] || score.model_id;
-        const modelCell = document.createElement('div');
-        const name = document.createElement('strong');
-        name.className = 'score-model';
-        name.textContent = model;
-        modelCell.append(name);
-        const plot = document.createElement('div');
-        plot.className = 'score-plot';
-        plot.setAttribute('role', 'group');
-        plot.setAttribute('aria-label', `${model} F1 scores`);
-        const scale = document.createElement('div');
-        scale.className = 'score-scale';
+      for (const kind of ['segmentation', 'description']) {
+        const figure = document.querySelector(`[data-score-kind="${kind}"]`);
+        const grid = figure.querySelector('.score-grid');
+        const axis = figure.querySelector('.score-axis-scale');
+        const metricLabel = kind === 'segmentation' ? 'Segmentation F1' : 'Description F1';
         for (let tick = firstTick; tick <= lastTick; tick += 1) {
-          const gridline = document.createElement('span');
-          gridline.className = 'score-gridline';
-          gridline.style.setProperty('--tick', `${(tick - firstTick) / (lastTick - firstTick) * 100}%`);
-          scale.append(gridline);
+          const label = document.createElement('span');
+          label.style.setProperty('--tick', `${tick / lastTick * 100}%`);
+          label.textContent = (tick / 10).toFixed(1);
+          axis.append(label);
         }
-        addPoint(scale, model, 'segmentation', 'Segmentation F1', score.segmentation.f1, axisMin, axisMax);
-        addPoint(scale, model, 'description', 'Description F1', score.description.f1, axisMin, axisMax);
-        plot.append(scale);
-        row.append(modelCell, plot);
-        scoreGrid.append(row);
-
-      });
+        const ranked = Object.entries(data.models).sort((a, b) => b[1][kind].f1 - a[1][kind].f1);
+        const best = ranked[0]?.[1][kind].f1;
+        ranked.forEach(([key, score]) => {
+          const row = document.createElement('div');
+          row.className = 'score-row' + (score[kind].f1 === best ? ' score-winner' : '');
+          const model = scoreNames[key] || score.model_id;
+          const name = document.createElement('strong');
+          name.className = 'score-model';
+          name.textContent = model;
+          const plot = document.createElement('div');
+          plot.className = 'score-plot';
+          plot.setAttribute('role', 'group');
+          plot.setAttribute('aria-label', `${model} ${metricLabel}`);
+          const scale = document.createElement('div');
+          scale.className = 'score-scale';
+          for (let tick = firstTick; tick <= lastTick; tick += 1) {
+            const gridline = document.createElement('span');
+            gridline.className = 'score-gridline';
+            gridline.style.setProperty('--tick', `${tick / lastTick * 100}%`);
+            scale.append(gridline);
+          }
+          addPoint(scale, model, kind, metricLabel, score[kind].f1, axisMin, axisMax);
+          if (score[kind].f1 === best) scale.querySelector('.score-point').setAttribute('aria-label', `${model}, ${metricLabel}: ${score[kind].f1.toFixed(3)}, highest score`);
+          plot.append(scale);
+          row.append(name, plot);
+          grid.append(row);
+        });
+      }
       updateCostChart(data.models);
       const refusals = Object.entries(data.models).filter(([, score]) => score.refused_tasks > 0);
       if (refusals.length) {
@@ -946,7 +955,7 @@ article h2,article h3{scroll-margin-top:32px}
     }).catch(() => {
       const message = document.createElement('p');
       message.textContent = 'Scores are not available yet.';
-      scoreGrid.append(message);
+      document.querySelectorAll('.score-results .score-grid').forEach(grid => grid.append(message.cloneNode(true)));
       costChart.textContent = 'Cost estimates are not available yet.';
     });
 
