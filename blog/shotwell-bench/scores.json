@@ -114,6 +114,17 @@
       },
       "overall_f1": 0.2167397421634709,
       "refused_tasks": 0
+    },
+    "terra": {
+      "model_id": "gpt-6.1-terra",
+      "segmentation": {
+        "f1": 0.7399577167019028
+      },
+      "description": {
+        "f1": 0.6676875957120981
+      },
+      "overall_f1": 0.49406058879330733,
+      "refused_tasks": 0
     }
   }
 }

@@ -651,7 +651,7 @@ article h2,article h3{scroll-margin-top:32px}
         <p>Description rules are also far more explicit in Shotwell-Bench than in the original WGO-Bench. The exact required format of sentences and rulings on required details leave no room for ambiguity, which makes checking accuracy far more objective. The guide also has more required details than WGO-Bench, making this a harder benchmark that punishes weaker models.</p>
         <h2>Results</h2>
 
-        <p>The chart compares the mean of each model's segmentation and description F1 with estimated cost per hour of video. The green line marks the Pareto frontier and routes through the latest GPT models and NVIDIA Flora.</p>
+        <p>The chart compares the mean of each model's segmentation and description F1 with estimated cost per hour of video. The green line marks the Pareto frontier: GPT-6 Luna, GPT-6.1 Terra, GPT-6.1 Sol, and GPT-6 Astra.</p>
 
         <figure class="cost-figure">
           <figcaption>Performance vs cost per video hour</figcaption>
@@ -760,7 +760,7 @@ article h2,article h3{scroll-margin-top:32px}
     }
 
     const scoreGrid = document.querySelector('#score-grid');
-    const scoreNames = { astra: 'GPT-6 Astra', sol: 'GPT-6.1 Sol', argon: 'Gemini 4 Argon', opus: 'Claude Opus 5.5', luna: 'GPT-6 Luna', sonnet: 'Claude Sonnet 5.5', qwen35: 'Qwen3.5 397B', flora: 'NVIDIA FLORA', kimi3: 'Kimi K3', kimi31pro: 'Kimi K3.1 Pro' };
+    const scoreNames = { astra: 'GPT-6 Astra', sol: 'GPT-6.1 Sol', terra: 'GPT-6.1 Terra', argon: 'Gemini 4 Argon', opus: 'Claude Opus 5.5', luna: 'GPT-6 Luna', sonnet: 'Claude Sonnet 5.5', qwen35: 'Qwen3.5 397B', flora: 'NVIDIA FLORA', kimi3: 'Kimi K3', kimi31pro: 'Kimi K3.1 Pro' };
     const addPoint = (scale, model, kind, label, value, axisMin, axisMax) => {
       const point = document.createElement('button');
       point.type = 'button';
@@ -786,6 +786,7 @@ article h2,article h3{scroll-margin-top:32px}
     const costRates = {
       astra: { imageRule: 'openai', input: 10, output: 50 },
       sol: { imageRule: 'openai', input: 2, output: 10 },
+      terra: { imageRule: 'openai', input: 1, output: 5 },
       luna: { imageRule: 'openai', input: 0.1, output: 0.5 },
       argon: { imageRule: 'google', input: 2, output: 10 },
       opus: { imageRule: 'anthropic', input: 4, output: 20 },
@@ -903,7 +904,7 @@ article h2,article h3{scroll-margin-top:32px}
       drawCostChart();
     };
     new ResizeObserver(drawCostChart).observe(costChart);
-    fetch('./scores.json?v=2026-10-30-kimi31pro').then((response) => {
+    fetch('./scores.json?v=2026-11-02-terra').then((response) => {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       return response.json();
     }).then((data) => {
