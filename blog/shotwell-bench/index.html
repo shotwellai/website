@@ -163,16 +163,14 @@
     .score-model { display: block; font: 500 15px/1.3 var(--sans); }
     .score-plot { position: relative; min-width: 0; height: 42px; }
     .score-scale { position: absolute; inset: 0 8px; }
-    .score-scale::after { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--wire-strong); }
+    .score-scale::after { display: none; }
     .score-gridline { position: absolute; top: 0; bottom: 0; left: var(--tick); width: 1px; background: var(--wire); }
-    .score-point { --marker: var(--score-seg); position: absolute; z-index: 2; left: var(--value); top: 50%; width: 16px; height: 18px; padding: 0; border: 0; background: transparent; transform: translate(-50%, -50%); cursor: default; }
-    .score-point::before { content: ''; position: absolute; top: 50%; left: 50%; width: 4px; height: 17px; background: var(--marker); transform: translate(-50%, -50%); }
-    .score-point.segmentation { --marker: var(--score-seg); top: 19%; height: 18px; }
-    .score-point.description { --marker: var(--score-desc); top: 81%; height: 18px; }
-    .score-point::after { content: attr(data-score); position: absolute; left: calc(50% + 9px); top: 50%; padding: 2px 5px; border: 1px solid var(--wire-strong); background: var(--ground); color: var(--fg); font: 11px/1.2 var(--mono); white-space: nowrap; opacity: 0; pointer-events: none; transform: translateY(-50%); }
-    .score-point.tooltip-left::after { right: calc(50% + 9px); left: auto; }
-    .score-point:hover::after, .score-point:focus-visible::after { opacity: 1; }
+    .score-point { --marker: var(--score-seg); position: absolute; z-index: 2; left: 0; top: 50%; width: var(--value); min-width: 1px; height: 12px; padding: 0; border: 0; border-radius: 0 2px 2px 0; background: var(--marker); transform: translateY(-50%); cursor: default; }
+    .score-point.segmentation { --marker: var(--score-seg); top: 23%; }
+    .score-point.description { --marker: var(--score-desc); top: 77%; }
+    .score-point::after { content: attr(data-score); position: absolute; left: calc(100% + 7px); top: 50%; color: var(--fg); font: 10px/1.2 var(--mono); white-space: nowrap; pointer-events: none; transform: translateY(-50%); }
     .score-point:hover, .score-point:focus-visible { z-index: 3; outline: 2px solid var(--fg); outline-offset: 2px; }
+    .score-key::before { width: 16px; height: 6px; }
     .score-caveat { margin: 14px 0 0; color: var(--dim); font: 12px/1.5 var(--mono); }
     .cost-figure { margin: 24px 0 32px; }
     .cost-figure figcaption { font: 400 22px/1.3 var(--display); }
