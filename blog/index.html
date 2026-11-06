@@ -128,6 +128,16 @@
   .score span{display:block;font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
   .score b{display:block;margin-top:6px;font-family:var(--display);font-weight:300;font-size:2.2rem;line-height:1;color:var(--fg)}
 
+  .post-egoverse h2{font-size:clamp(2.4rem,3.8vw,3.3rem);max-width:18ch}
+  .post-egoverse h2 span{display:block;margin-top:12px;font-family:var(--body);font-size:1.35rem;line-height:1.4;color:var(--ink)}
+  .egoverse-visual{display:flex;justify-content:center;align-items:center;padding:36px}
+  .egoverse-lock{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1.18fr);align-items:center;gap:4%;width:100%;max-width:480px;container-type:inline-size}
+  .egoverse-lock .sw{width:100%;height:auto}
+  .egoverse-lock i{font-style:normal;font-family:var(--display);font-size:5.5cqw;line-height:1;color:var(--fg)}
+  .egoverse-partner{display:flex;align-items:center;gap:1.4cqw;min-width:0}
+  .egoverse-name{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:8cqw;font-weight:700;letter-spacing:-.04em;line-height:1;white-space:nowrap}
+  .egoverse-partner img{width:20%;height:auto;flex-shrink:0}
+
   .footer{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:72px;
     padding-top:26px;border-top:1px solid var(--wire);font-family:var(--mono);font-size:.6875rem;letter-spacing:.1em;color:var(--faint)}
 
@@ -144,6 +154,7 @@
     .ultra-lock .sw{width:150px}.ultra-lock .ul{width:130px}
     .row{grid-template-columns:68px 1fr}
   }
+  @media (max-width:440px){.egoverse-visual{padding:24px}}
 </style>
 </head>
 <body>
@@ -216,6 +227,31 @@
           <div class="score"><span>Segments</span><b>0.86</b></div>
           <div class="score"><span>Descriptions</span><b>0.91</b></div>
           <div class="score"><span>Overall</span><b>0.89</b></div>
+        </div>
+      </div>
+    </a>
+
+    <a class="post post-egoverse" href="/blog/egoverse/">
+      <div class="post-copy">
+        <div>
+          <div class="post-top">
+            <span class="stamp">Perspective</span>
+            <span class="meta">EgoVerse</span>
+          </div>
+          <h2>Shotwell × EgoVerse <span>Defining Quality In Egocentric Data</span></h2>
+          <p>How Shotwell works with EgoVerse to understand and evaluate human demonstrations from a range of contributors.</p>
+        </div>
+        <span class="read">Read article</span>
+      </div>
+      <div class="visual egoverse-visual" aria-hidden="true">
+        <div class="egoverse-lock">
+          <img class="sw logo-dark-only" src="/brand/assets/SVG/shotwell-logo-horizontal-white.svg" alt="">
+          <img class="sw logo-light-only" src="/brand/assets/SVG/shotwell-logo-horizontal-black.svg" alt="">
+          <i>×</i>
+          <span class="egoverse-partner">
+            <span class="egoverse-name">EgoVerse</span>
+            <img src="/blog/egoverse/assets/egoverse-mark.svg" width="149" height="149" alt="">
+          </span>
         </div>
       </div>
     </a>
