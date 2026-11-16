@@ -7,6 +7,7 @@ import {
   exchangeGoogleCode,
   hasGoogleConfig
 } from "../auth/google.js";
+import { checkEmailDomain } from "../auth/email-domain.js";
 import { authStore, type User } from "../auth/store.js";
 import { config } from "../config.js";
 import { notifyNewSignup } from "../email/notifications.js";
@@ -15,8 +16,8 @@ import { defaultReturnTo, normalizeReturnTo, withCode } from "../http/hosts.js";
 import { loginPage, messagePage, privacyPolicyPage } from "../http/render.js";
 
 const emailLimiter = rateLimit({
-  windowMs: 10 * 60 * 1000,
-  limit: 10,
+  windowMs: 60 * 60 * 1000,
+  limit: 5,
   standardHeaders: true,
   legacyHeaders: false
 });
@@ -67,6 +68,24 @@ authRouter.post("/login/email", emailLimiter, async (req, res, next) => {
     }
 
     if (!config.allowDevEmailLogin) {
+      const domainStatus = await checkEmailDomain(email);
+      if (domainStatus !== "ok") {
+        res
+          .status(400)
+          .type("html")
+          .send(
+            domainStatus === "disposable"
+              ? messagePage(
+                  "Use a permanent email",
+                  "We do not send sign-in links to temporary mailboxes. Use your work email or Google sign-in.",
+                  "/login",
+                  "Back"
+                )
+              : messagePage("Email required", "Enter a valid email address.", "/login", "Back")
+          );
+        return;
+      }
+
       const loginToken = await authStore.createEmailLoginToken(email, returnTo);
       try {
         await sendLoginLink({

@@ -8,6 +8,7 @@ import { notifyContactSubmitted, notifyUploadSubmitted } from "../email/notifica
 import { adminPage, appPage, messagePage, resultPage } from "../http/render.js";
 import { createGcsUploadSessions, createResultReadStream, createUploadReadStream, getResultFileMetadata, resultObjectName, type NewUploadFileInput } from "../uploads/gcs.js";
 import { parseUploadResultJson } from "../uploads/results.js";
+import { blockedSourceUrlMessage, invalidSourceUrlMessage, parseSourceUrl } from "../uploads/source-url.js";
 import { createUploadId, uploadStore } from "../uploads/store.js";
 
 export const appRouter = Router();
@@ -252,30 +253,6 @@ function cleanFileName(value: unknown) {
   }
 
   return value.trim().slice(0, 512);
-}
-
-function parseSourceUrl(value: unknown) {
-  if (typeof value !== "string") {
-    return undefined;
-  }
-
-  const sourceUrl = value.trim().slice(0, 2_048);
-  if (!sourceUrl) {
-    return undefined;
-  }
-
-  let parsedUrl: URL;
-  try {
-    parsedUrl = new URL(sourceUrl);
-  } catch {
-    throw new Error("Enter a valid URL.");
-  }
-
-  if (!["http:", "https:", "s3:", "gs:"].includes(parsedUrl.protocol)) {
-    throw new Error("Enter a valid URL.");
-  }
-
-  return parsedUrl.toString();
 }
 
 function parseUploadRequest(body: unknown): { prompt: string; files: NewUploadFileInput[]; sourceUrl?: string } {
@@ -1288,7 +1265,8 @@ appRouter.post("/api/uploads", async (req, res, next) => {
     if (error instanceof Error && [
       "Choose files or provide a link.",
       "Choose files or provide a link, not both.",
-      "Enter a valid URL.",
+      invalidSourceUrlMessage,
+      blockedSourceUrlMessage,
       "Every file needs a name.",
       "Upload at most 100 files at a time."
     ].includes(error.message)) {
