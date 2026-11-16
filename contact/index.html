@@ -65,6 +65,7 @@
   .lede p{margin:14px auto 0;color:var(--dim);font-weight:500;font-size:1.125rem}
 
   form{margin-top:0;display:grid;gap:24px}
+  .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
   .field label{font-family:var(--body);font-size:.9375rem;font-weight:400;
     color:var(--fg);display:block;margin-bottom:9px}
   input,textarea,select{width:100%;background:var(--ground);border:1px solid var(--wire);
@@ -144,6 +145,12 @@
         <label for="msg">What would you like to discuss?</label>
         <textarea id="msg" name="msg" placeholder="The task, the robot, what you need labelled…" required></textarea>
       </div>
+      <!-- Honeypot: a person does not see this field. The server drops a
+           submission that fills it. -->
+      <div class="hp" aria-hidden="true">
+        <label for="website">Website</label>
+        <input id="website" name="website" type="text" tabindex="-1" autocomplete="off">
+      </div>
       <button type="submit">Send</button>
       <span class="alt">Or email <a href="mailto:hello@shotwell.ai">hello@shotwell.ai</a> directly.</span>
     </form>
@@ -174,7 +181,7 @@ document.getElementById('f').addEventListener('submit',async function(e){
   e.preventDefault();
   var g=function(id){return document.getElementById(id).value;};
   var payload={name:g('name'),company:g('company'),email:g('email'),
-    message:g('msg')};
+    message:g('msg'),website:g('website')};
   var btn=document.querySelector('#f button');
   btn.disabled=true; btn.textContent='Sending…';
   try{
