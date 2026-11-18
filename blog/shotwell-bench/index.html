@@ -308,13 +308,13 @@ article h2,article h3{scroll-margin-top:32px}
   <main class="document" id="post">
     <article aria-labelledby="post-title">
       <header class="post-header">
-        <div class="post-meta"><span>Research</span></div>
+        <div class="post-meta"><span>Research</span><span>Updated November 17, 2026</span></div>
         <h1 id="post-title">Shotwell-Bench</h1>
         <p class="post-subtitle">An annotation benchmark that accepts valid alternatives</p>
       </header>
 
       <div class="prose">
-        <p class="tldr"><strong>TL;DR:</strong> Shotwell-Bench fixes the core problem with annotation benchmarks. Existing benchmarks are extremely rigid in how they expect annotations, penalizing accurate model outputs which leads to noisy benchmark scores. Shotwell-Bench accepts multiple valid ways to annotate the same video and reflects model performance far more comprehensively. GPT-6 Astra performs the best on this benchmark.</p>
+        <p class="tldr"><strong>TL;DR:</strong> Shotwell-Bench fixes the core problem with annotation benchmarks. Existing benchmarks are extremely rigid in how they expect annotations, penalizing accurate model outputs which leads to noisy benchmark scores. Shotwell-Bench accepts multiple valid ways to annotate the same video and reflects model performance far more comprehensively. GPT-6.2 Astra performs the best on this benchmark.</p>
 
         <h2 id="why-another-benchmark">Why another benchmark?</h2>
 
@@ -322,7 +322,7 @@ article h2,article h3{scroll-margin-top:32px}
 
         <p>Existing benchmarks that assess VLM annotation accuracy are flawed because they penalize annotations that differ from the benchmark's reference set but are still valid annotations. These benchmark limitations hinder research efforts, as they don’t accurately capture nuance. We built Shotwell-Bench, extending <a href="https://huggingface.co/datasets/macrodata/WGO-Bench">WGO-Bench</a>, to assess accuracy in producing annotations without penalizing different valid ways of segmenting the same video.</p>
 
-        <p>Below are the F1 scores on segmentation and description accuracy. GPT-6 Astra leads in both.</p>
+        <p>Below are the F1 scores on segmentation and description accuracy. GPT-6.2 Astra leads in both.</p>
 
         <div class="score-results" aria-label="Measured benchmark scores">
           <figure class="score-figure" data-score-kind="segmentation">
@@ -651,7 +651,7 @@ article h2,article h3{scroll-margin-top:32px}
         <p>Description rules are also far more explicit in Shotwell-Bench than in the original WGO-Bench. The exact required format of sentences and rulings on required details leave no room for ambiguity, which makes checking accuracy far more objective. The guide also has more required details than WGO-Bench, making this a harder benchmark that punishes weaker models.</p>
         <h2>Results</h2>
 
-        <p>The chart compares the mean of each model's segmentation and description F1 with estimated cost per hour of video. The green line marks the Pareto frontier: GPT-6 Luna, GPT-6.1 Terra, GPT-6.1 Sol, and GPT-6 Astra.</p>
+        <p>The chart compares the mean of each model's segmentation and description F1 with estimated cost per hour of video. The green line marks the Pareto frontier: GPT-6 Luna, GPT-6.1 Terra, GPT-6.2 Sol, and GPT-6.2 Astra.</p>
 
         <figure class="cost-figure">
           <figcaption>Performance vs cost per video hour</figcaption>
@@ -760,7 +760,7 @@ article h2,article h3{scroll-margin-top:32px}
     }
 
     const scoreGrid = document.querySelector('#score-grid');
-    const scoreNames = { astra: 'GPT-6 Astra', sol: 'GPT-6.1 Sol', terra: 'GPT-6.1 Terra', argon: 'Gemini 4 Argon', opus: 'Claude Opus 5.5', luna: 'GPT-6 Luna', sonnet: 'Claude Sonnet 5.5', qwen35: 'Qwen3.5 397B', flora: 'NVIDIA FLORA', kimi3: 'Kimi K3', kimi31pro: 'Kimi K3.1 Pro' };
+    const scoreNames = { astra: 'GPT-6 Astra', sol: 'GPT-6.1 Sol', terra: 'GPT-6.1 Terra', argon: 'Gemini 4 Argon', opus: 'Claude Opus 5.5', luna: 'GPT-6 Luna', sonnet: 'Claude Sonnet 5.5', qwen35: 'Qwen3.5 397B', flora: 'NVIDIA FLORA', kimi3: 'Kimi K3', kimi31pro: 'Kimi K3.1 Pro', fable: 'Claude Fable 5.2', astra62: 'GPT-6.2 Astra', sol62: 'GPT-6.2 Sol', carbon: 'Gemini 4 Carbon' };
     const addPoint = (scale, model, kind, label, value, axisMin, axisMax) => {
       const point = document.createElement('button');
       point.type = 'button';
@@ -793,6 +793,10 @@ article h2,article h3{scroll-margin-top:32px}
       sonnet: { imageRule: 'anthropic', input: 2, output: 10 },
       kimi3: { imageRule: 'openai', input: 0.1624, output: 9.75 },
       kimi31pro: { imageRule: 'openai', input: 2, output: 10 },
+      astra62: { imageRule: 'openai', input: 8, output: 40 },
+      sol62: { imageRule: 'openai', input: 2, output: 10 },
+      fable: { imageRule: 'anthropic', input: 8, output: 40 },
+      carbon: { imageRule: 'google', input: 4, output: 20 },
     };
     const floraCompletedPassSpend = 9.42775365 + 0.94503751;
     const floraFailedAttemptSeconds = 287;
@@ -813,6 +817,53 @@ article h2,article h3{scroll-margin-top:32px}
       Object.entries(attributes).forEach(([key, value]) => element.setAttribute(key, String(value)));
       if (label !== undefined) element.textContent = label;
       return element;
+    };
+    const spreadCostLabels = (svg, points) => {
+      // Labels in the crowded top-right corner land on each other. Move each one to the nearest free spot,
+      // first the other side of its point, then up or down, and draw a leader line when it moves far.
+      const labels = [...svg.querySelectorAll('text.cost-label')];
+      const markers = [...svg.querySelectorAll('circle.cost-point')];
+      const svgWidth = svg.viewBox.baseVal.width;
+      const overlaps = (a, b) => !(a.x + a.width + 4 < b.x || b.x + b.width + 4 < a.x || a.y + a.height + 2 < b.y || b.y + b.height + 2 < a.y);
+      const placed = [];
+      const order = labels.map((label, index) => ({ label, marker: markers[index] }))
+        .sort((a, b) => Number(a.label.getAttribute('y')) - Number(b.label.getAttribute('y')));
+      for (const { label, marker } of order) {
+        const px = Number(marker.getAttribute('cx'));
+        const py = Number(marker.getAttribute('cy'));
+        const startY = Number(label.getAttribute('y'));
+        const startSide = label.getAttribute('text-anchor');
+        const otherSide = startSide === 'start' ? 'end' : 'start';
+        const candidates = [];
+        for (let shift = 0; shift <= 120; shift += 7) {
+          for (const sign of shift ? [-1, 1] : [1]) {
+            for (const side of [startSide, otherSide]) candidates.push({ side, y: startY + sign * shift, shift: sign * shift });
+          }
+        }
+        const place = (candidate) => {
+          label.setAttribute('text-anchor', candidate.side);
+          label.setAttribute('x', candidate.side === 'start' ? px + 11 : px - 11);
+          label.setAttribute('y', candidate.y);
+          return label.getBBox();
+        };
+        const clear = (box) => box.x >= 2 && box.x + box.width <= svgWidth - 2
+          && !placed.some((other) => overlaps(other, box))
+          && !markers.some((other) => other !== marker
+            && Number(other.getAttribute('cx')) > box.x - 8 && Number(other.getAttribute('cx')) < box.x + box.width + 8
+            && Number(other.getAttribute('cy')) > box.y - 8 && Number(other.getAttribute('cy')) < box.y + box.height + 8);
+        const chosen = candidates.find((candidate) => clear(place(candidate))) || candidates[0];
+        const box = place(chosen);
+        placed.push(box);
+        if (Math.abs(chosen.shift) > 10) {
+          svg.insertBefore(svgElement('line', {
+            class: 'cost-leader',
+            x1: px, y1: py,
+            x2: chosen.side === 'start' ? box.x - 2 : box.x + box.width + 2,
+            y2: box.y + box.height / 2,
+            stroke: 'currentColor', 'stroke-opacity': 0.35, 'stroke-width': 1,
+          }), svg.querySelector('circle'));
+        }
+      }
     };
     let costPoints = [];
     const drawCostChart = () => {
@@ -873,6 +924,7 @@ article h2,article h3{scroll-margin-top:32px}
         }
       }
       costChart.replaceChildren(svg);
+      if (!compact) spreadCostLabels(svg);
     };
     const updateCostChart = (models) => {
       costPoints = Object.entries(models).filter(([key]) => costRates[key] || key === 'flora').map(([key, score]) => ({
@@ -904,7 +956,7 @@ article h2,article h3{scroll-margin-top:32px}
       drawCostChart();
     };
     new ResizeObserver(drawCostChart).observe(costChart);
-    fetch('./scores.json?v=2026-11-02-terra').then((response) => {
+    fetch('./scores.json?v=2026-11-17-gpt62').then((response) => {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       return response.json();
     }).then((data) => {
