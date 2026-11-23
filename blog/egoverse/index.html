@@ -70,31 +70,70 @@
     .prose p { margin-bottom: 24px; }
     .prose a { text-underline-offset: 4px; text-decoration-thickness: 1px; }
     .prose a:hover { color: var(--accent); }
-    /* Article figures share the restrained lines and labels of the Ultra post. */
-    .article-figure { margin: 40px 0; scroll-margin-top: 28px; }
+    /* Color gives each stage an identity; labels keep the figures readable without it. */
+    .article-figure {
+      --figure-teal: #69D5C5;
+      --figure-amber: #EFB702;
+      --figure-violet: #B2A1F5;
+      --figure-coral: #F29293;
+      --figure-copy: color-mix(in srgb, var(--fg) 76%, var(--ground));
+      margin: 40px 0;
+      scroll-margin-top: 28px;
+    }
+    [data-theme="light"] .article-figure {
+      --figure-teal: #1A7165;
+      --figure-amber: #795900;
+      --figure-violet: #6F51B6;
+      --figure-coral: #A53E4D;
+    }
     .article-figure figcaption { margin-bottom: 14px; font: 11px/1.6 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--dim); }
     .figure-panel { padding: 26px; border: 1px solid var(--wire); background: var(--surface); }
-    .review-flow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; list-style: none; margin: 0; padding: 0; }
-    .review-step { position: relative; display: flex; flex-direction: column; justify-content: center; min-height: 146px; padding: 18px 14px; border: 1px solid var(--wire-strong); background: var(--ground); text-align: center; }
-    .review-step strong { display: block; font: 400 15px/1.5 var(--mono); }
-    .review-step small { display: block; margin-top: 10px; font: 300 14px/1.5 var(--body); color: var(--dim); }
-    .review-step.shotwell-step { border-color: var(--accent); }
-    .shotwell-step strong { color: var(--accent); }
-    .flow-arrow { position: absolute; left: -29px; top: 50%; transform: translateY(-50%); color: var(--dim); font: 20px/1 var(--mono); }
-    .figure-note { display: block; margin-top: 18px; font: 300 15px/1.6 var(--body); color: var(--dim); }
+    .review-flow { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1fr); align-items: center; gap: 28px; list-style: none; margin: 0; padding: 0; }
+    .review-step {
+      --stage-color: var(--figure-teal);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-height: 188px;
+      padding: 18px 16px;
+      border: 1px solid color-mix(in srgb, var(--stage-color) 42%, var(--ground));
+      border-top: 3px solid var(--stage-color);
+      background: color-mix(in srgb, var(--stage-color) 9%, var(--ground));
+    }
+    .review-step.shotwell-step { --stage-color: var(--figure-amber); }
+    .review-step.findings-step { --stage-color: var(--figure-violet); }
+    .step-marker { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; color: var(--stage-color); }
+    .step-number { display: grid; place-items: center; width: 28px; height: 28px; border: 1px solid color-mix(in srgb, var(--stage-color) 40%, transparent); border-radius: 50%; font: 11px/1 var(--mono); }
+    .figure-icon { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+    .review-step strong { display: block; font: 400 15px/1.5 var(--mono); color: var(--stage-color); }
+    .review-step small { display: block; margin-top: 10px; font: 300 14px/1.5 var(--body); color: var(--figure-copy); }
+    .review-criteria { display: grid; gap: 12px; list-style: none; margin: 12px 0 0; padding: 0; font: 300 14px/1.5 var(--body); color: var(--figure-copy); }
+    .review-criteria b { font-weight: 500; color: var(--fg); }
+    .flow-arrow { position: absolute; left: -25px; top: 50%; transform: translateY(-50%); color: var(--stage-color); font: 20px/1 var(--mono); }
+    .figure-note { display: block; margin-top: 20px; padding-left: 14px; border-left: 2px solid var(--figure-amber); font: 300 15px/1.6 var(--body); color: var(--figure-copy); }
     .annotation-pair { display: grid; grid-template-columns: minmax(0, 1fr) 28px minmax(0, 1fr); gap: 16px; align-items: center; }
-    .annotation-item { padding: 18px 20px; border: 1px solid var(--wire); background: var(--ground); }
-    .annotation-item small { display: block; margin-bottom: 12px; font: 10px/1.6 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
+    .annotation-item {
+      --item-color: var(--figure-coral);
+      padding: 18px 20px;
+      border: 1px solid color-mix(in srgb, var(--item-color) 42%, var(--ground));
+      border-top: 3px solid var(--item-color);
+      background: color-mix(in srgb, var(--item-color) 9%, var(--ground));
+    }
+    .annotation-item.observed-item { --item-color: var(--figure-teal); }
+    .annotation-label { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; color: var(--item-color); }
+    .annotation-label .figure-icon { width: 22px; height: 22px; }
+    .annotation-item small { display: block; font: 10px/1.6 var(--mono); letter-spacing: .12em; text-transform: uppercase; }
     .annotation-item strong { display: block; font: 300 24px/1.3 var(--display); }
     .comparison-arrow { text-align: center; font: 22px/1 var(--mono); color: var(--dim); }
-    .annotation-verdict { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--wire); font: 300 14px/1.6 var(--body); color: var(--dim); }
-    .annotation-verdict strong { font: 11px/1.6 var(--mono); color: #F0719E; }
-    [data-theme="light"] .annotation-verdict strong { color: #9F2455; }
+    .annotation-verdict { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--wire); font: 300 14px/1.6 var(--body); color: var(--figure-copy); }
+    .annotation-verdict strong { display: inline-flex; align-items: center; gap: 7px; padding: 5px 9px; border: 1px solid color-mix(in srgb, var(--figure-coral) 35%, transparent); background: color-mix(in srgb, var(--figure-coral) 10%, var(--ground)); font: 11px/1.6 var(--mono); color: var(--figure-coral); }
+    .verdict-symbol { font-size: 16px; line-height: 1; }
     @media (max-width: 600px) {
       .article-figure { margin: 32px 0; }
       .figure-panel { padding: 20px; }
       .review-flow { grid-template-columns: 1fr; gap: 30px; }
-      .review-step { min-height: 104px; padding: 16px; }
+      .review-step { min-height: 144px; padding: 16px; }
+      .step-marker { margin-bottom: 16px; }
       .flow-arrow { left: 50%; top: -25px; transform: translateX(-50%) rotate(90deg); }
       .annotation-pair { grid-template-columns: 1fr; gap: 12px; }
       .annotation-item { padding: 16px; }
@@ -163,16 +202,32 @@
           <div class="figure-panel">
             <ol class="review-flow">
               <li class="review-step">
+                <div class="step-marker" aria-hidden="true">
+                  <span class="step-number">01</span>
+                  <svg class="figure-icon" viewBox="0 0 24 24"><circle cx="12" cy="7" r="3"/><path d="M6 21v-3a6 6 0 0 1 12 0v3M4 4a3 3 0 0 1 0 6M20 4a3 3 0 0 0 0 6M2 17v-1a4 4 0 0 1 3-4M22 17v-1a4 4 0 0 0-3-4"/></svg>
+                </div>
                 <strong>Many contributors</strong>
                 <small>Different tasks, people, and settings</small>
               </li>
               <li class="review-step shotwell-step">
                 <span class="flow-arrow" aria-hidden="true">→</span>
+                <div class="step-marker" aria-hidden="true">
+                  <span class="step-number">02</span>
+                  <svg class="figure-icon" viewBox="0 0 24 24"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6M7 10l2 2 4-4"/></svg>
+                </div>
                 <strong>Shotwell review</strong>
-                <small>Recordings, motion tracking, and annotations</small>
+                <ul class="review-criteria">
+                  <li><b>Recordings:</b> Hand visibility and task coverage</li>
+                  <li><b>Motion tracking:</b> How faithfully movement is captured</li>
+                  <li><b>Annotations:</b> Accuracy of actions, objects, and tools</li>
+                </ul>
               </li>
-              <li class="review-step">
+              <li class="review-step findings-step">
                 <span class="flow-arrow" aria-hidden="true">→</span>
+                <div class="step-marker" aria-hidden="true">
+                  <span class="step-number">03</span>
+                  <svg class="figure-icon" viewBox="0 0 24 24"><path d="M14 3H5v18h14V8zM14 3v5h5M8 12h8M8 16h5"/></svg>
+                </div>
                 <strong>Review findings</strong>
                 <small>Coverage, issues, and supporting evidence</small>
               </li>
@@ -190,17 +245,23 @@
           <div class="figure-panel">
             <div class="annotation-pair">
               <div class="annotation-item">
-                <small>Provided annotation</small>
+                <div class="annotation-label">
+                  <small>Provided annotation</small>
+                  <svg class="figure-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h8l10 10-8 8L3 11z"/><circle cx="7.5" cy="7.5" r="1"/></svg>
+                </div>
                 <strong>Preparing food</strong>
               </div>
               <span class="comparison-arrow" aria-hidden="true">→</span>
-              <div class="annotation-item">
-                <small>Observed activity</small>
+              <div class="annotation-item observed-item">
+                <div class="annotation-label">
+                  <small>Observed activity</small>
+                  <svg class="figure-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m10 9 5 3-5 3z"/></svg>
+                </div>
                 <strong>Wiping a tray</strong>
               </div>
             </div>
             <div class="annotation-verdict">
-              <strong>Action mismatch</strong>
+              <strong><span class="verdict-symbol" aria-hidden="true">≠</span> Action mismatch</strong>
               <span>The main action differs from the label.</span>
             </div>
           </div>
