@@ -70,6 +70,8 @@
     .prose p { margin-bottom: 24px; }
     .prose a { text-underline-offset: 4px; text-decoration-thickness: 1px; }
     .prose a:hover { color: var(--accent); }
+    .prose .impact-statement { margin: 28px 0 32px; padding-left: 20px; border-left: 2px solid var(--accent); line-height: 1.65; scroll-margin-top: 28px; }
+    .impact-statement strong { display: block; margin-bottom: 10px; font: 500 22px/1.45 var(--body); color: var(--accent); }
     /* Color gives each stage an identity; labels keep the figures readable without it. */
     .article-figure {
       --figure-teal: #69D5C5;
@@ -189,13 +191,15 @@
       <div class="prose">
         <p>Robot learning needs demonstrations that capture the variety of tasks, objects, and environments robots will encounter. Collecting those demonstrations directly on robots is expensive and difficult to scale. Egocentric data offers a way to draw on the much broader range of activity people carry out every day. This opportunity is central to the <a href="https://egoverse.ai/">EgoVerse</a> project.</p>
 
-        <p><a href="https://egoverse.ai/">EgoVerse</a> brings together academic and industry contributors to build a growing collection of human demonstrations for robot learning. A collaborative approach allows the dataset to draw on different collection setups, environments, and areas of expertise. Each contributor can expand the range of behaviors available for researchers to learn from.</p>
+        <p><a href="https://egoverse.ai/">EgoVerse</a> brings together academic and industry contributors to build a growing collection of human demonstrations for robot learning.</p>
+
+        <p class="impact-statement" id="shotwell-impact"><strong>Shotwell defined the success rubric and took QA off the EgoVerse research team’s plate.</strong> We handle quality assurance (QA) across contributions, so the researchers can focus on research.</p>
 
         <p>We see that breadth as one of the strongest reasons for collecting data collaboratively. Folding clothes, assembling components, and restocking shelves capture different skills. Even the same task can vary across people, tools, and settings. Bringing those variations together creates opportunities to study how human demonstrations can support more capable robots.</p>
 
         <p>As the collection grows, it also needs a consistent way to assess quality. The number of hours tells researchers how much data exists. Understanding its usefulness requires a closer look at what those hours contain, how faithfully the motion is captured, and whether the accompanying annotations are accurate.</p>
 
-        <p>At Shotwell, we’re working with the EgoVerse team to understand and evaluate data from a range of contributors. We assess data quality using clear, consistent criteria for the recordings, motion tracking, and annotations.</p>
+        <p>We apply this rubric to recordings, motion tracking, and annotations across contributors.</p>
 
         <figure class="article-figure" id="review-approach" aria-labelledby="review-approach-caption">
           <figcaption id="review-approach-caption">A shared approach to data quality</figcaption>
